@@ -17,7 +17,10 @@ export default function Dashboard() {
       <div className="dashboard-leftpane w-1/4 shadow-md block p-3 bg-white-400">
         <div className="flex justify-center items-center bg-blue-100">
           <div className="block dashboard-leftpane__logo"></div>
-          <div className="font-mono text-2xl p-2">Git Convex</div>
+          <div className="font-mono text-2xl p-4 text-5xl">
+            <span className="font-bold mx-2 border-b-4 border-pink-400">Git</span>
+            Convex
+          </div>
         </div>
         <div className="mt-32 cursor-pointer">
           <div className="flex border-b border-black-100 p-3 hover:bg-gray-100">
@@ -49,5 +52,14 @@ export default function Dashboard() {
     );
   }
 
-  function rightPane() {}
+  function rightPane() {
+    return(
+      <div className="w-11/12">
+        <div className="rounded">
+          <span>Platform</span>
+          <span></span>
+        </div>
+      </div>
+    )
+  }
 }
