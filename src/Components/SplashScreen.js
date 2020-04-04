@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { Redirect } from "react-router";
+
 import {
   CONFIG_HTTP_MODE,
   API_HEALTHCHECK,
@@ -62,6 +62,8 @@ export default function SplashScreen(props) {
               case "nodeCheck":
                 setLoader("Checking Node availability...");
                 break;
+              default:
+                setLoader("Loading...")
             }
             setHcCheck(true);
             dispatch({ type: HC_DONE_SWITCH, payload: true });

@@ -8,6 +8,7 @@ export default function reducer(state, action) {
         hcDone: action.payload
       }
     case HC_PARAM_ACTION:
+      localStorage.setItem(action.payload.code, action.payload.value)
       return {
         ...state,
         hcParams: [...state.hcParams, action.payload]

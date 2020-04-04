@@ -2,9 +2,10 @@ import React, { useContext, useState, useEffect } from "react";
 import {
   FolderOutlined,
   SettingsOutlined,
-  HelpOutline
+  HelpOutline,
 } from "@material-ui/icons";
 
+import RepoComponent from "./RepoComponent";
 import { ContextProvider } from "../../context";
 
 export default function Dashboard() {
@@ -15,15 +16,22 @@ export default function Dashboard() {
   const [nodeVersion, setNodeVersion] = useState("");
 
   useEffect(() => {
-    state.hcParams.forEach(entry => {
-      if (entry["code"].match(/GIT/i)) {
-        setGitVersion(entry["value"]);
-      } else if (entry["code"].match(/NODE/i)) {
-        setNodeVersion(entry["value"]);
-      } else if (entry["code"].match(/OS/i)) {
-        setPlatform(entry["value"]);
-      }
-    });
+    if (state.hcParams.length > 0) {
+      state.hcParams.forEach((entry) => {
+        if (entry["code"].match(/GIT/i)) {
+          setGitVersion(entry["value"]);
+        } else if (entry["code"].match(/NODE/i)) {
+          setNodeVersion(entry["value"]);
+        } else if (entry["code"].match(/OS/i)) {
+          setPlatform(entry["value"]);
+        }
+      });
+    }
+    else{
+      setPlatform(localStorage.getItem('OS_CHECK_PASSED'))
+      setNodeVersion(localStorage.getItem('NODE_CHECK_PASSED'))
+      setGitVersion(localStorage.getItem('GIT_CHECK_PASSED'))
+    }
   }, [state.hcParams]);
 
   return (
@@ -118,14 +126,14 @@ export default function Dashboard() {
             )}
           </div>
         </div>
+        <div>{repoEntry()}</div>
       </div>
     );
   }
 
-  function repoEntry(){
-      if( platform !== "" && gitVersion !== "" && nodeVersion !== "")
-      {
-          
-      }
+  function repoEntry() {
+    if (platform !== "" && gitVersion !== "" && nodeVersion !== "") {
+      return <RepoComponent></RepoComponent>;
+    }
   }
 }
