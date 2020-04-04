@@ -1,24 +1,26 @@
 import React, { useReducer } from "react";
-import { BrowserRouter } from "react-router-dom";
 import { Route } from "react-router";
+import { BrowserRouter } from "react-router-dom";
 import "./App.css";
-
+import Dashboard from "./Components/DashBoard/Dashboard";
+import SplashScreen from "./Components/SplashScreen";
 import { ContextProvider } from "./context";
 import reducer from "./reducer";
 
-import SplashScreen from "./Components/SplashScreen";
-import Dashboard from "./Components/DashBoard/Dashboard";
-
 export default function App() {
-  const initialState = {};
+  const initialState = {
+    hcParams: []
+  };
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
     <div className="App w-full h-full">
-      <BrowserRouter>
-        <SplashScreen></SplashScreen>
-        <Route to="/dashboard" render={() => <Dashboard></Dashboard>}></Route>
-      </BrowserRouter>
+      <ContextProvider.Provider value={{ state, dispatch }}>
+        <BrowserRouter>
+          <Route path="/" exact component={SplashScreen}></Route>
+          <Route path="/dashboard" exact component={Dashboard}></Route>
+        </BrowserRouter>
+      </ContextProvider.Provider>
     </div>
   );
 }

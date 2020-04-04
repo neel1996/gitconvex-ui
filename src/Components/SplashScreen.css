@@ -1,3 +1,11 @@
+::selection
+{
+    color: #fff;
+    background: rgba(0,0,125, 0.3);
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px rgba(0,0,0,0.5);
+}
+
 .splash-logo__image
 {
     background: url('../assets/gitconvex.png');
@@ -17,4 +25,12 @@
     background-size: cover;
     width: 85px;
     height: 85px;
+}
+
+.rightpane-details__header
+{
+    font-weight: bold;
+    margin: 10px;
+    font-family: sans-serif;
+    font-size: 22px;
 }

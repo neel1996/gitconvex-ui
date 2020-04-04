@@ -1,0 +1,2 @@
+export const HC_PARAM_ACTION = "HC_PARAM_ACTION"
+export const HC_DONE_SWITCH = "HC_DONE_SWITCH"

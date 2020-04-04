@@ -1,3 +1,20 @@
-export default function reducer(state, action){
-    return null;
+import { HC_PARAM_ACTION, HC_DONE_SWITCH } from "./actionStore";
+
+export default function reducer(state, action) {
+  switch (action.type) {
+    case HC_DONE_SWITCH:
+      return{
+        ...state,
+        hcDone: action.payload
+      }
+    case HC_PARAM_ACTION:
+      return {
+        ...state,
+        hcParams: [...state.hcParams, action.payload]
+      };
+    default:
+      return {
+        ...state
+      };
+  }
 }

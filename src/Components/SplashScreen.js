@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { Redirect } from "react-router";
 import {
@@ -6,11 +6,17 @@ import {
   API_HEALTHCHECK,
   PORT_HEALTHCHECK_API
 } from "../env_config";
+import { HC_PARAM_ACTION, HC_DONE_SWITCH } from "../actionStore";
+
+import { ContextProvider } from "../context";
+
 import "./SplashScreen.css";
 
 export default function SplashScreen(props) {
   const [loader, setLoader] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
   const [hcCheck, setHcCheck] = useState(false);
+  const { state, dispatch } = useContext(ContextProvider);
 
   useEffect(() => {
     const apiURL = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_HEALTHCHECK_API}/${API_HEALTHCHECK}`;
@@ -30,6 +36,22 @@ export default function SplashScreen(props) {
       })
         .then(res => {
           if (res) {
+            var currentObj = JSON.parse(JSON.stringify(res.data));
+            var objKey = Object.keys(currentObj);
+            let hcEntry = JSON.parse(
+              JSON.stringify(Object.values(currentObj[objKey]))
+            );
+
+            hcEntry = {
+              code: JSON.parse(hcEntry).status,
+              value: JSON.parse(hcEntry).message
+            };
+
+            dispatch({
+              type: HC_PARAM_ACTION,
+              payload: hcEntry
+            });
+
             switch (hcParams) {
               case "osCheck":
                 setLoader("Checking platform...");
@@ -42,13 +64,17 @@ export default function SplashScreen(props) {
                 break;
             }
             setHcCheck(true);
+            dispatch({ type: HC_DONE_SWITCH, payload: true });
           } else {
             setHcCheck(false);
           }
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+          setShowAlert(true);
+          console.log(err);
+        });
     });
-  });
+  }, []);
 
   return (
     <>
@@ -70,12 +96,21 @@ export default function SplashScreen(props) {
               </div>
             </div>
           </div>
-          <div className="text-center justify-center p-3 mx-auto border-b-2 border-blue-300">
-            {loader}
-          </div>
+
+          {showAlert ? (
+            <div className="fixed bottom-0 left-0 right-0 w-full p-3 rounded-lg text-center font-sans bg-red-200 border-red-900">
+              <div className="h1 text-3xl p-2 m-2 text-red-800">
+                Server Unreachable
+              </div>
+              <p>
+                The server is not reachable.Please check if the server module is
+                running.
+              </p>
+            </div>
+          ) : null}
         </div>
       ) : (
-        <Redirect to="/dashboard"></Redirect>
+        props.history.push("/dashboard")
       )}
     </>
   );
