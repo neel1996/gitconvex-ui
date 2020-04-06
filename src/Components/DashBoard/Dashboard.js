@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import {
   FolderOutlined,
   SettingsOutlined,
-  HelpOutline,
+  HelpOutline
 } from "@material-ui/icons";
 
 import RepoComponent from "./RepoComponent";
@@ -17,7 +17,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (state.hcParams.length > 0) {
-      state.hcParams.forEach((entry) => {
+      state.hcParams.forEach(entry => {
         if (entry["code"].match(/GIT/i)) {
           setGitVersion(entry["value"]);
         } else if (entry["code"].match(/NODE/i)) {
@@ -26,11 +26,10 @@ export default function Dashboard() {
           setPlatform(entry["value"]);
         }
       });
-    }
-    else{
-      setPlatform(localStorage.getItem('OS_CHECK_PASSED'))
-      setNodeVersion(localStorage.getItem('NODE_CHECK_PASSED'))
-      setGitVersion(localStorage.getItem('GIT_CHECK_PASSED'))
+    } else {
+      setPlatform(localStorage.getItem("OS_CHECK_PASSED"));
+      setNodeVersion(localStorage.getItem("NODE_CHECK_PASSED"));
+      setGitVersion(localStorage.getItem("GIT_CHECK_PASSED"));
     }
   }, [state.hcParams]);
 
@@ -45,7 +44,7 @@ export default function Dashboard() {
 
   function leftPane() {
     return (
-      <div className="dashboard-leftpane w-1/2 shadow-md block p-3 bg-white-400">
+      <div className="dashboard-leftpane w-1/4 shadow-md block p-3 bg-white-400">
         <div className="flex justify-center items-center bg-blue-100">
           <div className="block dashboard-leftpane__logo"></div>
           <div className="font-mono text-2xl p-4 text-3xl">
@@ -126,7 +125,7 @@ export default function Dashboard() {
             )}
           </div>
         </div>
-        <div>{repoEntry()}</div>
+        {repoEntry()}
       </div>
     );
   }
