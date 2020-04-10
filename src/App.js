@@ -18,7 +18,7 @@ export default function App() {
       <ContextProvider.Provider value={{ state, dispatch }}>
         <BrowserRouter>
           <Route path="/" exact component={SplashScreen}></Route>
-          <Route path="/dashboard" exact component={Dashboard}></Route>
+          <Route path="/dashboard" component={Dashboard}></Route>
         </BrowserRouter>
       </ContextProvider.Provider>
     </div>

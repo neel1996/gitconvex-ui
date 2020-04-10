@@ -1,25 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
-import { getAPIURL } from "../../apiURLSupplier";
-
 import axios from "axios";
-import {
-  PORT_FETCHREPO_API,
-  API_FETCHREPO,
-  CONFIG_HTTP_MODE,
-  PORT_ADDREPO_API,
-  API_ADDREPO
-} from "../../env_config";
+import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { getAPIURL } from "../../apiURLSupplier";
+import { API_ADDREPO, API_FETCHREPO, CONFIG_HTTP_MODE, PORT_ADDREPO_API, PORT_FETCHREPO_API } from "../../env_config";
 
-export default function RepoComponent() {
+export default function RepoComponent(props) {
   const [repoStatus, setRepoStatus] = useState(false);
   const [repo, setRepo] = useState([]);
   const [repoFormEnable, setRepoFormEnable] = useState(false);
 
   const [repoNameState, setRepoName] = useState("");
   const [repoPathState, setRepoPath] = useState("");
-
-  const repoName = React.createRef();
-  const repoPath = React.createRef();
 
   useEffect(() => {
     const fetchRepoURL = getAPIURL(
@@ -54,37 +45,39 @@ export default function RepoComponent() {
 
     return (
       <>
-      <div className="w-auto flex">
-        {!repoFormEnable ? (
-          <>
-            {repoArray.map(entry => {
-              const repoName = entry.repoName;
-              var avatar = "";
+        <div className="w-5/6 mx-auto flex">
+          {!repoFormEnable ? (
+            <>
+              {repoArray.map(entry => {
+                const repoName = entry.repoName;
+                var avatar = "";
 
-              if (repoName.split(" ").length > 1) {
-                let tempName = repoName.split(" ");
-                avatar =
-                  tempName[0].substring(0, 1) + tempName[1].substring(0, 1);
-                avatar = avatar.toUpperCase();
-              } else {
-                avatar = repoName.substring(0, 1).toUpperCase();
-              }
+                if (repoName.split(" ").length > 1) {
+                  let tempName = repoName.split(" ");
+                  avatar =
+                    tempName[0].substring(0, 1) + tempName[1].substring(0, 1);
+                  avatar = avatar.toUpperCase();
+                } else {
+                  avatar = repoName.substring(0, 1).toUpperCase();
+                }
 
-              return (
-                <div className="pl-4 pr-4 py-3 pt-6 pb-6 rounded-lg shadow-md my-6 text-center xl:w-1/6 lg:w-1/4 md:w-1/3 mx-auto bg-blue-100 border border-gray-100 text-center cursor-pointer hover:shadow-xl">
-                  <div className="text-center bg-blue-600 text-white text-5xl my-2 px-10 py-5">
-                    {avatar}
-                  </div>
-                  <div className="my-4 font-sans text-2xl">
-                    {entry.repoName}
-                  </div>
-                </div>
-              );
-            })}
-          </>
-        ) : null}
-      </div>
-            {addNewRepo()}
+                return (
+                    <NavLink to={`/dashboard/repository/${entry.id}`} className="pl-4 pr-4 py-3 pt-6 pb-6 rounded-lg shadow-md my-6 text-center xl:w-1/4 lg:w-1/3 md:w-1/2 md:block mx-auto bg-blue-100 border border-gray-100 text-center cursor-pointer hover:shadow-xl">
+                      <div>
+                        <div className="text-center bg-blue-600 text-white text-5xl my-2 px-10 py-5">
+                          {avatar}
+                        </div>
+                        <div className="my-4 font-sans text-2xl">
+                          {entry.repoName}
+                        </div>
+                      </div>
+                    </NavLink>
+                );
+              })}
+            </>
+          ) : null}
+        </div>
+        {addNewRepo()}
       </>
     );
   };
@@ -93,7 +86,7 @@ export default function RepoComponent() {
     return !repoFormEnable ? (
       <>
         <div
-          className="my-20 rounded-lg pt-4 pl-2 pr-2 pb-8 w-3/4 mx-auto justify-center shadow-md bg-gray-100 hover:bg-gray-300 cursor-pointer"
+          className="my-20 rounded-lg pt-4 pl-2 pr-2 pb-8 w-1/5 mx-auto justify-center shadow-md bg-gray-100 hover:bg-gray-300 border-2 border-gray-300 border-dotted cursor-pointer"
           onClick={() => {
             setRepoFormEnable(true);
           }}
@@ -156,10 +149,10 @@ export default function RepoComponent() {
   };
 
   return (
-      <div className="flex md:block flex-wrap mx-auto justify-center text-center align-middle">
-        {repoStatus ? showAvailableRepo() : addNewRepo()}
-        {repoAddForm()}
-      </div>
+    <div className="flex md:block flex-wrap mx-auto justify-center text-center align-middle">
+      {repoStatus ? showAvailableRepo() : addNewRepo()}
+      {repoAddForm()}
+    </div>
   );
 
   function storeRepoAPI(repoName, repoPath) {
