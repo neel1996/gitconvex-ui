@@ -2,6 +2,7 @@
 
 .vscode/
 .yarn/
+.yarn/*
 node_modules/
 build
 .DS_Store
