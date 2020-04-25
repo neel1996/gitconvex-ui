@@ -236,7 +236,7 @@ export default function Repository(props) {
                       .filter((entry, index) => {
                         return index !== 0 ? entry : null;
                       })
-                      .join(" ")}
+                      .join(" ")
                     }
                   </div>
                 </td>
