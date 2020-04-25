@@ -202,7 +202,7 @@ export default function Repository(props) {
                   </div>
                 </td>
                 <td>
-                  <div className="p-2 bg-green-200 text-green-900 rounded-lg text-left w-3/5">
+                  <div className="p-2 bg-green-200 text-green-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
                       .split(" ")
                       .filter((entry, index) => {
@@ -230,14 +230,13 @@ export default function Repository(props) {
                   </div>
                 </td>
                 <td>
-                  <div className="p-2 bg-indigo-200 text-indigo-900 rounded-lg text-left w-3/5">
+                  <div className="p-2 bg-indigo-200 text-indigo-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
                       .split(" ")
                       .filter((entry, index) => {
                         return index !== 0 ? entry : null;
                       })
-                      .join(" ")
-                    }
+                      .join(" ")}
                   </div>
                 </td>
               </tr>
