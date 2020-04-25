@@ -52,6 +52,7 @@ export default function Repository(props) {
     gitTotalCommits,
     gitLatestCommit,
     gitTrackedFiles,
+    gitFileBasedCommit,
   } = gitRepoStatus;
 
   const gitRepoHeaderContent = () => {
@@ -182,7 +183,7 @@ export default function Repository(props) {
       var directoryEntry = [];
       var fileEntry = [];
 
-      gitTrackedFiles.forEach((entry) => {
+      gitTrackedFiles.forEach((entry, index) => {
         const splitEntry = entry.split(":");
 
         if (splitEntry[1].includes("directory")) {
@@ -198,6 +199,16 @@ export default function Repository(props) {
                 <td>
                   <div className="text-gray-800 text-lg mx-3 font-sans">
                     {splitEntry[0]}
+                  </div>
+                </td>
+                <td>
+                  <div className="p-2 bg-green-200 text-green-900 rounded-lg text-left w-3/5">
+                    {gitFileBasedCommit[index]
+                      .split(" ")
+                      .filter((entry, index) => {
+                        return index !== 0 ? entry : null;
+                      })
+                      .join(" ")}
                   </div>
                 </td>
               </tr>
@@ -218,14 +229,25 @@ export default function Repository(props) {
                     {splitEntry[0]}
                   </div>
                 </td>
+                <td>
+                  <div className="p-2 bg-indigo-200 text-indigo-900 rounded-lg text-left w-3/5">
+                    {gitFileBasedCommit[index]
+                      .split(" ")
+                      .filter((entry, index) => {
+                        return index !== 0 ? entry : null;
+                      })
+                      .join(" ")}
+                    }
+                  </div>
+                </td>
               </tr>
             </>
           );
         }
       });
 
-      formattedFiles.push(directoryEntry)
-      formattedFiles.push(fileEntry)
+      formattedFiles.push(directoryEntry);
+      formattedFiles.push(fileEntry);
 
       return (
         <div className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto">
