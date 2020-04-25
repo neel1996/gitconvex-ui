@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   CONFIG_HTTP_MODE,
   PORT_GITREPOSTATUS_API,
-  API_GITREPOSTATUS
+  API_GITREPOSTATUS,
 } from "../../../env_config";
 
 export default function Repository(props) {
@@ -29,13 +29,13 @@ export default function Repository(props) {
         method: "GET",
         headers: {
           "Content-type": "application/json",
-          Accept: "application/json"
-        }
+          Accept: "application/json",
+        },
       })
-        .then(res => {
+        .then((res) => {
           setGitRepoStatus(res.data);
         })
-        .catch(err => {
+        .catch((err) => {
           if (err) {
             console.log("API GitStatus error occurred : " + err);
           }
@@ -51,7 +51,7 @@ export default function Repository(props) {
     gitRemoteHost,
     gitTotalCommits,
     gitLatestCommit,
-    gitTrackedFiles
+    gitTrackedFiles,
   } = gitRepoStatus;
 
   const gitRepoHeaderContent = () => {
@@ -152,7 +152,7 @@ export default function Repository(props) {
                   Available Branches
                 </td>
                 <td>
-                  {gitBranchList.map(entry => {
+                  {gitBranchList.map((entry) => {
                     return entry == gitCurrentBranch ? (
                       <div className="text-lg text-bold text-gray-800">
                         {entry}
@@ -178,11 +178,15 @@ export default function Repository(props) {
 
   const gitTrackedFileComponent = () => {
     if (gitRepoStatus.gitTrackedFiles != "" && gitTrackedFiles !== undefined) {
-      var formattedFiles = gitTrackedFiles.map(entry => {
+      var formattedFiles = [];
+      var directoryEntry = [];
+      var fileEntry = [];
+
+      gitTrackedFiles.forEach((entry) => {
         const splitEntry = entry.split(":");
 
         if (splitEntry[1].includes("directory")) {
-          return (
+          directoryEntry.push(
             <>
               <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
                 <td>
@@ -200,7 +204,7 @@ export default function Repository(props) {
             </>
           );
         } else {
-          return (
+          fileEntry.push(
             <>
               <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
                 <td>
@@ -220,6 +224,9 @@ export default function Repository(props) {
         }
       });
 
+      formattedFiles.push(directoryEntry)
+      formattedFiles.push(fileEntry)
+
       return (
         <div className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto">
           <table className="table-auto w-full p-2 mx-auto" cellPadding="10">
@@ -237,7 +244,7 @@ export default function Repository(props) {
   };
 
   return (
-    <div className="rp_repo-view p-6 mx-auto rounded-lg justify-evenly overflow-auto">
+    <div className="rp_repo-view w-screen h-screen p-6 mx-auto rounded-lg justify-evenly overflow-auto">
       <div className="flex px-3 py-2">
         {gitRepoStatus !== {} ? gitRepoHeaderContent() : null}
       </div>
@@ -246,7 +253,7 @@ export default function Repository(props) {
           {gitRepoStatus !== {} ? gitRepoLeftPane() : null}
         </div>
       </div>
-      <div className="block w-11/12 ml-6 h-42 my-6 scroll p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
+      <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
         {gitRepoStatus !== {} ? gitTrackedFileComponent() : null}
       </div>
     </div>
