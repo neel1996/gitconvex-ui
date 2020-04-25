@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 import { fab } from "@fortawesome/free-brands-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -12,7 +13,7 @@ import {
 } from "../../../env_config";
 
 export default function Repository(props) {
-  library.add(fab);
+  library.add(fab, fas);
   const [gitRepoStatus, setGitRepoStatus] = useState({});
 
   useEffect(() => {
@@ -111,7 +112,7 @@ export default function Repository(props) {
 
       return (
         <>
-          <div className="block rounded-md shadow-sm border-2 border-dotted border-gray-400 p-6 my-6">
+          <div className="block rounded-md shadow-sm border-2 border-dotted border-gray-400 p-6 my-6 mx-3">
             <table className="table-auto" cellSpacing="10" cellPadding="20">
               <tr>
                 <td className="text-xl text-gray-600">Remote Host</td>
@@ -126,15 +127,13 @@ export default function Repository(props) {
                 <td className="text-xl text-gray-600">{gitRemoteHost} URL</td>
                 <td>
                   <span className="text-blue-400 hover:text-blue-500 cursor-pointer">
-                    <a href={gitRemoteData} target="_blank">
-                      {gitRemoteData}
-                    </a>
+                    {gitRemoteData}
                   </span>
                 </td>
               </tr>
             </table>
           </div>
-          <div className="block rounded-lg shadow-sm border-2 border-dotted border-gray-400 p-2 my-2">
+          <div className="block rounded-lg shadow-sm border-2 border-dotted border-gray-400 p-2 my-2 mx-3">
             <table className="table-light" cellPadding="10">
               <tr>
                 <td className="text-lg text-gray-500">Total Commits</td>
@@ -178,19 +177,55 @@ export default function Repository(props) {
   };
 
   const gitTrackedFileComponent = () => {
-    console.log(gitTrackedFiles);
-
     if (gitRepoStatus.gitTrackedFiles != "" && gitTrackedFiles !== undefined) {
+      var formattedFiles = gitTrackedFiles.map(entry => {
+        const splitEntry = entry.split(":");
+
+        if (splitEntry[1].includes("directory")) {
+          return (
+            <>
+              <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
+                <td>
+                  <FontAwesomeIcon
+                    icon={["fas", "folder"]}
+                    className="font-sans text-xl text-blue-600"
+                  ></FontAwesomeIcon>
+                </td>
+                <td>
+                  <div className="text-gray-800 text-lg mx-3 font-sans">
+                    {splitEntry[0]}
+                  </div>
+                </td>
+              </tr>
+            </>
+          );
+        } else {
+          return (
+            <>
+              <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
+                <td>
+                  <FontAwesomeIcon
+                    icon={["fas", "file"]}
+                    className="font-sans text-xl text-gray-700"
+                  ></FontAwesomeIcon>
+                </td>
+                <td>
+                  <div className="text-gray-800 text-lg mx-3 font-sans">
+                    {splitEntry[0]}
+                  </div>
+                </td>
+              </tr>
+            </>
+          );
+        }
+      });
+
       return (
-        <>
-          {gitTrackedFiles.map(entry => {
-            return (
-              <div className="border-1 border-b border-gray-300 p-1">
-                {entry}
-              </div>
-            );
-          })}
-        </>
+        <div className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto">
+          <table className="table-auto w-full p-2 mx-auto" cellPadding="10">
+            {formattedFiles}
+          </table>
+        </div>
       );
     } else {
       return (
@@ -202,15 +237,17 @@ export default function Repository(props) {
   };
 
   return (
-    <div className="p-6 mx-auto rounded-lg justify-evenly">
+    <div className="rp_repo-view p-6 mx-auto rounded-lg justify-evenly overflow-auto">
       <div className="flex px-3 py-2">
         {gitRepoStatus !== {} ? gitRepoHeaderContent() : null}
       </div>
-      <div className="flex mx-auto justify-evenly">
-        <div className="block w-4/5">{gitRepoStatus !== {} ? gitRepoLeftPane() : null}</div>
-        <div className="block w-11/12 ml-6 h-48 my-6 scroll p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
-          {gitRepoStatus !== {} ? gitTrackedFileComponent() : null}
+      <div className="w-full">
+        <div className="flex my-4 mx-auto justify-around">
+          {gitRepoStatus !== {} ? gitRepoLeftPane() : null}
         </div>
+      </div>
+      <div className="block w-11/12 ml-6 h-42 my-6 scroll p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
+        {gitRepoStatus !== {} ? gitTrackedFileComponent() : null}
       </div>
     </div>
   );
