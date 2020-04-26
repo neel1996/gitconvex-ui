@@ -9,7 +9,8 @@ import reducer from "./reducer";
 
 export default function App() {
   const initialState = {
-    hcParams: []
+    hcParams: [],
+    presentRepo: []
   };
   const [state, dispatch] = useReducer(reducer, initialState);
 

@@ -1,4 +1,4 @@
-import { HC_PARAM_ACTION, HC_DONE_SWITCH } from "./actionStore";
+import { HC_PARAM_ACTION, HC_DONE_SWITCH, PRESENT_REPO } from "./actionStore";
 
 export default function reducer(state, action) {
   switch (action.type) {
@@ -13,6 +13,12 @@ export default function reducer(state, action) {
         ...state,
         hcParams: [...state.hcParams, action.payload]
       };
+    case PRESENT_REPO:
+      localStorage.setItem("presentRepo",[...action.payload])
+      return{
+        ...state,
+        presentRepo: [...state.presentRepo, action.payload]
+      }
     default:
       return {
         ...state

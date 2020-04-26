@@ -204,11 +204,13 @@ export default function Repository(props) {
                 <td>
                   <div className="p-2 bg-green-200 text-green-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
-                      .split(" ")
-                      .filter((entry, index) => {
-                        return index !== 0 ? entry : null;
-                      })
-                      .join(" ")}
+                      ? gitFileBasedCommit[index]
+                          .split(" ")
+                          .filter((entry, index) => {
+                            return index !== 0 ? entry : null;
+                          })
+                          .join(" ")
+                      : null}
                   </div>
                 </td>
               </tr>
@@ -232,11 +234,13 @@ export default function Repository(props) {
                 <td>
                   <div className="p-2 bg-indigo-200 text-indigo-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
-                      .split(" ")
-                      .filter((entry, index) => {
-                        return index !== 0 ? entry : null;
-                      })
-                      .join(" ")}
+                      ? gitFileBasedCommit[index]
+                          .split(" ")
+                          .filter((entry, index) => {
+                            return index !== 0 ? entry : null;
+                          })
+                          .join(" ")
+                      : null}
                   </div>
                 </td>
               </tr>
@@ -251,6 +255,11 @@ export default function Repository(props) {
       return (
         <div className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto">
           <table className="table-auto w-full p-2 mx-auto" cellPadding="10">
+            <tr className="pb-6 border-b border-blue-400">
+              <th></th>
+              <th>File / Directory</th>
+              <th>Latest commit</th>
+            </tr>
             {formattedFiles}
           </table>
         </div>

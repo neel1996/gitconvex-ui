@@ -1,8 +1,16 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { getAPIURL } from "../../apiURLSupplier";
-import { API_ADDREPO, API_FETCHREPO, CONFIG_HTTP_MODE, PORT_ADDREPO_API, PORT_FETCHREPO_API } from "../../env_config";
+import { PRESENT_REPO } from "../../actionStore";
+import { ContextProvider } from "../../context";
+import {
+  API_ADDREPO,
+  API_FETCHREPO,
+  CONFIG_HTTP_MODE,
+  PORT_ADDREPO_API,
+  PORT_FETCHREPO_API,
+} from "../../env_config";
 
 export default function RepoComponent(props) {
   const [repoStatus, setRepoStatus] = useState(false);
@@ -11,6 +19,8 @@ export default function RepoComponent(props) {
 
   const [repoNameState, setRepoName] = useState("");
   const [repoPathState, setRepoPath] = useState("");
+
+  const { state, dispatch } = useContext(ContextProvider);
 
   useEffect(() => {
     const fetchRepoURL = getAPIURL(
@@ -27,15 +37,16 @@ export default function RepoComponent(props) {
                     query{
                         fetchRepo
                     }
-                `
-      }
-    }).then(res => {
+                `,
+      },
+    }).then((res) => {
       const apiResponse = JSON.parse(res.data.data.fetchRepo);
 
       if (apiResponse.status === "REPO_PRESENT") {
         const repoContent = JSON.parse(apiResponse.content);
         setRepoStatus(true);
         setRepo(repoContent);
+        dispatch({ type: PRESENT_REPO, payload: repoContent });
       }
     });
   }, []);
@@ -48,7 +59,7 @@ export default function RepoComponent(props) {
         <div className="w-5/6 mx-auto flex">
           {!repoFormEnable ? (
             <>
-              {repoArray.map(entry => {
+              {repoArray.map((entry) => {
                 const repoName = entry.repoName;
                 var avatar = "";
 
@@ -62,16 +73,19 @@ export default function RepoComponent(props) {
                 }
 
                 return (
-                    <NavLink to={`/dashboard/repository/${entry.id}`} className="pl-4 pr-4 py-3 pt-6 pb-6 rounded-lg shadow-md my-6 text-center xl:w-1/4 lg:w-1/3 md:w-1/2 md:block mx-auto bg-blue-100 border border-gray-100 text-center cursor-pointer hover:shadow-xl">
-                      <div>
-                        <div className="text-center bg-blue-600 text-white text-5xl my-2 px-10 py-5">
-                          {avatar}
-                        </div>
-                        <div className="my-4 font-sans text-2xl">
-                          {entry.repoName}
-                        </div>
+                  <NavLink
+                    to={`/dashboard/repository/${entry.id}`}
+                    className="pl-4 pr-4 py-3 pt-6 pb-6 rounded-lg shadow-md my-6 text-center xl:w-1/4 lg:w-1/3 md:w-1/2 md:block mx-auto bg-blue-100 border border-gray-100 text-center cursor-pointer hover:shadow-xl"
+                  >
+                    <div>
+                      <div className="text-center bg-blue-600 text-white text-5xl my-2 px-10 py-5">
+                        {avatar}
                       </div>
-                    </NavLink>
+                      <div className="my-4 font-sans text-2xl">
+                        {entry.repoName}
+                      </div>
+                    </div>
+                  </NavLink>
                 );
               })}
             </>
@@ -110,7 +124,7 @@ export default function RepoComponent(props) {
               type="text"
               placeholder="Enter a Repository Name"
               className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
-              onChange={event => {
+              onChange={(event) => {
                 setRepoName(event.target.value);
               }}
             ></input>
@@ -120,7 +134,7 @@ export default function RepoComponent(props) {
               type="text"
               placeholder="Enter repository path"
               className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
-              onChange={event => {
+              onChange={(event) => {
                 setRepoPath(event.target.value);
               }}
             ></input>
@@ -161,14 +175,14 @@ export default function RepoComponent(props) {
       method: "POST",
       data: {
         repoName,
-        repoPath
-      }
+        repoPath,
+      },
     })
-      .then(res => {
+      .then((res) => {
         console.log(res);
         setRepoFormEnable(!setRepoFormEnable);
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }

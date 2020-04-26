@@ -4,6 +4,7 @@ import { BrowserRouter, Route } from "react-router-dom";
 import LeftPane from "./LeftPane";
 import RightPane from "./RightPane";
 import RepositoryPane from "./Repository/Repository";
+import RepositoryAction from './Repository/RepositoryAction'
 
 import { ContextProvider } from "../../context";
 
@@ -43,11 +44,11 @@ export default function Dashboard(props) {
       case "/dashboard":
         return <RightPane params={params}></RightPane>;
       case "/dashboard/repository":
-        return <RepositoryPane></RepositoryPane>;
+        return <RepositoryAction></RepositoryAction>;
       default:
         return (
           <BrowserRouter>
-            <Route path="/dashboard/repository/:repoId">
+            <Route exact path="/dashboard/repository/:repoId">
               <RepositoryPane parentProps={props}></RepositoryPane>
             </Route>
           </BrowserRouter>
