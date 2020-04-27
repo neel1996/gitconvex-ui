@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   CONFIG_HTTP_MODE,
   PORT_GITREPOSTATUS_API,
-  API_GITREPOSTATUS,
+  API_GITREPOSTATUS
 } from "../../../env_config";
 
 export default function Repository(props) {
@@ -25,17 +25,36 @@ export default function Repository(props) {
       )[1];
 
       axios({
-        url: endpointURL + "?repoId=" + repoId,
-        method: "GET",
+        url: endpointURL,
+        method: "POST",
         headers: {
-          "Content-type": "application/json",
-          Accept: "application/json",
+          "Content-type": "application/json"
         },
+        data: {
+          query: `
+
+            query GetRepoStatusQuery
+            {
+                getRepoStatus(repoId: "${repoId}"){
+                    gitRemoteData
+                    gitRepoName
+                    gitBranchList
+                    gitCurrentBranch
+                    gitRemoteHost
+                    gitTotalCommits
+                    gitLatestCommit
+                    gitTrackedFiles
+                    gitFileBasedCommit
+              }
+            }
+          `
+        }
       })
-        .then((res) => {
-          setGitRepoStatus(res.data);
+        .then(res => {
+          console.log(res.data);
+          setGitRepoStatus(res.data.data.getRepoStatus);
         })
-        .catch((err) => {
+        .catch(err => {
           if (err) {
             console.log("API GitStatus error occurred : " + err);
           }
@@ -52,7 +71,7 @@ export default function Repository(props) {
     gitTotalCommits,
     gitLatestCommit,
     gitTrackedFiles,
-    gitFileBasedCommit,
+    gitFileBasedCommit
   } = gitRepoStatus;
 
   const gitRepoHeaderContent = () => {
@@ -153,7 +172,7 @@ export default function Repository(props) {
                   Available Branches
                 </td>
                 <td>
-                  {gitBranchList.map((entry) => {
+                  {gitBranchList.map(entry => {
                     return entry == gitCurrentBranch ? (
                       <div className="text-lg text-bold text-gray-800">
                         {entry}

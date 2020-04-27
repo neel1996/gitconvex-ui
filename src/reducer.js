@@ -14,7 +14,6 @@ export default function reducer(state, action) {
         hcParams: [...state.hcParams, action.payload]
       };
     case PRESENT_REPO:
-      localStorage.setItem("presentRepo",[...action.payload])
       return{
         ...state,
         presentRepo: [...state.presentRepo, action.payload]

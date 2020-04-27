@@ -1,16 +1,10 @@
 import axios from "axios";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import { getAPIURL } from "../../apiURLSupplier";
 import { PRESENT_REPO } from "../../actionStore";
+import { getAPIURL } from "../../apiURLSupplier";
 import { ContextProvider } from "../../context";
-import {
-  API_ADDREPO,
-  API_FETCHREPO,
-  CONFIG_HTTP_MODE,
-  PORT_ADDREPO_API,
-  PORT_FETCHREPO_API,
-} from "../../env_config";
+import { API_ADDREPO, API_FETCHREPO, CONFIG_HTTP_MODE, PORT_ADDREPO_API, PORT_FETCHREPO_API } from "../../env_config";
 
 export default function RepoComponent(props) {
   const [repoStatus, setRepoStatus] = useState(false);
@@ -37,16 +31,19 @@ export default function RepoComponent(props) {
                     query{
                         fetchRepo
                     }
-                `,
-      },
-    }).then((res) => {
+                `
+      }
+    }).then(res => {
       const apiResponse = JSON.parse(res.data.data.fetchRepo);
 
       if (apiResponse.status === "REPO_PRESENT") {
         const repoContent = JSON.parse(apiResponse.content);
         setRepoStatus(true);
         setRepo(repoContent);
-        dispatch({ type: PRESENT_REPO, payload: repoContent });
+        dispatch({
+          type: PRESENT_REPO,
+          payload: repoContent
+        });
       }
     });
   }, []);
@@ -59,7 +56,7 @@ export default function RepoComponent(props) {
         <div className="w-5/6 mx-auto flex">
           {!repoFormEnable ? (
             <>
-              {repoArray.map((entry) => {
+              {repoArray.map(entry => {
                 const repoName = entry.repoName;
                 var avatar = "";
 
@@ -124,7 +121,7 @@ export default function RepoComponent(props) {
               type="text"
               placeholder="Enter a Repository Name"
               className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
-              onChange={(event) => {
+              onChange={event => {
                 setRepoName(event.target.value);
               }}
             ></input>
@@ -134,7 +131,7 @@ export default function RepoComponent(props) {
               type="text"
               placeholder="Enter repository path"
               className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
-              onChange={(event) => {
+              onChange={event => {
                 setRepoPath(event.target.value);
               }}
             ></input>
@@ -175,14 +172,14 @@ export default function RepoComponent(props) {
       method: "POST",
       data: {
         repoName,
-        repoPath,
-      },
+        repoPath
+      }
     })
-      .then((res) => {
+      .then(res => {
         console.log(res);
         setRepoFormEnable(!setRepoFormEnable);
       })
-      .catch((err) => {
+      .catch(err => {
         console.log(err);
       });
   }
