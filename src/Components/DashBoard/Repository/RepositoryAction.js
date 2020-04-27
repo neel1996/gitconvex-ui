@@ -102,8 +102,6 @@ export default function RepositoryAction() {
 
   useEffect(() => {
     if (presentRepo !== undefined && presentRepo.length >= 1) {
-      console.log("Present Repo : " + presentRepo[0][0]);
-      setDefaultRepo(presentRepo[0][0]);
       setAvailableRepos(presentRepo[0]);
       fetchSelectedRepoStatus();
     } else {
