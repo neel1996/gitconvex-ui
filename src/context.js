@@ -5,8 +5,10 @@ const contextValues = {
    platform: "",
    git:"",
    node:"",
+   globalRepoId: "",
    hcParams: [],
-   presentRepo: []   
+   presentRepo: [],
+   modifiedGitFiles: []   
 }
 
 export const ContextProvider =  React.createContext(contextValues)

@@ -1,27 +1,21 @@
-import axios from "axios";
-import { BrowserRouter } from "react-router-dom";
-import { Redirect } from "react-router";
-import React, { useContext, useEffect, useState } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { ContextProvider } from "../../../context";
-import {
-  API_FETCHREPO,
-  CONFIG_HTTP_MODE,
-  PORT_FETCHREPO_API,
-  API_GITREPOSTATUS,
-  PORT_GITREPOSTATUS_API
-} from "../../../env_config";
-import { PRESENT_REPO } from "../../../actionStore";
+import axios from "axios";
+import React, { useContext, useEffect, useMemo, useState } from "react";
+import { Redirect } from "react-router";
+import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../actionStore";
 import { getAPIURL } from "../../../apiURLSupplier";
+import { ContextProvider } from "../../../context";
+import { API_FETCHREPO, API_GITREPOSTATUS, CONFIG_HTTP_MODE, PORT_FETCHREPO_API, PORT_GITREPOSTATUS_API } from "../../../env_config";
+import GitTrackedComponent from "./GitTrackedComponent";
 
 export default function RepositoryAction() {
   library.add(fas);
 
   const { state, dispatch } = useContext(ContextProvider);
   const { presentRepo } = state;
+  const [selectedFlag, setSelectedFlag] = useState(false);
   const [defaultRepo, setDefaultRepo] = useState({});
   const [availableRepos, setAvailableRepos] = useState([]);
   const [selectedRepoDetails, setSelectedRepoDetails] = useState({
@@ -30,6 +24,10 @@ export default function RepositoryAction() {
     gitTotalCommits: 0,
     gitTotalTrackedFiles: 0
   });
+
+  const memoizedGitTracker = useMemo(() => {
+    return <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>;
+  }, [defaultRepo]);
 
   async function invokeRepoFetchAPI() {
     const fetchRepoURL = getAPIURL(
@@ -90,7 +88,6 @@ export default function RepositoryAction() {
       }
     })
       .then(res => {
-        console.log(res.data);
         setSelectedRepoDetails(res.data.data.getRepoStatus);
       })
       .catch(err => {
@@ -113,20 +110,25 @@ export default function RepositoryAction() {
   function activeRepoPane() {
     const defaultRepoName = defaultRepo.repoName;
     return (
-      <div className="text-center mx-auto my-auto justify-around mt-3 p-3 rounded-md shadow-sm flex border-2 border-gray-300">
+      <div className="text-center mx-auto my-auto justify-around mt-3 p-3 rounded-md shadow-sm flex border-2 border-gray-300 w-1/2">
         <div className="font-sans font-semibold text-gray-900 my-1 mx-2">
           Choose saved repository
         </div>
         <select
-          className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500"
+          className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500 w-1/2"
           onChange={event => {
+            setSelectedFlag(true);
             availableRepos.map(elm => {
               if (event.target.value === elm.repoName) {
                 setDefaultRepo(elm);
+                dispatch({type: GIT_GLOBAL_REPOID, payload: defaultRepo.id})
               }
             });
           }}
         >
+          <option selected hidden disabled>
+            Select a repo
+          </option>
           {availableRepos.map(entry => {
             return <option value={entry.repoName}>{entry.repoName}</option>;
           })}
@@ -138,7 +140,7 @@ export default function RepositoryAction() {
   function getTopPaneComponent(icon, value) {
     return (
       <>
-        <div className="flex justify-between mx-2 p-1 font-sans text-lg border-b border-dotted rounded-sm border-gray-600 text-gray-700">
+        <div className="flex justify-between mx-2 font-sans text-lg text-gray-700">
           <div className="mx-2">
             <FontAwesomeIcon icon={["fas", icon]}></FontAwesomeIcon>
           </div>
@@ -149,13 +151,13 @@ export default function RepositoryAction() {
   }
 
   return (
-    <>
+    <div className="overflow-scroll w-11/12 h-full mx-auto block justify-center overflow-x-hidden">
       {availableRepos ? (
-        <>
-          <div className="flex mx-auto my-auto mt-2 justify-center">
+        <div className="">
+          <div className="flex text-center justify-center mt-6">
             {activeRepoPane()}
-            {selectedRepoDetails ? (
-              <div className="mt-3 mx-3 p-3 rounded-md shadow-sm flex border-2 border-gray-300">
+            {selectedRepoDetails && selectedFlag ? (
+              <div className="mt-3 mx-3 p-3 rounded-md shadow-sm flex mx-auto justify-center border-2 border-gray-300">
                 {getTopPaneComponent(
                   "code-branch",
                   selectedRepoDetails.gitBranchList.length + " Branches"
@@ -171,13 +173,16 @@ export default function RepositoryAction() {
               </div>
             ) : null}
           </div>
-        </>
+          <div>
+            {selectedRepoDetails && selectedFlag ? memoizedGitTracker : null}
+          </div>
+        </div>
       ) : (
         <div className="block p-4 mx-auto my-auto text-center font-sans bg-pink-200 rounded-md shadow-lg text-red-800 font-bold h-auto justify-center">
           {alert("Please add a repository!")}
           <Redirect to="/dashboard"></Redirect>
         </div>
       )}
-    </>
+    </div>
   );
 }

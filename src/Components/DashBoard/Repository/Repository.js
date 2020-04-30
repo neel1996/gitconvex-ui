@@ -51,7 +51,6 @@ export default function Repository(props) {
         }
       })
         .then(res => {
-          console.log(res.data);
           setGitRepoStatus(res.data.data.getRepoStatus);
         })
         .catch(err => {
