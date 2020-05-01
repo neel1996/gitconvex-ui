@@ -23,7 +23,7 @@ export default function GitDiffViewComponent() {
   const [activeFileName, setActiveFileName] = useState("");
 
   useEffect(() => {
-    setActiveFileName("")
+    setActiveFileName("");
     setFileLineDiffState("Click on a file item to see the difference");
     setDiffStatState("Click on a file item to see the difference");
     let apiEndPoint = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITDIFF_API}/${API_GITDIFF}`;
@@ -156,6 +156,8 @@ export default function GitDiffViewComponent() {
         return <div className="bg-green-200">{line.replace("+", "")}</div>;
       } else if (line[0] === "-") {
         return <div className="bg-red-200">{line.replace("-", "")}</div>;
+      } else {
+        return <div className="bg-white-200">{line.replace("-", "")}</div>;
       }
     });
 
