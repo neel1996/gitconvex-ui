@@ -153,7 +153,7 @@ export default function GitTrackedComponent(props) {
           </div>
         );
       case GIT_DIFFERENCE:
-        return memoizedGitDiffView;
+        return <GitDiffViewComponent></GitDiffViewComponent>;
     }
   }
 

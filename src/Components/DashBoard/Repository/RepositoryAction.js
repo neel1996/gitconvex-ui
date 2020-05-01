@@ -7,7 +7,13 @@ import { Redirect } from "react-router";
 import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../actionStore";
 import { getAPIURL } from "../../../apiURLSupplier";
 import { ContextProvider } from "../../../context";
-import { API_FETCHREPO, API_GITREPOSTATUS, CONFIG_HTTP_MODE, PORT_FETCHREPO_API, PORT_GITREPOSTATUS_API } from "../../../env_config";
+import {
+  API_FETCHREPO,
+  API_GITREPOSTATUS,
+  CONFIG_HTTP_MODE,
+  PORT_FETCHREPO_API,
+  PORT_GITREPOSTATUS_API,
+} from "../../../env_config";
 import GitTrackedComponent from "./GitTrackedComponent";
 
 export default function RepositoryAction() {
@@ -22,12 +28,12 @@ export default function RepositoryAction() {
     gitBranchList: "",
     gitCurrentBranch: "",
     gitTotalCommits: 0,
-    gitTotalTrackedFiles: 0
+    gitTotalTrackedFiles: 0,
   });
 
   const memoizedGitTracker = useMemo(() => {
     return <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>;
-  }, [defaultRepo]);
+  }, [defaultRepo, state.globalRepoId]);
 
   async function invokeRepoFetchAPI() {
     const fetchRepoURL = getAPIURL(
@@ -44,16 +50,16 @@ export default function RepositoryAction() {
             query{
                 fetchRepo
             }
-        `
-      }
-    }).then(res => {
+        `,
+      },
+    }).then((res) => {
       const apiResponse = JSON.parse(res.data.data.fetchRepo);
 
       if (apiResponse.status === "REPO_PRESENT") {
         const repoContent = JSON.parse(apiResponse.content);
         dispatch({
           type: PRESENT_REPO,
-          payload: repoContent
+          payload: repoContent,
         });
         setDefaultRepo(repoContent[0]);
         setAvailableRepos(repoContent);
@@ -70,7 +76,7 @@ export default function RepositoryAction() {
       url: endpointURL,
       method: "POST",
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
       },
       data: {
         query: `
@@ -84,13 +90,13 @@ export default function RepositoryAction() {
                     gitTotalTrackedFiles
               }
             }
-          `
-      }
+          `,
+      },
     })
-      .then(res => {
+      .then((res) => {
         setSelectedRepoDetails(res.data.data.getRepoStatus);
       })
-      .catch(err => {
+      .catch((err) => {
         if (err) {
           console.log("API GitStatus error occurred : " + err);
         }
@@ -116,12 +122,12 @@ export default function RepositoryAction() {
         </div>
         <select
           className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500 w-1/2"
-          onChange={event => {
+          onChange={(event) => {
             setSelectedFlag(true);
-            availableRepos.map(elm => {
+            availableRepos.map((elm) => {
               if (event.target.value === elm.repoName) {
                 setDefaultRepo(elm);
-                dispatch({type: GIT_GLOBAL_REPOID, payload: defaultRepo.id})
+                dispatch({ type: GIT_GLOBAL_REPOID, payload: elm.id });
               }
             });
           }}
@@ -129,7 +135,7 @@ export default function RepositoryAction() {
           <option selected hidden disabled>
             Select a repo
           </option>
-          {availableRepos.map(entry => {
+          {availableRepos.map((entry) => {
             return <option value={entry.repoName}>{entry.repoName}</option>;
           })}
         </select>

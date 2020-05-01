@@ -1,119 +1,195 @@
-import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
-
+import React, { useContext, useEffect, useState } from "react";
+import { GIT_TRACKED_FILES } from "../../../actionStore";
+import { getAPIURL } from "../../../apiURLSupplier";
+import { ContextProvider } from "../../../context";
 import {
+  API_GITDIFF,
+  API_GITDIFFSTAT,
   CONFIG_HTTP_MODE,
   PORT_GITDIFFSTAT_API,
-  API_GITDIFFSTAT,
+  PORT_GITDIFF_API,
 } from "../../../env_config";
 
-import { ContextProvider } from "../../../context";
-
-export default function GitDiffViewComponent(props) {
-  const { state } = useContext(ContextProvider);
-  var gitModifiedFiles = state.modifiedGitFiles[0];
+export default function GitDiffViewComponent() {
+  const { state, dispatch } = useContext(ContextProvider);
   const repoId = state.globalRepoId;
 
-  const [activeFileName, setActiveFileName] = useState(
-    gitModifiedFiles[0].split(",")[1]
+  const [changedFiles, setChangedFiles] = useState([]);
+  const [diffStatState, setDiffStatState] = useState(
+    "Click on a file item to see the difference"
   );
-  const [fileLineDifference, setFileLineDifference] = useState([]);
-  const [diffStat, setDiffStat] = useState([]);
+  const [fileLineDiffState, setFileLineDiffState] = useState([]);
+  const [activeFileName, setActiveFileName] = useState("");
 
   useEffect(() => {
-    let apiEndPoint = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITDIFFSTAT_API}/${API_GITDIFFSTAT}`;
-    let fileName = activeFileName;
+    setActiveFileName("")
+    setFileLineDiffState("Click on a file item to see the difference");
+    setDiffStatState("Click on a file item to see the difference");
+    let apiEndPoint = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITDIFF_API}/${API_GITDIFF}`;
+    console.log("Repo Id : " + repoId);
+    if (repoId) {
+      axios({
+        url: apiEndPoint,
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        data: {
+          query: `
+              query GitDiffQuery{
+                  gitDiffQuery(repoId: "${repoId}")
+                  {
+                      gitChangedFiles
+                  }
+              }
+          `,
+        },
+      })
+        .then((res) => {
+          if (res) {
+            var apiData = res.data.data.gitDiffQuery;
+            const { gitChangedFiles } = apiData;
+            setChangedFiles([...gitChangedFiles]);
+            dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
+            console.log(res);
+          }
+        })
+        .catch((err) => {
+          return err;
+        });
+    }
+  }, [state.globalRepoId]);
+
+  function getDiffFiles() {
+    return (
+      <>
+        {changedFiles.map((entry) => {
+          if (entry && entry.split(",")[0] === "M") {
+            let fileEntry = entry.split(",")[1];
+            const styleSelector = " bg-indigo-100 border-b border-indigo-400";
+            return (
+              <div
+                className={`p-2 hover:bg-indigo-100 cursor-pointer ${
+                  fileEntry === activeFileName ? styleSelector : ""
+                }`}
+                onClick={() => {
+                  setActiveFileName(fileEntry);
+                  fileDiffStatComponent(repoId, fileEntry);
+                }}
+              >
+                {fileEntry}
+              </div>
+            );
+          }
+        })}
+      </>
+    );
+  }
+  function fileDiffStatComponent(repoId, fileName) {
+    const apiEndPoint = getAPIURL(
+      CONFIG_HTTP_MODE,
+      API_GITDIFFSTAT,
+      PORT_GITDIFFSTAT_API
+    );
 
     axios({
       url: apiEndPoint,
       method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
       data: {
         repoId,
         fileName,
       },
-      headers: {
-        "Content-type": "application/json",
-      },
     })
       .then((res) => {
-        console.log(res);
         const { diffStat, fileDiff } = res.data.differencePayload;
 
-        setDiffStat([...diffStat]);
-        setFileLineDifference([...fileDiff]);
+        setDiffStatState(diffStat[1]);
+        setFileLineDiffState(fileDiff);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [activeFileName]);
-
-  function modifiedComponents() {
-    return (
-      <div className="w-full">
-        {gitModifiedFiles.map((item) => {
-          if (item && item.split(",")) {
-            if (item.split(",")[0] === "M") {
-              let styleSelector =
-                "bg-indigo-100 text-indigo-900 font-sans font-bold border-b border-indigo-400";
-
-              return (
-                <div
-                  className={`p-2 px-6 bg-blue-200 text-sm font-sans break-words hover:bg-indigo-100 cursor-pointer ${
-                    item.split(",")[1] === activeFileName ? styleSelector : ""
-                  }`}
-                  onClick={() => {
-                    setActiveFileName(item.split(",")[1]);
-                  }}
-                >
-                  {item.split(",")[1]}
-                </div>
-              );
-            }
-          }
-        })}
-      </div>
-    );
   }
 
-  function fileDiffStat() {
-    if (diffStat) {
-      const diffStatText = diffStat[1];
-
-      console.log("Check : " + diffStatText);
-
-      if (diffStatText) {
-        diffStatText.replace(
-          "insertion(+)",
-          <span className="text-green-800 text-bold">insertions(+)</span>
-        );
-        diffStatText.replace(
-          "deletion(-)",
-          <span className="text-green-800 text-bold">deletions(-)</span>
-        );
-      }
+  function statFormat() {
+    if (diffStatState && diffStatState.includes(",")) {
+      let splitStat = diffStatState.split(",");
 
       return (
-        <div className="text-center font-sans text-xl mx-auto">
-          {diffStat[1]}
-        </div>
-      );
-    } else {
-      return (
-        <div className="text-center font-sans text-xl mx-auto">
-          Fetching stat...
-        </div>
+        <>
+          <span className="font-sans font-bold px-1">{splitStat[0]}</span>
+          {splitStat.slice(1, splitStat.length).map((parts) => {
+            if (parts.match(/insert/i)) {
+              return (
+                <span>
+                  <span className="px-2">{parts.toString().split(" ")[1]}</span>
+                  <span className="text-green-700 font-sans font-semibold">
+                    {" "}
+                    insertions (+)
+                  </span>
+                </span>
+              );
+            } else {
+              return (
+                <span>
+                  <span className="px-2">{parts.toString().split(" ")[1]}</span>
+                  <span className="text-red-700 font-sans font-semibold">
+                    {" "}
+                    deletions (+)
+                  </span>
+                </span>
+              );
+            }
+          })}
+        </>
       );
     }
   }
 
+  function fileLineDiffComponent() {
+    let splitLines = fileLineDiffState.map((line) => {
+      if (line[0] === "+") {
+        return <div className="bg-green-200">{line.replace("+", "")}</div>;
+      } else if (line[0] === "-") {
+        return <div className="bg-red-200">{line.replace("-", "")}</div>;
+      }
+    });
+
+    return <div className="break-all my-6 mx-auto">{splitLines}</div>;
+  }
+
   return (
-    <div className="flex w-11/12 p-2 mx-auto justify-center">
-      {gitModifiedFiles ? (
-        <div>{modifiedComponents()}</div>
+    <div className="flex mx-auto justify-between w-11/12">
+      <div className="break-words p-2 py-2 bg-indigo-200 text-indigo-800">
+        {getDiffFiles()}
+      </div>
+      {!activeFileName ? (
+        <div className="p-3 shadow-md rounded-sm text-center mx-auto my-auto mt-3 block text-md font-sans">
+          Click on a file to see difference information
+        </div>
       ) : (
-        <div className="text-center p-2 text-xl">Fetching files...</div>
+        ""
       )}
-      {diffStat ? <div className="w-full">{fileDiffStat()}</div> : null}
+      {diffStatState &&
+      diffStatState !== "Click on a file item to see the difference" ? (
+        <div className="p-2 mx-auto text-center justify-center">
+          {diffStatState ? statFormat() : ""}
+          {fileLineDiffState &&
+          fileLineDiffState !== "Click on a file item to see the difference" ? (
+            <code className="p-2 py-6 mt-6 text-left">
+              {fileLineDiffComponent()}
+            </code>
+          ) : (
+            ""
+          )}
+        </div>
+      ) : (
+        ""
+      )}
     </div>
   );
 }
