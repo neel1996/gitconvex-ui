@@ -10,6 +10,7 @@ import {
   PORT_GITDIFFSTAT_API,
   PORT_GITDIFF_API,
 } from "../../../env_config";
+import Prism from "prismjs";
 
 export default function GitDiffViewComponent() {
   const { state, dispatch } = useContext(ContextProvider);
@@ -27,7 +28,6 @@ export default function GitDiffViewComponent() {
     setFileLineDiffState("Click on a file item to see the difference");
     setDiffStatState("Click on a file item to see the difference");
     let apiEndPoint = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITDIFF_API}/${API_GITDIFF}`;
-    console.log("Repo Id : " + repoId);
     if (repoId) {
       axios({
         url: apiEndPoint,
@@ -151,29 +151,62 @@ export default function GitDiffViewComponent() {
   }
 
   function fileLineDiffComponent() {
-    let splitLines = fileLineDiffState.map((line) => {
+    let partFile = fileLineDiffState
+      .join("|HASH_SEPARATOR_2020|")
+      .split(
+        /@@\s[-|+][0-9]+[,|\s]+[0-9]+\s[+|-|\s]+[0-9]+[,|\s]+[0-9]+\s+@*/gi
+      )[1]
+      .split("|HASH_SEPARATOR_2020|");
+
+    let splitLines = partFile.map((line) => {
       if (line[0] === "+") {
         return (
           <div className="bg-green-200">
-            <code>
-              <pre className="break-all">{line.replace("+", "")}</pre>
-            </code>
+            <pre>
+              <code
+                dangerouslySetInnerHTML={{
+                  __html: Prism.highlight(
+                    line.replace("+", ""),
+                    Prism.languages.javascript,
+                    "javascript"
+                  ),
+                }}
+              ></code>
+            </pre>
           </div>
         );
       } else if (line[0] === "-") {
         return (
           <div className="bg-red-200">
-            <code>
-              <pre className="break-all">{line.replace("-", "")}</pre>
-            </code>
+            <pre>
+              <pre>
+                <code
+                  dangerouslySetInnerHTML={{
+                    __html: Prism.highlight(
+                      line.replace("-", ""),
+                      Prism.languages.javascript,
+                      "javascript"
+                    ),
+                  }}
+                ></code>
+              </pre>
+            </pre>
           </div>
         );
       } else {
         return (
           <div className="bg-white-200">
-            <code>
-              <pre className="break-all">{line}</pre>
-            </code>
+            <pre>
+              <code
+                dangerouslySetInnerHTML={{
+                  __html: Prism.highlight(
+                    line,
+                    Prism.languages.javascript,
+                    "javascript"
+                  ),
+                }}
+              ></code>
+            </pre>
           </div>
         );
       }
