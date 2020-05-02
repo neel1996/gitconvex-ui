@@ -159,7 +159,7 @@ export default function RepositoryAction() {
   return (
     <div className="overflow-scroll w-11/12 h-full mx-auto block justify-center overflow-x-hidden">
       {availableRepos ? (
-        <div className="">
+        <div>
           <div className="flex text-center justify-center mt-6">
             {activeRepoPane()}
             {selectedRepoDetails && selectedFlag ? (
@@ -179,6 +179,25 @@ export default function RepositoryAction() {
               </div>
             ) : null}
           </div>
+          {!selectedFlag ? (
+            <>
+              <div className="mt-10 w-11/12 rounded-sm shadow-sm h-full my-auto bock mx-auto text-center align-middle p-6 bg-orange-200 text-xl text-orange-900">
+                Select a configured repo from the dropdown to perform git
+                related operations
+              </div>
+              <div className="p-6 rounded-lg border-2 border-gray-100 w-3/4 block mx-auto my-20">
+                <div>
+                  <FontAwesomeIcon
+                    icon={["fas", "mouse-pointer"]}
+                    className="flex text-6xl mt-20 text-center text-gray-300 font-bold mx-auto my-auto h-full w-full"
+                  ></FontAwesomeIcon>
+                </div>
+                <div className="block text-6xl text-gray-200 mx-auto text-center align-middle">
+                  No repositories selected
+                </div>
+              </div>
+            </>
+          ) : null}
           <div>
             {selectedRepoDetails && selectedFlag ? memoizedGitTracker : null}
           </div>

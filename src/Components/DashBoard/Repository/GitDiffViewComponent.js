@@ -70,7 +70,7 @@ export default function GitDiffViewComponent() {
             const styleSelector = " bg-indigo-100 border-b border-indigo-400";
             return (
               <div
-                className={`p-2 hover:bg-indigo-100 cursor-pointer ${
+                className={`p-2 text-sm break-words hover:bg-indigo-100 cursor-pointer ${
                   fileEntry === activeFileName ? styleSelector : ""
                 }`}
                 onClick={() => {
@@ -120,7 +120,7 @@ export default function GitDiffViewComponent() {
       let splitStat = diffStatState.split(",");
 
       return (
-        <>
+        <div className="text-xl text-center w-3/4 mx-auto block p-2 border border-gray-500 rounded-md shadow-md border-dotted">
           <span className="font-sans font-bold px-1">{splitStat[0]}</span>
           {splitStat.slice(1, splitStat.length).map((parts) => {
             if (parts.match(/insert/i)) {
@@ -145,7 +145,7 @@ export default function GitDiffViewComponent() {
               );
             }
           })}
-        </>
+        </div>
       );
     }
   }
@@ -153,11 +153,29 @@ export default function GitDiffViewComponent() {
   function fileLineDiffComponent() {
     let splitLines = fileLineDiffState.map((line) => {
       if (line[0] === "+") {
-        return <div className="bg-green-200">{line.replace("+", "")}</div>;
+        return (
+          <div className="bg-green-200">
+            <code>
+              <pre className="break-all">{line.replace("+", "")}</pre>
+            </code>
+          </div>
+        );
       } else if (line[0] === "-") {
-        return <div className="bg-red-200">{line.replace("-", "")}</div>;
+        return (
+          <div className="bg-red-200">
+            <code>
+              <pre className="break-all">{line.replace("-", "")}</pre>
+            </code>
+          </div>
+        );
       } else {
-        return <div className="bg-white-200">{line.replace("-", "")}</div>;
+        return (
+          <div className="bg-white-200">
+            <code>
+              <pre className="break-all">{line}</pre>
+            </code>
+          </div>
+        );
       }
     });
 
@@ -165,8 +183,8 @@ export default function GitDiffViewComponent() {
   }
 
   return (
-    <div className="flex mx-auto justify-between w-11/12">
-      <div className="break-words p-2 py-2 bg-indigo-200 text-indigo-800">
+    <div className="flex mx-auto w-full justify-center">
+      <div className="break-words p-2 py-2 bg-indigo-200 text-indigo-800 w-1/4 overflow-hidden">
         {getDiffFiles()}
       </div>
       {!activeFileName ? (
@@ -178,13 +196,13 @@ export default function GitDiffViewComponent() {
       )}
       {diffStatState &&
       diffStatState !== "Click on a file item to see the difference" ? (
-        <div className="p-2 mx-auto text-center justify-center">
+        <div className="p-2 break-all w-3/4 mx-auto">
           {diffStatState ? statFormat() : ""}
           {fileLineDiffState &&
           fileLineDiffState !== "Click on a file item to see the difference" ? (
-            <code className="p-2 py-6 mt-6 text-left">
+            <div className="p-2 py-6 mt-6 text-left break-words overflow-scroll">
               {fileLineDiffComponent()}
-            </code>
+            </div>
           ) : (
             ""
           )}

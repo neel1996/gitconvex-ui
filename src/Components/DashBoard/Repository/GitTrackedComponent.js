@@ -2,14 +2,23 @@ import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { GIT_TRACKED_FILES } from "../../../actionStore";
 import { ContextProvider } from "../../../context";
-import { API_GITDIFF, CONFIG_HTTP_MODE, PORT_GITDIFF_API } from "../../../env_config";
+import {
+  API_GITDIFF,
+  CONFIG_HTTP_MODE,
+  PORT_GITDIFF_API,
+} from "../../../env_config";
 import GitDiffViewComponent from "./GitDiffViewComponent";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fab } from "@fortawesome/free-brands-svg-icons";
 
 export default function GitTrackedComponent(props) {
+  library.add(fab);
   const [gitDiffFilesState, setGitDiffFilesState] = useState([]);
   const [gitUntrackedFilesState, setGitUntrackedFilesState] = useState([]);
   const [topMenuItemState, setTopMenuItemState] = useState("File View");
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
+  const [noChangeMarker, setNoChangeMarker] = useState(false);
 
   const { state, dispatch } = useContext(ContextProvider);
 
@@ -24,7 +33,7 @@ export default function GitTrackedComponent(props) {
       url: apiEndPoint,
       method: "POST",
       headers: {
-        "Content-type": "application/json"
+        "Content-type": "application/json",
       },
       data: {
         query: `
@@ -35,20 +44,26 @@ export default function GitTrackedComponent(props) {
                     gitChangedFiles
                 }
             }
-        `
-      }
+        `,
+      },
     })
-      .then(res => {
+      .then((res) => {
         if (res) {
           var apiData = res.data.data.gitDiffQuery;
           const { gitChangedFiles, gitUntrackedFiles } = apiData;
-          setGitDiffFilesState([...gitChangedFiles]);
-          setGitUntrackedFilesState([...gitUntrackedFiles]);
 
-          dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
+          if (gitChangedFiles && gitChangedFiles.length > 0) {
+            setGitDiffFilesState([...gitChangedFiles]);
+            setGitUntrackedFilesState([...gitUntrackedFiles]);
+            setNoChangeMarker(false);
+
+            dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
+          } else {
+            setNoChangeMarker(true);
+          }
         }
       })
-      .catch(err => {
+      .catch((err) => {
         return err;
       });
   }, [props]);
@@ -57,7 +72,7 @@ export default function GitTrackedComponent(props) {
     var deletedArtifacts = [];
     var modifiedArtifacts = [];
 
-    if (gitDiffFilesState) {
+    if (gitDiffFilesState && gitDiffFilesState.length > 0) {
       gitDiffFilesState.forEach((diffFile, index) => {
         var splitFile = diffFile.split(",");
         var flag = splitFile[0];
@@ -105,7 +120,7 @@ export default function GitTrackedComponent(props) {
     let untrackedDir = [];
     let untrackedFile = [];
 
-    gitUntrackedFilesState.forEach(entry => {
+    gitUntrackedFilesState.forEach((entry) => {
       let splitEntry = entry.split(",");
 
       if (splitEntry) {
@@ -157,31 +172,58 @@ export default function GitTrackedComponent(props) {
     }
   }
 
+  function presentChangeComponent() {
+    return (
+      <>
+        <div className="flex my-4 mx-auto w-11/12 justify-around font-sans font-semibold rounded-sm shadow-md cursor-pointer">
+          {topMenuItems.map((item) => {
+            let styleSelector =
+              "w-full py-3 px-1 text-center border-r border-blue-400 ";
+            if (item === topMenuItemState) {
+              styleSelector +=
+                "bg-blue-100 text-blue-800 border-b border-blue-700";
+            } else {
+              styleSelector += "bg-blue-600 text-white";
+            }
+            return (
+              <div
+                className={`w-full py-3 px-1 text-center border-r border-blue-400 hover:bg-blue-200 hover:text-blue-900 ${styleSelector}`}
+                onClick={(event) => {
+                  setTopMenuItemState(item);
+                }}
+              >
+                {item}
+              </div>
+            );
+          })}
+        </div>
+        <div className="w-11/12 block mx-auto my-6">{menuComponent()}</div>
+      </>
+    );
+  }
+
   return (
     <>
-      <div className="flex my-4 mx-auto w-11/12 justify-around font-sans font-semibold rounded-sm shadow-md cursor-pointer">
-        {topMenuItems.map(item => {
-          let styleSelector =
-            "w-full py-3 px-1 text-center border-r border-blue-400 ";
-          if (item === topMenuItemState) {
-            styleSelector +=
-              "bg-blue-100 text-blue-800 border-b border-blue-700";
-          } else {
-            styleSelector += "bg-blue-600 text-white";
-          }
-          return (
-            <div
-              className={`w-full py-3 px-1 text-center border-r border-blue-400 hover:bg-blue-200 hover:text-blue-900 ${styleSelector}`}
-              onClick={event => {
-                setTopMenuItemState(item);
-              }}
-            >
-              {item}
+      {noChangeMarker ? (
+        <>
+          <div className="mt-10 w-11/12 rounded-sm shadow-sm h-full my-auto bock mx-auto text-center align-middle p-6 bg-pink-200 text-xl text-pink-600">
+            No changes found in the selected git repo
+          </div>
+          <div className="p-6 rounded-lg border-2 border-gray-100 w-3/4 block mx-auto my-20">
+            <div>
+              <FontAwesomeIcon
+                icon={["fab", "creative-commons-zero"]}
+                className="flex text-6xl mt-20 text-center text-gray-300 font-bold mx-auto my-auto h-full w-full"
+              ></FontAwesomeIcon>
             </div>
-          );
-        })}
-      </div>
-      <div className="w-11/12 block mx-auto my-6">{menuComponent()}</div>
+            <div className="block text-6xl text-gray-200 mx-auto text-center align-middle">
+              "0" changes in repo
+            </div>
+          </div>
+        </>
+      ) : (
+        presentChangeComponent()
+      )}
     </>
   );
 }
