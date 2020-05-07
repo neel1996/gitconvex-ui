@@ -294,6 +294,7 @@ export default function RepositoryDetails(props) {
           <table className="table-auto w-full p-2 mx-auto" cellPadding="10">
             <tbody>
               <tr className="pb-6 border-b border-blue-400">
+                <th></th>
                 <th>File / Directory</th>
                 <th>Latest commit</th>
               </tr>
