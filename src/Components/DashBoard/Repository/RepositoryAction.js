@@ -5,14 +5,11 @@ import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Redirect } from "react-router";
 import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../actionStore";
-import { getAPIURL } from "../../../apiURLSupplier";
 import { ContextProvider } from "../../../context";
 import {
-  API_FETCHREPO,
-  API_GITREPOSTATUS,
-  CONFIG_HTTP_MODE,
-  PORT_FETCHREPO_API,
-  PORT_GITREPOSTATUS_API,
+  globalAPIEndpoint,
+  ROUTE_FETCH_REPO,
+  ROUTE_REPO_DETAILS,
 } from "../../../env_config";
 import GitTrackedComponent from "./GitTrackedComponent";
 
@@ -33,30 +30,37 @@ export default function RepositoryAction() {
 
   const memoizedGitTracker = useMemo(() => {
     return <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>;
-  }, [defaultRepo, state.globalRepoId]);
+  }, [defaultRepo]);
 
   async function invokeRepoFetchAPI() {
-    const fetchRepoURL = getAPIURL(
-      CONFIG_HTTP_MODE,
-      API_FETCHREPO,
-      PORT_FETCHREPO_API
-    );
-
     return await axios({
-      url: fetchRepoURL,
+      url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-            query{
-                fetchRepo
+            query GitConvexApi{
+              gitConvexApi(route: "${ROUTE_FETCH_REPO}"){
+                fetchRepo{
+                  repoId
+                  repoName
+                  repoPath
+                }
+              }
             }
         `,
       },
     }).then((res) => {
-      const apiResponse = JSON.parse(res.data.data.fetchRepo);
+      const apiResponse = res.data.data.gitConvexApi.fetchRepo;
 
-      if (apiResponse.status === "REPO_PRESENT") {
-        const repoContent = JSON.parse(apiResponse.content);
+      if (apiResponse) {
+        const repoContent = apiResponse.repoId.map((entry, index) => {
+          return {
+            id: apiResponse.repoId[index],
+            repoName: apiResponse.repoName[index],
+            repoPath: apiResponse.repoPath[index],
+          };
+        });
+
         dispatch({
           type: PRESENT_REPO,
           payload: repoContent,
@@ -69,42 +73,46 @@ export default function RepositoryAction() {
   }
 
   function fetchSelectedRepoStatus() {
-    const endpointURL = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITREPOSTATUS_API}/${API_GITREPOSTATUS}`;
     const repoId = defaultRepo.id;
 
-    axios({
-      url: endpointURL,
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      data: {
-        query: `
+    if (repoId) {
+      const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
 
-            query GetRepoStatusQuery
+      axios({
+        url: globalAPIEndpoint,
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        data: {
+          query: `
+            query GitConvexApi
             {
-                getRepoStatus(repoId: "${repoId}"){
-                    gitBranchList
-                    gitCurrentBranch
-                    gitTotalCommits
-                    gitTotalTrackedFiles
+              gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
+                gitRepoStatus {
+                  gitBranchList
+                  gitCurrentBranch
+                  gitTotalCommits
+                  gitTotalTrackedFiles  
+                }
               }
             }
           `,
-      },
-    })
-      .then((res) => {
-        setSelectedRepoDetails(res.data.data.getRepoStatus);
+        },
       })
-      .catch((err) => {
-        if (err) {
-          console.log("API GitStatus error occurred : " + err);
-        }
-      });
+        .then((res) => {
+          setSelectedRepoDetails(res.data.data.gitConvexApi.gitRepoStatus);
+        })
+        .catch((err) => {
+          if (err) {
+            console.log("API GitStatus error occurred : " + err);
+          }
+        });
+    }
   }
 
   useEffect(() => {
-    if (presentRepo !== undefined && presentRepo.length >= 1) {
+    if (presentRepo && presentRepo.length >= 1) {
       setAvailableRepos(presentRepo[0]);
       fetchSelectedRepoStatus();
     } else {
@@ -114,7 +122,6 @@ export default function RepositoryAction() {
   }, [defaultRepo]);
 
   function activeRepoPane() {
-    const defaultRepoName = defaultRepo.repoName;
     return (
       <div className="text-center mx-auto my-auto justify-around mt-3 p-3 rounded-md shadow-sm flex border-2 border-gray-300 w-1/2">
         <div className="font-sans font-semibold text-gray-900 my-1 mx-2">
@@ -122,9 +129,10 @@ export default function RepositoryAction() {
         </div>
         <select
           className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500 w-1/2"
+          defaultValue="checked"
           onChange={(event) => {
             setSelectedFlag(true);
-            availableRepos.map((elm) => {
+            availableRepos.forEach((elm) => {
               if (event.target.value === elm.repoName) {
                 setDefaultRepo(elm);
                 dispatch({ type: GIT_GLOBAL_REPOID, payload: elm.id });
@@ -132,11 +140,15 @@ export default function RepositoryAction() {
             });
           }}
         >
-          <option selected hidden disabled>
+          <option defaultChecked value="checked" hidden disabled>
             Select a repo
           </option>
           {availableRepos.map((entry) => {
-            return <option value={entry.repoName}>{entry.repoName}</option>;
+            return (
+              <option value={entry.repoName} key={entry.repoName}>
+                {entry.repoName}
+              </option>
+            );
           })}
         </select>
       </div>

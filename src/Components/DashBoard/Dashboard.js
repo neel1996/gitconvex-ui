@@ -1,12 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { BrowserRouter, Route } from "react-router-dom";
 import { ContextProvider } from "../../context";
 import LeftPane from "./LeftPane";
-import RepositoryPane from "./Repository/Repository";
-import RepositoryAction from './Repository/RepositoryAction';
+import RepositoryDetails from "./Repository/RepositoryDetails";
+import RepositoryAction from "./Repository/RepositoryAction";
 import RightPane from "./RightPane";
-
-
 
 export default function Dashboard(props) {
   const { state } = useContext(ContextProvider);
@@ -15,28 +13,28 @@ export default function Dashboard(props) {
   const [gitVersion, setGitVersion] = useState("");
   const [nodeVersion, setNodeVersion] = useState("");
 
+  const memoizedRepoDetails = useMemo(() => {
+    return <RepositoryDetails parentProps={props}></RepositoryDetails>;
+  }, [props]);
+
   useEffect(() => {
-    if (state.hcParams.length > 0) {
-      state.hcParams.forEach(entry => {
-        if (entry["code"].match(/GIT/i)) {
-          setGitVersion(entry["value"]);
-        } else if (entry["code"].match(/NODE/i)) {
-          setNodeVersion(entry["value"]);
-        } else if (entry["code"].match(/OS/i)) {
-          setPlatform(entry["value"]);
-        }
-      });
+    const { osCheck, gitCheck, nodeCheck } = state.hcParams;
+
+    if (osCheck && gitCheck && nodeCheck) {
+      setPlatform(osCheck);
+      setGitVersion(gitCheck);
+      setNodeVersion(nodeCheck);
     } else {
-      setPlatform(localStorage.getItem("OS_CHECK_PASSED"));
-      setNodeVersion(localStorage.getItem("NODE_CHECK_PASSED"));
-      setGitVersion(localStorage.getItem("GIT_CHECK_PASSED"));
+      setPlatform(localStorage.getItem("OS_TYPE"));
+      setNodeVersion(localStorage.getItem("GIT_VERSION"));
+      setGitVersion(localStorage.getItem("NODE_VERSION"));
     }
   }, [state.hcParams]);
 
   const params = {
     platform,
     gitVersion,
-    nodeVersion
+    nodeVersion,
   };
 
   const renderRightPaneComponent = () => {
@@ -49,7 +47,7 @@ export default function Dashboard(props) {
         return (
           <BrowserRouter>
             <Route exact path="/dashboard/repository/:repoId">
-              <RepositoryPane parentProps={props}></RepositoryPane>
+              {memoizedRepoDetails}
             </Route>
           </BrowserRouter>
         );

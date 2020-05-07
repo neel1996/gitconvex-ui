@@ -6,7 +6,7 @@ const contextValues = {
    git:"",
    node:"",
    globalRepoId: "",
-   hcParams: [],
+   hcParams: {},
    presentRepo: [],
    modifiedGitFiles: []   
 }

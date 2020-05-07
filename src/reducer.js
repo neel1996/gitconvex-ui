@@ -14,10 +14,24 @@ export default function reducer(state, action) {
         hcDone: action.payload,
       };
     case HC_PARAM_ACTION:
-      localStorage.setItem(action.payload.code, action.payload.value);
+      const { osCheck, gitCheck, nodeCheck } = action.payload;
+
+      const parseValue = (payload) => {
+        return JSON.parse(JSON.parse(JSON.stringify(payload))).message;
+      };
+
+      localStorage.setItem("OS_TYPE", parseValue(osCheck));
+      localStorage.setItem("GIT_VERSION", parseValue(gitCheck));
+      localStorage.setItem("NODE_VERSION", parseValue(nodeCheck));
+
       return {
         ...state,
-        hcParams: [...state.hcParams, action.payload],
+        hcParams: {
+          ...state.hcParams,
+          osCheck: parseValue(osCheck),
+          gitCheck: parseValue(gitCheck),
+          nodeCheck: parseValue(nodeCheck),
+        },
       };
     case PRESENT_REPO:
       return {

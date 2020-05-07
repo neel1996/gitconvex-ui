@@ -1,81 +1,59 @@
-import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-
-import {
-  CONFIG_HTTP_MODE,
-  API_HEALTHCHECK,
-  PORT_HEALTHCHECK_API
-} from "../env_config";
-import { HC_PARAM_ACTION, HC_DONE_SWITCH } from "../actionStore";
-
+import React, { useContext, useEffect, useState } from "react";
+import { HC_PARAM_ACTION } from "../actionStore";
 import { ContextProvider } from "../context";
-
+import { globalAPIEndpoint } from "../env_config";
 import "./SplashScreen.css";
 
 export default function SplashScreen(props) {
-  const [loader, setLoader] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [hcCheck, setHcCheck] = useState(false);
-  const { state, dispatch } = useContext(ContextProvider);
+  const { dispatch } = useContext(ContextProvider);
 
   useEffect(() => {
-    const apiURL = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_HEALTHCHECK_API}/${API_HEALTHCHECK}`;
-    const hcParams = ["osCheck", "gitCheck", "nodeCheck"];
-
-    hcParams.forEach(param => {
-      axios({
-        url: apiURL,
-        method: "POST",
-        data: {
-          query: `
-            query{
-              ${param}
+    const apiURL = globalAPIEndpoint;
+    axios({
+      url: apiURL,
+      method: "POST",
+      data: {
+        query: `
+          query GitConvexAPI{
+            gitConvexApi(route:"HEALTH_CHECK"){
+              healthCheck{
+                osCheck
+                gitCheck
+                nodeCheck
+              }
             }
-          `
+          }
+        `,
+      },
+    })
+      .then((res) => {
+        if (res.data.data) {
+          const {
+            osCheck,
+            gitCheck,
+            nodeCheck,
+          } = res.data.data.gitConvexApi.healthCheck;
+
+          dispatch({
+            type: HC_PARAM_ACTION,
+            payload: {
+              osCheck,
+              gitCheck,
+              nodeCheck,
+            },
+          });
+          setHcCheck(true);
+        } else {
+          setShowAlert(true);
         }
       })
-        .then(res => {
-          if (res) {
-            var currentObj = JSON.parse(JSON.stringify(res.data));
-            var objKey = Object.keys(currentObj);
-            let hcEntry = JSON.parse(
-              JSON.stringify(Object.values(currentObj[objKey]))
-            );
-
-            hcEntry = {
-              code: JSON.parse(hcEntry).status,
-              value: JSON.parse(hcEntry).message
-            };
-
-            dispatch({
-              type: HC_PARAM_ACTION,
-              payload: hcEntry
-            });
-
-            switch (hcParams) {
-              case "osCheck":
-                setLoader("Checking platform...");
-                break;
-              case "gitCheck":
-                setLoader("Checking Git availability...");
-                break;
-              case "nodeCheck":
-                setLoader("Checking Node availability...");
-                break;
-              default:
-                setLoader("Loading...")
-            }
-            setHcCheck(true);
-            dispatch({ type: HC_DONE_SWITCH, payload: true });
-          } else {
-            setHcCheck(false);
-          }
-        })
-        .catch(err => {
-          setShowAlert(true);
-          console.log(err);
-        });
-    });
+      .catch((err) => {
+        console.log(err);
+        setShowAlert(true);
+      });
   }, []);
 
   return (

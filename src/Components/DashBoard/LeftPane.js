@@ -1,17 +1,45 @@
 import {
   FolderOutlined,
   HelpOutline,
-  SettingsOutlined
+  SettingsOutlined,
 } from "@material-ui/icons";
 import React from "react";
 import { NavLink } from "react-router-dom";
 
 export default function LeftPane(props) {
+  const menuItemParams = [
+    {
+      link: "/dashboard/repository",
+      icon: (
+        <FolderOutlined
+          style={{ color: "grey", fontSize: "36px" }}
+        ></FolderOutlined>
+      ),
+      label: "Repositories",
+    },
+    {
+      link: "/dashboard/settings",
+      icon: (
+        <SettingsOutlined
+          style={{ color: "grey", fontSize: "36px" }}
+        ></SettingsOutlined>
+      ),
+      label: "Settings",
+    },
+    {
+      link: "/dashboard/help",
+      icon: (
+        <HelpOutline style={{ color: "grey", fontSize: "36px" }}></HelpOutline>
+      ),
+      label: "Help",
+    },
+  ];
+
   return (
     <div className="dashboard-leftpane w-1/4 shadow-md block p-3 bg-white-400">
       <div
         className="flex justify-center items-center bg-blue-100 cursor-pointer"
-        onClick={event => {
+        onClick={(event) => {
           props.parentProps.history.push("/dashboard");
         }}
       >
@@ -22,32 +50,22 @@ export default function LeftPane(props) {
         </div>
       </div>
       <div className="mt-32 cursor-pointer">
-        <NavLink to="/dashboard/repository" exact activeClassName="bg-gray-300" className="flex border-b border-black-100 p-3 hover:bg-gray-100">
-          <div className="flex">
-            <div>
-              <FolderOutlined
-                style={{ color: "grey", fontSize: "36px" }}
-              ></FolderOutlined>
-            </div>
-            <div className="ml-2 text-2xl text-gray-700">Repositories</div>
-          </div>
-        </NavLink>
-        <div className="flex border-b border-black-100 p-3 hover:bg-gray-100">
-          <div>
-            <SettingsOutlined
-              style={{ color: "grey", fontSize: "36px" }}
-            ></SettingsOutlined>
-          </div>
-          <div className="ml-2 text-2xl text-gray-700">Settings</div>
-        </div>
-        <div className="flex border-b border-black-100 p-3 hover:bg-gray-100">
-          <div>
-            <HelpOutline
-              style={{ color: "grey", fontSize: "36px" }}
-            ></HelpOutline>
-          </div>
-          <div className="ml-2 text-2xl text-gray-700">Help</div>
-        </div>
+        {menuItemParams.map((entry) => {
+          return (
+            <NavLink
+              to={`${entry.link}`}
+              exact
+              activeClassName="bg-gray-300"
+              className="flex border-b border-black-100 p-3 hover:bg-gray-100"
+              key={entry.label}
+            >
+              <div className="flex">
+                <div>{entry.icon}</div>
+                <div className="ml-2 text-2xl text-gray-700">{entry.label}</div>
+              </div>
+            </NavLink>
+          );
+        })}
       </div>
     </div>
   );

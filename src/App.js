@@ -9,7 +9,7 @@ import reducer from "./reducer";
 
 export default function App() {
   const initialState = {
-    hcParams: [],
+    hcParams: {},
     presentRepo: [],
     modifiedGitFiles: [],
     globalRepoId: ""

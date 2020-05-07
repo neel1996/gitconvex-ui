@@ -1,65 +1,66 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
-import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { globalAPIEndpoint, ROUTE_REPO_DETAILS } from "../../../env_config";
 
-import {
-  CONFIG_HTTP_MODE,
-  PORT_GITREPOSTATUS_API,
-  API_GITREPOSTATUS
-} from "../../../env_config";
-
-export default function Repository(props) {
+export default function RepositoryDetails(props) {
   library.add(fab, fas);
   const [gitRepoStatus, setGitRepoStatus] = useState({});
+  const [repoFetchFailed, setRepoFetchFailed] = useState(false);
 
   useEffect(() => {
-    const endpointURL = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITREPOSTATUS_API}/${API_GITREPOSTATUS}`;
+    const endpointURL = globalAPIEndpoint;
 
-    if (props.parentProps !== undefined) {
+    if (props.parentProps) {
       const repoId = props.parentProps.location.pathname.split(
         "/repository/"
       )[1];
+
+      const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
 
       axios({
         url: endpointURL,
         method: "POST",
         headers: {
-          "Content-type": "application/json"
+          "Content-type": "application/json",
         },
         data: {
           query: `
 
-            query GetRepoStatusQuery
+            query GitConvexApi
             {
-                getRepoStatus(repoId: "${repoId}"){
-                    gitRemoteData
-                    gitRepoName
-                    gitBranchList
-                    gitCurrentBranch
-                    gitRemoteHost
-                    gitTotalCommits
-                    gitLatestCommit
-                    gitTrackedFiles
-                    gitFileBasedCommit
+              gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
+                gitRepoStatus {
+                  gitRemoteData
+                  gitRepoName
+                  gitBranchList
+                  gitCurrentBranch
+                  gitRemoteHost
+                  gitTotalCommits
+                  gitLatestCommit
+                  gitTrackedFiles
+                  gitFileBasedCommit
+                  gitTotalTrackedFiles    
+                }
               }
             }
-          `
-        }
+          `,
+        },
       })
-        .then(res => {
-          setGitRepoStatus(res.data.data.getRepoStatus);
+        .then((res) => {
+          setGitRepoStatus(res.data.data.gitConvexApi.gitRepoStatus);
         })
-        .catch(err => {
+        .catch((err) => {
           if (err) {
             console.log("API GitStatus error occurred : " + err);
+            setRepoFetchFailed(true);
           }
         });
     }
-  }, []);
+  }, [props.parentProps]);
 
   const {
     gitRemoteData,
@@ -70,7 +71,7 @@ export default function Repository(props) {
     gitTotalCommits,
     gitLatestCommit,
     gitTrackedFiles,
-    gitFileBasedCommit
+    gitFileBasedCommit,
   } = gitRepoStatus;
 
   const gitRepoHeaderContent = () => {
@@ -91,7 +92,7 @@ export default function Repository(props) {
   const gitRepoLeftPane = () => {
     var remoteLogo = "";
 
-    if (gitRemoteHost != "" && gitRemoteHost !== undefined) {
+    if (gitRemoteHost && gitRemoteHost) {
       if (gitRemoteHost.match(/github/i)) {
         remoteLogo = (
           <FontAwesomeIcon
@@ -133,55 +134,70 @@ export default function Repository(props) {
         <>
           <div className="block rounded-md shadow-sm border-2 border-dotted border-gray-400 p-6 my-6 mx-3">
             <table className="table-auto" cellSpacing="10" cellPadding="20">
-              <tr>
-                <td className="text-xl text-gray-600">Remote Host</td>
-                <td>
-                  <div className="p-1 rounded-md border-2 shadow-md text-center w-1/2 border-gray-200">
-                    <span className="p-3">{remoteLogo}</span>
-                    <span className="text-center text-lg">{gitRemoteHost}</span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="text-xl text-gray-600">{gitRemoteHost} URL</td>
-                <td>
-                  <span className="text-blue-400 hover:text-blue-500 cursor-pointer">
-                    {gitRemoteData}
-                  </span>
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td className="text-xl text-gray-600">Remote Host</td>
+                  <td>
+                    <div className="p-1 rounded-md border-2 shadow-md text-center w-1/2 border-gray-200">
+                      <span className="p-3">{remoteLogo}</span>
+                      <span className="text-center text-lg">
+                        {gitRemoteHost}
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td className="text-xl text-gray-600">{gitRemoteHost} URL</td>
+                  <td>
+                    <span className="text-blue-400 hover:text-blue-500 cursor-pointer">
+                      {gitRemoteData}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
           <div className="block rounded-lg shadow-sm border-2 border-dotted border-gray-400 p-2 my-2 mx-3">
             <table className="table-light" cellPadding="10">
-              <tr>
-                <td className="text-lg text-gray-500">Total Commits</td>
-                <td className="text-left text-md text-bold text-black-800">
-                  {gitTotalCommits} Commits
-                </td>
-              </tr>
-              <tr>
-                <td className="text-lg text-gray-500">Latest Commit</td>
-                <td className="text-left text-sm text-bold text-black-900">
-                  {gitLatestCommit}
-                </td>
-              </tr>
-              <tr>
-                <td className="text-lg text-gray-500 align-text-top">
-                  Available Branches
-                </td>
-                <td>
-                  {gitBranchList.map(entry => {
-                    return entry == gitCurrentBranch ? (
-                      <div className="text-lg text-bold text-gray-800">
-                        {entry}
-                      </div>
-                    ) : (
-                      <div>{entry}</div>
-                    );
-                  })}
-                </td>
-              </tr>
+              <tbody>
+                <tr>
+                  <td className="text-lg text-gray-500">Total Commits</td>
+                  <td className="text-left text-md text-bold text-black-800">
+                    {gitTotalCommits} Commits
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td className="text-lg text-gray-500">Latest Commit</td>
+                  <td className="text-left text-sm text-bold text-black-900">
+                    {gitLatestCommit}
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td className="text-lg text-gray-500 align-text-top">
+                    Available Branches
+                  </td>
+                  <td>
+                    {gitBranchList.map((entry) => {
+                      return entry === gitCurrentBranch ? (
+                        <div
+                          className="text-lg text-bold text-gray-800"
+                          key={entry}
+                        >
+                          {entry}
+                        </div>
+                      ) : (
+                        <div key="entry-key">{entry}</div>
+                      );
+                    })}
+                  </td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </>
@@ -196,7 +212,7 @@ export default function Repository(props) {
   };
 
   const gitTrackedFileComponent = () => {
-    if (gitRepoStatus.gitTrackedFiles != "" && gitTrackedFiles !== undefined) {
+    if (gitRepoStatus.gitTrackedFiles && gitTrackedFiles) {
       var formattedFiles = [];
       var directoryEntry = [];
       var fileEntry = [];
@@ -206,7 +222,7 @@ export default function Repository(props) {
 
         if (splitEntry[1].includes("directory")) {
           directoryEntry.push(
-            <>
+            <tbody>
               <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
                 <td>
                   <FontAwesomeIcon
@@ -232,11 +248,11 @@ export default function Repository(props) {
                   </div>
                 </td>
               </tr>
-            </>
+            </tbody>
           );
         } else {
           fileEntry.push(
-            <>
+            <tbody>
               <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
                 <td>
                   <FontAwesomeIcon
@@ -262,7 +278,7 @@ export default function Repository(props) {
                   </div>
                 </td>
               </tr>
-            </>
+            </tbody>
           );
         }
       });
@@ -271,13 +287,17 @@ export default function Repository(props) {
       formattedFiles.push(fileEntry);
 
       return (
-        <div className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto">
+        <div
+          className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto"
+          key="repo-key"
+        >
           <table className="table-auto w-full p-2 mx-auto" cellPadding="10">
-            <tr className="pb-6 border-b border-blue-400">
-              <th></th>
-              <th>File / Directory</th>
-              <th>Latest commit</th>
-            </tr>
+            <tbody>
+              <tr className="pb-6 border-b border-blue-400">
+                <th>File / Directory</th>
+                <th>Latest commit</th>
+              </tr>
+            </tbody>
             {formattedFiles}
           </table>
         </div>
@@ -293,17 +313,30 @@ export default function Repository(props) {
 
   return (
     <div className="rp_repo-view w-screen h-screen p-6 mx-auto rounded-lg justify-evenly overflow-auto">
-      <div className="flex px-3 py-2">
-        {gitRepoStatus !== {} ? gitRepoHeaderContent() : null}
-      </div>
-      <div className="w-full">
-        <div className="flex my-4 mx-auto justify-around">
-          {gitRepoStatus !== {} ? gitRepoLeftPane() : null}
+      {gitRepoStatus && !repoFetchFailed ? (
+        <>
+          <div className="flex px-3 py-2">
+            {gitRepoStatus ? gitRepoHeaderContent() : null}
+          </div>
+          <div className="w-full">
+            <div className="flex my-4 mx-auto justify-around">
+              {gitRepoStatus ? gitRepoLeftPane() : null}
+            </div>
+          </div>
+          <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
+            {gitRepoStatus ? gitTrackedFileComponent() : null}
+          </div>
+        </>
+      ) : (
+        <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
+          Fetching repo details...
         </div>
-      </div>
-      <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
-        {gitRepoStatus !== {} ? gitTrackedFileComponent() : null}
-      </div>
+      )}
+      {repoFetchFailed ? (
+        <div className="p-2 text-center mx-auto rounded-lg bg-red-200 text-xl">
+          Repo details fetch failed!
+        </div>
+      ) : null}
     </div>
   );
 }

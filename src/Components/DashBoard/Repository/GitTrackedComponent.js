@@ -1,16 +1,15 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { GIT_TRACKED_FILES } from "../../../actionStore";
 import { ContextProvider } from "../../../context";
 import {
-  API_GITDIFF,
-  CONFIG_HTTP_MODE,
-  PORT_GITDIFF_API,
+  globalAPIEndpoint,
+  ROUTE_REPO_TRACKED_DIFF,
 } from "../../../env_config";
 import GitDiffViewComponent from "./GitDiffViewComponent";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fab } from "@fortawesome/free-brands-svg-icons";
 
 export default function GitTrackedComponent(props) {
   library.add(fab);
@@ -20,14 +19,16 @@ export default function GitTrackedComponent(props) {
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
   const [noChangeMarker, setNoChangeMarker] = useState(false);
 
-  const { state, dispatch } = useContext(ContextProvider);
+  const { dispatch } = useContext(ContextProvider);
 
   const memoizedGitDiffView = useMemo(() => {
     return <GitDiffViewComponent></GitDiffViewComponent>;
   }, []);
 
   useEffect(() => {
-    let apiEndPoint = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITDIFF_API}/${API_GITDIFF}`;
+    let apiEndPoint = globalAPIEndpoint;
+
+    const payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
 
     axios({
       url: apiEndPoint,
@@ -37,19 +38,21 @@ export default function GitTrackedComponent(props) {
       },
       data: {
         query: `
-            query GitDiffQuery{
-                gitDiffQuery(repoId: "${props.repoId}")
-                {
-                    gitUntrackedFiles
-                    gitChangedFiles
+            query GitConvexApi{
+              gitConvexApi(route: "${ROUTE_REPO_TRACKED_DIFF}", payload:${payload})
+              {
+                gitChanges{
+                  gitUntrackedFiles
+                  gitChangedFiles
                 }
+              }
             }
         `,
       },
     })
       .then((res) => {
         if (res) {
-          var apiData = res.data.data.gitDiffQuery;
+          var apiData = res.data.data.gitConvexApi.gitChanges;
           const { gitChangedFiles, gitUntrackedFiles } = apiData;
 
           if (gitChangedFiles && gitChangedFiles.length > 0) {
@@ -82,7 +85,7 @@ export default function GitTrackedComponent(props) {
           case "M":
             styleSelector += "text-yellow-900 bg-yellow-200";
             modifiedArtifacts.push(
-              <div className="flex mx-auto justify-between">
+              <div className="flex mx-auto justify-between" key={name}>
                 <div className={`${styleSelector} w-11/12`}>{name}</div>
                 <div className="rounded-lg shadow-sm border border-gray-300 p-2 text-center w-1/6">
                   Modified
@@ -93,7 +96,7 @@ export default function GitTrackedComponent(props) {
           case "D":
             styleSelector += "text-red-900 bg-red-200";
             deletedArtifacts.push(
-              <div className="flex mx-auto justify-between">
+              <div className="flex mx-auto justify-between" key={name}>
                 <div className={`${styleSelector} w-11/12`}>{name}</div>
                 <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6">
                   Deleted
@@ -135,7 +138,7 @@ export default function GitTrackedComponent(props) {
 
     return untrackedDir.map((entry, index) => {
       return (
-        <div className="flex">
+        <div className="flex" key={`${entry}-${index}`}>
           <div className="bg-indigo-100 text-indigo-800 flex p-2 block w-11/12">
             {untrackedDir[index]}
             {untrackedFile[index]}
@@ -168,7 +171,13 @@ export default function GitTrackedComponent(props) {
           </div>
         );
       case GIT_DIFFERENCE:
-        return <GitDiffViewComponent></GitDiffViewComponent>;
+        return memoizedGitDiffView;
+      case GIT_OPERATIONS:
+        return <div>Git Operations</div>;
+      default:
+        return (
+          <div className="text-xl text-center">Invalid Menu Selector!</div>
+        );
     }
   }
 
@@ -188,6 +197,7 @@ export default function GitTrackedComponent(props) {
             return (
               <div
                 className={`w-full py-3 px-1 text-center border-r border-blue-400 hover:bg-blue-200 hover:text-blue-900 ${styleSelector}`}
+                key={item}
                 onClick={(event) => {
                   setTopMenuItemState(item);
                 }}

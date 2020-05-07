@@ -1,16 +1,15 @@
 import axios from "axios";
+import Prism from "prismjs";
 import React, { useContext, useEffect, useState } from "react";
 import { GIT_TRACKED_FILES } from "../../../actionStore";
-import { getAPIURL } from "../../../apiURLSupplier";
 import { ContextProvider } from "../../../context";
 import {
-  API_GITDIFF,
-  API_GITDIFFSTAT,
-  CONFIG_HTTP_MODE,
-  PORT_GITDIFFSTAT_API,
-  PORT_GITDIFF_API,
+  globalAPIEndpoint,
+  ROUTE_REPO_FILE_DIFF,
+  ROUTE_REPO_TRACKED_DIFF,
 } from "../../../env_config";
-import Prism from "prismjs";
+
+import { v4 as uuidv4 } from "uuid";
 
 export default function GitDiffViewComponent() {
   const { state, dispatch } = useContext(ContextProvider);
@@ -27,8 +26,10 @@ export default function GitDiffViewComponent() {
     setActiveFileName("");
     setFileLineDiffState("Click on a file item to see the difference");
     setDiffStatState("Click on a file item to see the difference");
-    let apiEndPoint = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GITDIFF_API}/${API_GITDIFF}`;
+    let apiEndPoint = globalAPIEndpoint;
     if (repoId) {
+      const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
+
       axios({
         url: apiEndPoint,
         method: "POST",
@@ -37,22 +38,23 @@ export default function GitDiffViewComponent() {
         },
         data: {
           query: `
-              query GitDiffQuery{
-                  gitDiffQuery(repoId: "${repoId}")
-                  {
-                      gitChangedFiles
-                  }
+            query GitConvexApi{
+              gitConvexApi(route: "${ROUTE_REPO_TRACKED_DIFF}", payload:${payload})
+              {
+                gitChanges{
+                  gitChangedFiles
+                }
               }
+            }
           `,
         },
       })
         .then((res) => {
           if (res) {
-            var apiData = res.data.data.gitDiffQuery;
+            var apiData = res.data.data.gitConvexApi.gitChanges;
             const { gitChangedFiles } = apiData;
             setChangedFiles([...gitChangedFiles]);
             dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
-            console.log(res);
           }
         })
         .catch((err) => {
@@ -77,20 +79,23 @@ export default function GitDiffViewComponent() {
                   setActiveFileName(fileEntry);
                   fileDiffStatComponent(repoId, fileEntry);
                 }}
+                key={fileEntry}
               >
                 {fileEntry}
               </div>
             );
+          } else {
+            return null;
           }
         })}
       </>
     );
   }
   function fileDiffStatComponent(repoId, fileName) {
-    const apiEndPoint = getAPIURL(
-      CONFIG_HTTP_MODE,
-      API_GITDIFFSTAT,
-      PORT_GITDIFFSTAT_API
+    const apiEndPoint = globalAPIEndpoint;
+
+    const payload = JSON.stringify(
+      JSON.stringify({ repoId: repoId, fileName: fileName })
     );
 
     axios({
@@ -100,12 +105,24 @@ export default function GitDiffViewComponent() {
         "Content-type": "application/json",
       },
       data: {
-        repoId,
-        fileName,
+        query: `
+          query GitConvexApi{
+            gitConvexApi(route: "${ROUTE_REPO_FILE_DIFF}", payload:${payload})
+            {
+              gitFileLineChanges{
+                diffStat
+                fileDiff
+              }
+            }
+          }
+        `,
       },
     })
       .then((res) => {
-        const { diffStat, fileDiff } = res.data.differencePayload;
+        const {
+          diffStat,
+          fileDiff,
+        } = res.data.data.gitConvexApi.gitFileLineChanges;
 
         setDiffStatState(diffStat[1]);
         setFileLineDiffState(fileDiff);
@@ -125,7 +142,7 @@ export default function GitDiffViewComponent() {
           {splitStat.slice(1, splitStat.length).map((parts) => {
             if (parts.match(/insert/i)) {
               return (
-                <span>
+                <span key={`${parts}-${new Date().getTime()}`}>
                   <span className="px-2">{parts.toString().split(" ")[1]}</span>
                   <span className="text-green-700 font-sans font-semibold">
                     {" "}
@@ -135,7 +152,7 @@ export default function GitDiffViewComponent() {
               );
             } else {
               return (
-                <span>
+                <span key={`${parts}-${new Date().getTime()}`}>
                   <span className="px-2">{parts.toString().split(" ")[1]}</span>
                   <span className="text-red-700 font-sans font-semibold">
                     {" "}
@@ -151,66 +168,67 @@ export default function GitDiffViewComponent() {
   }
 
   function fileLineDiffComponent() {
-    let partFile = fileLineDiffState
-      .join("|HASH_SEPARATOR_2020|")
-      .split(
-        /@@\s[-|+][0-9]+[,|\s]+[0-9]+\s[+|-|\s]+[0-9]+[,|\s]+[0-9]+\s+@*/gi
-      )[1]
-      .split("|HASH_SEPARATOR_2020|");
+    let splitLines = [];
+    if (fileLineDiffState) {
+      let partFile = fileLineDiffState
+        .join("|__HASH_SEPARATOR__|")
+        .split(/@@.*@@/gi)[1]
+        .split("|__HASH_SEPARATOR__|");
 
-    let splitLines = partFile.map((line) => {
-      if (line[0] === "+") {
-        return (
-          <div className="bg-green-200">
-            <pre>
-              <code
-                dangerouslySetInnerHTML={{
-                  __html: Prism.highlight(
-                    line.replace("+", ""),
-                    Prism.languages.javascript,
-                    "javascript"
-                  ),
-                }}
-              ></code>
-            </pre>
-          </div>
-        );
-      } else if (line[0] === "-") {
-        return (
-          <div className="bg-red-200">
-            <pre>
+      splitLines = partFile.map((line) => {
+        if (line[0] === "+") {
+          return (
+            <div className="bg-green-200 w-screen" key={`${line}-${uuidv4()}`}>
               <pre>
                 <code
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
-                      line.replace("-", ""),
+                      line.replace("+", ""),
                       Prism.languages.javascript,
                       "javascript"
                     ),
                   }}
                 ></code>
               </pre>
-            </pre>
-          </div>
-        );
-      } else {
-        return (
-          <div className="bg-white-200">
-            <pre>
-              <code
-                dangerouslySetInnerHTML={{
-                  __html: Prism.highlight(
-                    line,
-                    Prism.languages.javascript,
-                    "javascript"
-                  ),
-                }}
-              ></code>
-            </pre>
-          </div>
-        );
-      }
-    });
+            </div>
+          );
+        } else if (line[0] === "-") {
+          return (
+            <div className="bg-red-200 w-screen" key={`${line}-${uuidv4()}`}>
+              <pre>
+                <pre>
+                  <code
+                    dangerouslySetInnerHTML={{
+                      __html: Prism.highlight(
+                        line.replace("-", ""),
+                        Prism.languages.javascript,
+                        "javascript"
+                      ),
+                    }}
+                  ></code>
+                </pre>
+              </pre>
+            </div>
+          );
+        } else {
+          return (
+            <div className="bg-white-200 w-screen" key={`${line}-${uuidv4()}`}>
+              <pre>
+                <code
+                  dangerouslySetInnerHTML={{
+                    __html: Prism.highlight(
+                      line,
+                      Prism.languages.javascript,
+                      "javascript"
+                    ),
+                  }}
+                ></code>
+              </pre>
+            </div>
+          );
+        }
+      });
+    }
 
     return <div className="break-all my-6 mx-auto">{splitLines}</div>;
   }
