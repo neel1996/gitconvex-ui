@@ -3,13 +3,14 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { GIT_TRACKED_FILES } from "../../../actionStore";
+import { GIT_TRACKED_FILES, GIT_ACTION_TRACKED_FILES, GIT_ACTION_UNTRACKED_FILES } from "../../../actionStore";
 import { ContextProvider } from "../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_TRACKED_DIFF,
 } from "../../../env_config";
 import GitDiffViewComponent from "./GitDiffViewComponent";
+import GitOperationComponent from "./GitOperationComponent";
 
 export default function GitTrackedComponent(props) {
   library.add(fab);
@@ -19,16 +20,24 @@ export default function GitTrackedComponent(props) {
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
   const [noChangeMarker, setNoChangeMarker] = useState(false);
 
-  const { dispatch } = useContext(ContextProvider);
+  const { state, dispatch } = useContext(ContextProvider);
 
   const memoizedGitDiffView = useMemo(() => {
     return <GitDiffViewComponent></GitDiffViewComponent>;
   }, []);
 
+  const memoizedGitOperationView = useMemo(() => {
+    return <GitOperationComponent></GitOperationComponent>
+  })
+
   useEffect(() => {
     let apiEndPoint = globalAPIEndpoint;
 
-    const payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
+    const payload = JSON.stringify(
+      JSON.stringify({
+        repoId: props.repoId,
+      })
+    );
 
     axios({
       url: apiEndPoint,
@@ -55,12 +64,28 @@ export default function GitTrackedComponent(props) {
           var apiData = res.data.data.gitConvexApi.gitChanges;
           const { gitChangedFiles, gitUntrackedFiles } = apiData;
 
-          if (gitChangedFiles && gitChangedFiles.length > 0) {
+          console.log(apiData)
+
+          if ((gitChangedFiles || gitUntrackedFiles) && (gitChangedFiles.length > 0 || gitUntrackedFiles.length > 0)) {
             setGitDiffFilesState([...gitChangedFiles]);
             setGitUntrackedFilesState([...gitUntrackedFiles]);
             setNoChangeMarker(false);
 
-            dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
+            dispatch({
+              type: GIT_TRACKED_FILES,
+              payload: gitChangedFiles,
+            });
+
+            dispatch({
+              type: GIT_ACTION_TRACKED_FILES,
+              payload: gitChangedFiles
+            })
+
+            dispatch({
+              type: GIT_ACTION_UNTRACKED_FILES,
+              payload: gitUntrackedFiles
+            })
+
           } else {
             setNoChangeMarker(true);
           }
@@ -86,7 +111,7 @@ export default function GitTrackedComponent(props) {
             styleSelector += "text-yellow-900 bg-yellow-200";
             modifiedArtifacts.push(
               <div className="flex mx-auto justify-between" key={name}>
-                <div className={`${styleSelector} w-11/12`}>{name}</div>
+                <div className={`${styleSelector} w-11/12`}> {name} </div>
                 <div className="rounded-lg shadow-sm border border-gray-300 p-2 text-center w-1/6">
                   Modified
                 </div>
@@ -97,7 +122,7 @@ export default function GitTrackedComponent(props) {
             styleSelector += "text-red-900 bg-red-200";
             deletedArtifacts.push(
               <div className="flex mx-auto justify-between" key={name}>
-                <div className={`${styleSelector} w-11/12`}>{name}</div>
+                <div className={`${styleSelector} w-11/12`}> {name} </div>
                 <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6">
                   Deleted
                 </div>
@@ -112,8 +137,8 @@ export default function GitTrackedComponent(props) {
 
       return (
         <>
-          {modifiedArtifacts}
-          {deletedArtifacts}
+
+          {modifiedArtifacts} {deletedArtifacts}
         </>
       );
     }
@@ -129,10 +154,11 @@ export default function GitTrackedComponent(props) {
       if (splitEntry) {
         untrackedDir.push(
           <div className="font-sans font-semibold">
+
             {splitEntry[0] !== "NO_DIR" ? splitEntry[0] : "./"}
           </div>
         );
-        untrackedFile.push(<div className="font-sans">{splitEntry[1]}</div>);
+        untrackedFile.push(<div className="font-sans"> {splitEntry[1]} </div>);
       }
     });
 
@@ -140,8 +166,8 @@ export default function GitTrackedComponent(props) {
       return (
         <div className="flex" key={`${entry}-${index}`}>
           <div className="bg-indigo-100 text-indigo-800 flex p-2 block w-11/12">
-            {untrackedDir[index]}
-            {untrackedFile[index]}
+
+            {untrackedDir[index]} {untrackedFile[index]}
           </div>
           <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 text-sm">
             New / Untracked
@@ -160,23 +186,24 @@ export default function GitTrackedComponent(props) {
       case FILE_VIEW:
         return (
           <div className="shadow-sm rounded-sm my-2 block justify-center mx-auto border border-gray-300">
+
             {gitDiffFilesState ? (
               diffPane()
             ) : (
-              <div className="rounded-lg shadow-md text-center p-4 font-sans">
-                Getting file based status...
-              </div>
-            )}
+                <div className="rounded-lg shadow-md text-center p-4 font-sans">
+                  Getting file based status...
+                </div>
+              )}
             {gitUntrackedFilesState ? untrackedPane() : null}
           </div>
         );
       case GIT_DIFFERENCE:
         return memoizedGitDiffView;
       case GIT_OPERATIONS:
-        return <div>Git Operations</div>;
+        return memoizedGitOperationView;
       default:
         return (
-          <div className="text-xl text-center">Invalid Menu Selector!</div>
+          <div className="text-xl text-center"> Invalid Menu Selector! </div>
         );
     }
   }
@@ -185,6 +212,7 @@ export default function GitTrackedComponent(props) {
     return (
       <>
         <div className="flex my-4 mx-auto w-11/12 justify-around font-sans font-semibold rounded-sm shadow-md cursor-pointer">
+
           {topMenuItems.map((item) => {
             let styleSelector =
               "w-full py-3 px-1 text-center border-r border-blue-400 ";
@@ -207,13 +235,14 @@ export default function GitTrackedComponent(props) {
             );
           })}
         </div>
-        <div className="w-11/12 block mx-auto my-6">{menuComponent()}</div>
+        <div className="w-11/12 block mx-auto my-6"> {menuComponent()} </div>
       </>
     );
   }
 
   return (
     <>
+
       {noChangeMarker ? (
         <>
           <div className="mt-10 w-11/12 rounded-sm shadow-sm h-full my-auto bock mx-auto text-center align-middle p-6 bg-pink-200 text-xl text-pink-600">
@@ -232,8 +261,8 @@ export default function GitTrackedComponent(props) {
           </div>
         </>
       ) : (
-        presentChangeComponent()
-      )}
+          presentChangeComponent()
+        )}
     </>
   );
 }

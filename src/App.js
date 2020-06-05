@@ -12,7 +12,9 @@ export default function App() {
     hcParams: {},
     presentRepo: [],
     modifiedGitFiles: [],
-    globalRepoId: ""
+    globalRepoId: "",
+    gitUntrackedFiles: [],
+    gitTrackedFiles: []
   };
   const [state, dispatch] = useReducer(reducer, initialState);
 

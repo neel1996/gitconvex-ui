@@ -138,7 +138,7 @@ export default function RepositoryDetails(props) {
                 <tr>
                   <td className="text-xl text-gray-600">Remote Host</td>
                   <td>
-                    <div className="p-1 rounded-md border-2 shadow-md text-center w-1/2 border-gray-200">
+                    <div className="p-1 rounded-md border-2 shadow-md text-center w-full border-gray-200">
                       <span className="p-3">{remoteLogo}</span>
                       <span className="text-center text-lg">
                         {gitRemoteHost}
@@ -192,8 +192,8 @@ export default function RepositoryDetails(props) {
                           {entry}
                         </div>
                       ) : (
-                        <div key="entry-key">{entry}</div>
-                      );
+                          <div key="entry-key">{entry}</div>
+                        );
                     })}
                   </td>
                 </tr>
@@ -212,7 +212,8 @@ export default function RepositoryDetails(props) {
   };
 
   const gitTrackedFileComponent = () => {
-    if (gitRepoStatus.gitTrackedFiles && gitTrackedFiles) {
+    console.log(gitTrackedFiles)
+    if (gitTrackedFiles && gitTrackedFiles.length > 0 && gitTrackedFiles[0] !== "NO_TRACKED_FILES") {
       var formattedFiles = [];
       var directoryEntry = [];
       var fileEntry = [];
@@ -239,11 +240,11 @@ export default function RepositoryDetails(props) {
                   <div className="p-2 bg-green-200 text-green-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
                       ? gitFileBasedCommit[index]
-                          .split(" ")
-                          .filter((entry, index) => {
-                            return index !== 0 ? entry : null;
-                          })
-                          .join(" ")
+                        .split(" ")
+                        .filter((entry, index) => {
+                          return index !== 0 ? entry : null;
+                        })
+                        .join(" ")
                       : null}
                   </div>
                 </td>
@@ -269,11 +270,11 @@ export default function RepositoryDetails(props) {
                   <div className="p-2 bg-indigo-200 text-indigo-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
                       ? gitFileBasedCommit[index]
-                          .split(" ")
-                          .filter((entry, index) => {
-                            return index !== 0 ? entry : null;
-                          })
-                          .join(" ")
+                        .split(" ")
+                        .filter((entry, index) => {
+                          return index !== 0 ? entry : null;
+                        })
+                        .join(" ")
                       : null}
                   </div>
                 </td>
@@ -303,7 +304,15 @@ export default function RepositoryDetails(props) {
           </table>
         </div>
       );
-    } else {
+    }
+    else if (gitTrackedFiles && gitTrackedFiles[0] === "NO_TRACKED_FILES") {
+      return (
+        <div className="bg-gray-400 rounded-lg text-black text-2xl text-center">
+          No Tracked Files in the repo!
+        </div>
+      );
+    }
+    else {
       return (
         <div className="bg-gray-400 rounded-lg text-black text-2xl text-center">
           Loading tracked files...
@@ -329,10 +338,10 @@ export default function RepositoryDetails(props) {
           </div>
         </>
       ) : (
-        <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
-          Fetching repo details...
-        </div>
-      )}
+          <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
+            Fetching repo details...
+          </div>
+        )}
       {repoFetchFailed ? (
         <div className="p-2 text-center mx-auto rounded-lg bg-red-200 text-xl">
           Repo details fetch failed!

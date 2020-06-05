@@ -5,6 +5,7 @@ import { PRESENT_REPO } from "../../actionStore";
 import { ContextProvider } from "../../context";
 import { globalAPIEndpoint, ROUTE_FETCH_REPO } from "../../env_config";
 import AddRepoFormComponent from "./AddRepoForm";
+import RepoCard from "./RepoCard";
 
 export default function RepoComponent(props) {
   const [repo, setRepo] = useState([]);
@@ -60,35 +61,8 @@ export default function RepoComponent(props) {
         <div className="w-full mx-auto justify-around flex flex-wrap">
           <>
             {repoArray.map((entry) => {
-              const repoName = entry.repoName;
-              var avatar = "";
-
-              if (repoName) {
-                if (repoName.split(" ").length > 1) {
-                  let tempName = repoName.split(" ");
-                  avatar =
-                    tempName[0].substring(0, 1) + tempName[1].substring(0, 1);
-                  avatar = avatar.toUpperCase();
-                } else {
-                  avatar = repoName.substring(0, 1).toUpperCase();
-                }
-              }
-
               return (
-                <NavLink
-                  to={`/dashboard/repository/${entry.id}`}
-                  className="w-1/4 block p-6 mx-6 rounded-lg border border-gray-300 shadow-md my-6 text-center bg-blue-100 cursor-pointer hover:shadow-xl"
-                  key={entry.repoName}
-                >
-                  <div>
-                    <div className="text-center bg-blue-600 text-white text-5xl my-2 px-10 py-5">
-                      {avatar}
-                    </div>
-                    <div className="my-4 font-sans text-2xl">
-                      {entry.repoName}
-                    </div>
-                  </div>
-                </NavLink>
+                <RepoCard repoData={entry}></RepoCard>
               );
             })}
           </>
@@ -119,8 +93,8 @@ export default function RepoComponent(props) {
       {!repoFormEnable ? (
         showAvailableRepo()
       ) : (
-        <AddRepoFormComponent formEnable={addFormRemove}></AddRepoFormComponent>
-      )}
+          <AddRepoFormComponent formEnable={addFormRemove}></AddRepoFormComponent>
+        )}
     </div>
   );
 }
