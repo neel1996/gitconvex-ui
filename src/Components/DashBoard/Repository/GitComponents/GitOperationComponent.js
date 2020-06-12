@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { MUIDataTable } from 'mui-datatables'
 // import { Table } from '@material-ui/core'
 
-import { ContextProvider } from '../../../context'
+import { ContextProvider } from '../../../../context'
 
 export default function GitOperationComponent() {
 
@@ -31,13 +31,12 @@ export default function GitOperationComponent() {
         }
 
         let actionButton = <div className="p-2  bg-green-300 text-white rounded-md shadow-sm hover:shadow-md">Add</div>
-        console.log(gitTrackedFiles)
-        console.log(gitUntrackedFiles)
 
         gitTrackedFiles.forEach((item) => {
             console.log(item[0])
             if (item[0].split(",").length > 0) {
-                tableDataArray.push([item[0].split(",")[1], statusPill(item[0].split(",")[0]), actionButton])
+                const trackedItem = item[0].split(",")[1]
+                tableDataArray.push([trackedItem, statusPill(item[0].split(",")[0]), actionButton])
             }
         })
 

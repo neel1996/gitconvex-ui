@@ -1,10 +1,10 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Route } from "react-router-dom";
 import { ContextProvider } from "../../context";
-import LeftPane from "./LeftPane";
-import RepositoryDetails from "./Repository/RepositoryDetails";
-import RepositoryAction from "./Repository/RepositoryAction";
-import RightPane from "./RightPane";
+import LeftPane from "./DashboardPaneComponents/LeftPane";
+import RightPane from "./DashboardPaneComponents/RightPane";
+import RepositoryAction from "./Repository/RepoComponents/RepositoryAction";
+import RepositoryDetails from "./Repository/RepoComponents/RepositoryDetails";
 
 export default function Dashboard(props) {
   const { state } = useContext(ContextProvider);

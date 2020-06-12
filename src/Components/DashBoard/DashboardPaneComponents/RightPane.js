@@ -1,5 +1,5 @@
 import React from "react";
-import FetchRepoComponent from "./FetchRepoComponent";
+import FetchRepoComponent from "../Repository/RepoComponents/RepoComponent";
 
 export default function RightPane(props) {
   const { platform, gitVersion, nodeVersion } = props.params;

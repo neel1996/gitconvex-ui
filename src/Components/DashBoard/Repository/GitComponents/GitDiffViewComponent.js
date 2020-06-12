@@ -1,13 +1,13 @@
 import axios from "axios";
 import Prism from "prismjs";
 import React, { useContext, useEffect, useState } from "react";
-import { GIT_TRACKED_FILES } from "../../../actionStore";
-import { ContextProvider } from "../../../context";
+import { GIT_TRACKED_FILES } from "../../../../actionStore";
+import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_FILE_DIFF,
   ROUTE_REPO_TRACKED_DIFF,
-} from "../../../env_config";
+} from "../../../../util/env_config";
 
 import { v4 as uuidv4 } from "uuid";
 

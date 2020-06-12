@@ -3,12 +3,12 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { GIT_TRACKED_FILES, GIT_ACTION_TRACKED_FILES, GIT_ACTION_UNTRACKED_FILES } from "../../../actionStore";
-import { ContextProvider } from "../../../context";
+import { GIT_TRACKED_FILES, GIT_ACTION_TRACKED_FILES, GIT_ACTION_UNTRACKED_FILES } from "../../../../actionStore";
+import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_TRACKED_DIFF,
-} from "../../../env_config";
+} from "../../../../util/env_config";
 import GitDiffViewComponent from "./GitDiffViewComponent";
 import GitOperationComponent from "./GitOperationComponent";
 

@@ -4,14 +4,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Redirect } from "react-router";
-import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../actionStore";
-import { ContextProvider } from "../../../context";
-import {
-  globalAPIEndpoint,
-  ROUTE_FETCH_REPO,
-  ROUTE_REPO_DETAILS,
-} from "../../../env_config";
-import GitTrackedComponent from "./GitTrackedComponent";
+import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../../actionStore";
+import { ContextProvider } from "../../../../context";
+import { globalAPIEndpoint, ROUTE_FETCH_REPO, ROUTE_REPO_DETAILS } from "../../../../util/env_config";
+import GitTrackedComponent from "../GitComponents/GitTrackedComponent";
 
 export default function RepositoryAction() {
   library.add(fas);

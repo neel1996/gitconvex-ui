@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useRef, useState } from "react";
-import { globalAPIEndpoint, ROUTE_ADD_REPO } from "../../env_config";
+import { globalAPIEndpoint, ROUTE_ADD_REPO } from "../../../../util/env_config";
 
 export default function AddRepoForm(props) {
   const [repoNameState, setRepoName] = useState("");

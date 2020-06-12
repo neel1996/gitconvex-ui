@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { HC_PARAM_ACTION } from "../actionStore";
 import { ContextProvider } from "../context";
-import { globalAPIEndpoint } from "../env_config";
+import { globalAPIEndpoint } from "../util/env_config";
 import "./SplashScreen.css";
 
 export default function SplashScreen(props) {

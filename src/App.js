@@ -14,7 +14,7 @@ export default function App() {
     modifiedGitFiles: [],
     globalRepoId: "",
     gitUntrackedFiles: [],
-    gitTrackedFiles: []
+    gitTrackedFiles: [],
   };
   const [state, dispatch] = useReducer(reducer, initialState);
 

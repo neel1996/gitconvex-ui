@@ -1,7 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { globalAPIEndpoint, ROUTE_REPO_DETAILS } from "../../env_config";
+import { globalAPIEndpoint, ROUTE_REPO_DETAILS } from "../../../../util/env_config";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";

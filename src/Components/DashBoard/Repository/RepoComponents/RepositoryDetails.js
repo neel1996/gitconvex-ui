@@ -3,13 +3,27 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { globalAPIEndpoint, ROUTE_REPO_DETAILS } from "../../../env_config";
+import React, { useEffect, useState, useMemo } from "react";
+import {
+  globalAPIEndpoint,
+  ROUTE_REPO_DETAILS,
+} from "../../../../util/env_config";
+import RepositoryCommitLogComponent from "./RepositoryCommitLogComponent";
 
 export default function RepositoryDetails(props) {
   library.add(fab, fas);
   const [gitRepoStatus, setGitRepoStatus] = useState({});
   const [repoFetchFailed, setRepoFetchFailed] = useState(false);
+  const [repoIdState, setRepoIdState] = useState("");
+  const [showCommitLogs, setShowCommitLogs] = useState(false);
+
+  const memoizedCommitLogComponent = useMemo(() => {
+    return (
+      <RepositoryCommitLogComponent
+        repoId={repoIdState}
+      ></RepositoryCommitLogComponent>
+    );
+  });
 
   useEffect(() => {
     const endpointURL = globalAPIEndpoint;
@@ -18,6 +32,8 @@ export default function RepositoryDetails(props) {
       const repoId = props.parentProps.location.pathname.split(
         "/repository/"
       )[1];
+
+      setRepoIdState(repoId);
 
       const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
 
@@ -132,6 +148,25 @@ export default function RepositoryDetails(props) {
 
       return (
         <>
+          {showCommitLogs ? (
+            <>
+              <div
+                className="fixed w-screen left-0 top-0 right-0 bottom-0 overflow-auto p-6"
+                style={{ background: "rgba(0,0,0,0.5)" }}
+              >
+                <div
+                  className="float-right text-4xl font-sans pl-2 pr-2 p-1 cursor-pointer rounded-lg shadow-sm bg-red-500"
+                  onClick={() => {
+                    setShowCommitLogs(false);
+                  }}
+                >
+                  X
+                </div>
+                {memoizedCommitLogComponent}
+              </div>
+            </>
+          ) : null}
+
           <div className="block rounded-md shadow-sm border-2 border-dotted border-gray-400 p-6 my-6 mx-3">
             <table className="table-auto" cellSpacing="10" cellPadding="20">
               <tbody>
@@ -154,6 +189,21 @@ export default function RepositoryDetails(props) {
                     <span className="text-blue-400 hover:text-blue-500 cursor-pointer">
                       {gitRemoteData}
                     </span>
+                  </td>
+                </tr>
+              </tbody>
+              <tbody>
+                <tr>
+                  <td className="text-xl text-gray-600">Commit Logs</td>
+                  <td>
+                    <div
+                      className="rounded-md shadow-md p-3 text-center bg-orange-300 cursor-pointer"
+                      onClick={(event) => {
+                        setShowCommitLogs(true);
+                      }}
+                    >
+                      Show Commit Logs
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -192,8 +242,8 @@ export default function RepositoryDetails(props) {
                           {entry}
                         </div>
                       ) : (
-                          <div key="entry-key">{entry}</div>
-                        );
+                        <div key="entry-key">{entry}</div>
+                      );
                     })}
                   </td>
                 </tr>
@@ -212,8 +262,11 @@ export default function RepositoryDetails(props) {
   };
 
   const gitTrackedFileComponent = () => {
-    console.log(gitTrackedFiles)
-    if (gitTrackedFiles && gitTrackedFiles.length > 0 && gitTrackedFiles[0] !== "NO_TRACKED_FILES") {
+    if (
+      gitTrackedFiles &&
+      gitTrackedFiles.length > 0 &&
+      gitTrackedFiles[0] !== "NO_TRACKED_FILES"
+    ) {
       var formattedFiles = [];
       var directoryEntry = [];
       var fileEntry = [];
@@ -240,11 +293,11 @@ export default function RepositoryDetails(props) {
                   <div className="p-2 bg-green-200 text-green-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
                       ? gitFileBasedCommit[index]
-                        .split(" ")
-                        .filter((entry, index) => {
-                          return index !== 0 ? entry : null;
-                        })
-                        .join(" ")
+                          .split(" ")
+                          .filter((entry, index) => {
+                            return index !== 0 ? entry : null;
+                          })
+                          .join(" ")
                       : null}
                   </div>
                 </td>
@@ -270,11 +323,11 @@ export default function RepositoryDetails(props) {
                   <div className="p-2 bg-indigo-200 text-indigo-900 rounded-lg text-left mx-auto w-3/5">
                     {gitFileBasedCommit[index]
                       ? gitFileBasedCommit[index]
-                        .split(" ")
-                        .filter((entry, index) => {
-                          return index !== 0 ? entry : null;
-                        })
-                        .join(" ")
+                          .split(" ")
+                          .filter((entry, index) => {
+                            return index !== 0 ? entry : null;
+                          })
+                          .join(" ")
                       : null}
                   </div>
                 </td>
@@ -304,15 +357,13 @@ export default function RepositoryDetails(props) {
           </table>
         </div>
       );
-    }
-    else if (gitTrackedFiles && gitTrackedFiles[0] === "NO_TRACKED_FILES") {
+    } else if (gitTrackedFiles && gitTrackedFiles[0] === "NO_TRACKED_FILES") {
       return (
         <div className="bg-gray-400 rounded-lg text-black text-2xl text-center">
           No Tracked Files in the repo!
         </div>
       );
-    }
-    else {
+    } else {
       return (
         <div className="bg-gray-400 rounded-lg text-black text-2xl text-center">
           Loading tracked files...
@@ -338,10 +389,10 @@ export default function RepositoryDetails(props) {
           </div>
         </>
       ) : (
-          <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
-            Fetching repo details...
-          </div>
-        )}
+        <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
+          Fetching repo details...
+        </div>
+      )}
       {repoFetchFailed ? (
         <div className="p-2 text-center mx-auto rounded-lg bg-red-200 text-xl">
           Repo details fetch failed!

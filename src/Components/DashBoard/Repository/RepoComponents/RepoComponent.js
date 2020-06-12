@@ -1,9 +1,8 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import { PRESENT_REPO } from "../../actionStore";
-import { ContextProvider } from "../../context";
-import { globalAPIEndpoint, ROUTE_FETCH_REPO } from "../../env_config";
+import { PRESENT_REPO } from "../../../../actionStore";
+import { ContextProvider } from "../../../../context";
+import { globalAPIEndpoint, ROUTE_FETCH_REPO } from "../../../../util/env_config";
 import AddRepoFormComponent from "./AddRepoForm";
 import RepoCard from "./RepoCard";
 
@@ -61,9 +60,7 @@ export default function RepoComponent(props) {
         <div className="w-full mx-auto justify-around flex flex-wrap">
           <>
             {repoArray.map((entry) => {
-              return (
-                <RepoCard repoData={entry}></RepoCard>
-              );
+              return <RepoCard repoData={entry}></RepoCard>;
             })}
           </>
         </div>
@@ -93,8 +90,8 @@ export default function RepoComponent(props) {
       {!repoFormEnable ? (
         showAvailableRepo()
       ) : (
-          <AddRepoFormComponent formEnable={addFormRemove}></AddRepoFormComponent>
-        )}
+        <AddRepoFormComponent formEnable={addFormRemove}></AddRepoFormComponent>
+      )}
     </div>
   );
 }
