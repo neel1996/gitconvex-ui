@@ -66,7 +66,10 @@ export default function RepositoryCommitLogComponent(props) {
         commitLogs.map((commit) => {
           const { hash, author, commitTime, commitMessage } = commit;
           return (
-            <div className="p-3 rounded-md shadow-sm block justify-center mx-auto my-4 bg-white w-3/4">
+            <div
+              className="p-3 pb-6 rounded-md shadow-sm block justify-center mx-auto my-4 bg-white w-full border-b-4 border-blue-400"
+              key={hash}
+            >
               <div className="p-2 text-2xl font-sans text-left">
                 <FontAwesomeIcon
                   icon={["fas", "calendar-alt"]}

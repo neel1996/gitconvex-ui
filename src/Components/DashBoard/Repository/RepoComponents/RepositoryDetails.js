@@ -152,17 +152,26 @@ export default function RepositoryDetails(props) {
             <>
               <div
                 className="fixed w-screen left-0 top-0 right-0 bottom-0 overflow-auto p-6"
-                style={{ background: "rgba(0,0,0,0.5)" }}
+                id="commit-log__backdrop"
+                style={{ background: "rgba(0,0,0,0.5)", zIndex: 99 }}
+                onClick={(event) => {
+                  if (event.target.id === "commit-log__backdrop") {
+                    setShowCommitLogs(false);
+                  }
+                  console.log("Press");
+                }}
               >
                 <div
-                  className="float-right text-4xl font-sans pl-2 pr-2 p-1 cursor-pointer rounded-lg shadow-sm bg-red-500"
+                  className="float-right text-2xl font-sans pl-2 pr-2 p-1 cursor-pointer rounded-lg shadow-sm bg-red-500"
                   onClick={() => {
                     setShowCommitLogs(false);
                   }}
                 >
                   X
                 </div>
-                {memoizedCommitLogComponent}
+                <div id="commit-log__cards" className="w-3/4 block mx-auto">
+                  {memoizedCommitLogComponent}
+                </div>
               </div>
             </>
           ) : null}
@@ -276,7 +285,7 @@ export default function RepositoryDetails(props) {
 
         if (splitEntry[1].includes("directory")) {
           directoryEntry.push(
-            <tbody>
+            <tbody key={`dir-entry-${index}`}>
               <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
                 <td>
                   <FontAwesomeIcon
@@ -306,7 +315,7 @@ export default function RepositoryDetails(props) {
           );
         } else {
           fileEntry.push(
-            <tbody>
+            <tbody key={`file-entry-${index}`}>
               <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
                 <td>
                   <FontAwesomeIcon

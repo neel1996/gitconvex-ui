@@ -28,7 +28,10 @@ export default function RightPane(props) {
               <div key={entry.label}>
                 <span className="rightpane-details__header">{entry.label}</span>
                 {entry.value !== "" ? (
-                  <span className="bg-green-200 border-green-800 text-green-900 p-2 rounded-lg">
+                  <span
+                    className="bg-green-200 border-green-800 text-green-900 p-2 rounded-lg hc-param"
+                    id={`hc-param__${entry.label}`}
+                  >
                     {entry.value}
                   </span>
                 ) : (
