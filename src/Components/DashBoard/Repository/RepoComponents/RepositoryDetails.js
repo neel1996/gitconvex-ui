@@ -67,7 +67,11 @@ export default function RepositoryDetails(props) {
         },
       })
         .then((res) => {
-          setGitRepoStatus(res.data.data.gitConvexApi.gitRepoStatus);
+          if (res.data && res.data.data && !res.data.error) {
+            setGitRepoStatus(res.data.data.gitConvexApi.gitRepoStatus);
+          } else {
+            setRepoFetchFailed(true);
+          }
         })
         .catch((err) => {
           if (err) {
@@ -242,18 +246,19 @@ export default function RepositoryDetails(props) {
                     Available Branches
                   </td>
                   <td>
-                    {gitBranchList.map((entry) => {
-                      return entry === gitCurrentBranch ? (
-                        <div
-                          className="text-lg text-bold text-gray-800"
-                          key={entry}
-                        >
-                          {entry}
-                        </div>
-                      ) : (
-                        <div key="entry-key">{entry}</div>
-                      );
-                    })}
+                    {gitBranchList &&
+                      gitBranchList.map((entry) => {
+                        return entry === gitCurrentBranch ? (
+                          <div
+                            className="text-lg text-bold text-gray-800"
+                            key={entry}
+                          >
+                            {entry}
+                          </div>
+                        ) : (
+                          <div key="entry-key">{entry}</div>
+                        );
+                      })}
                   </td>
                 </tr>
               </tbody>

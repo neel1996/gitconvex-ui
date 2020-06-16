@@ -3,14 +3,18 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { GIT_TRACKED_FILES, GIT_ACTION_TRACKED_FILES, GIT_ACTION_UNTRACKED_FILES } from "../../../../actionStore";
+import {
+  GIT_TRACKED_FILES,
+  GIT_ACTION_TRACKED_FILES,
+  GIT_ACTION_UNTRACKED_FILES,
+} from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_TRACKED_DIFF,
 } from "../../../../util/env_config";
 import GitDiffViewComponent from "./GitDiffViewComponent";
-import GitOperationComponent from "./GitOperationComponent";
+import GitOperationComponent from "./GitOperation/GitOperationComponent";
 
 export default function GitTrackedComponent(props) {
   library.add(fab);
@@ -27,8 +31,10 @@ export default function GitTrackedComponent(props) {
   }, []);
 
   const memoizedGitOperationView = useMemo(() => {
-    return <GitOperationComponent></GitOperationComponent>
-  })
+    return (
+      <GitOperationComponent repoId={props.repoId}></GitOperationComponent>
+    );
+  }, []);
 
   useEffect(() => {
     let apiEndPoint = globalAPIEndpoint;
@@ -64,9 +70,10 @@ export default function GitTrackedComponent(props) {
           var apiData = res.data.data.gitConvexApi.gitChanges;
           const { gitChangedFiles, gitUntrackedFiles } = apiData;
 
-          console.log(apiData)
-
-          if ((gitChangedFiles || gitUntrackedFiles) && (gitChangedFiles.length > 0 || gitUntrackedFiles.length > 0)) {
+          if (
+            (gitChangedFiles || gitUntrackedFiles) &&
+            (gitChangedFiles.length > 0 || gitUntrackedFiles.length > 0)
+          ) {
             setGitDiffFilesState([...gitChangedFiles]);
             setGitUntrackedFilesState([...gitUntrackedFiles]);
             setNoChangeMarker(false);
@@ -78,21 +85,20 @@ export default function GitTrackedComponent(props) {
 
             dispatch({
               type: GIT_ACTION_TRACKED_FILES,
-              payload: gitChangedFiles
-            })
+              payload: [...gitChangedFiles],
+            });
 
             dispatch({
               type: GIT_ACTION_UNTRACKED_FILES,
-              payload: gitUntrackedFiles
-            })
-
+              payload: [...gitUntrackedFiles],
+            });
           } else {
             setNoChangeMarker(true);
           }
         }
       })
       .catch((err) => {
-        return err;
+        setNoChangeMarker(true);
       });
   }, [props]);
 
@@ -137,7 +143,6 @@ export default function GitTrackedComponent(props) {
 
       return (
         <>
-
           {modifiedArtifacts} {deletedArtifacts}
         </>
       );
@@ -154,7 +159,6 @@ export default function GitTrackedComponent(props) {
       if (splitEntry) {
         untrackedDir.push(
           <div className="font-sans font-semibold">
-
             {splitEntry[0] !== "NO_DIR" ? splitEntry[0] : "./"}
           </div>
         );
@@ -166,7 +170,6 @@ export default function GitTrackedComponent(props) {
       return (
         <div className="flex" key={`${entry}-${index}`}>
           <div className="bg-indigo-100 text-indigo-800 flex p-2 block w-11/12">
-
             {untrackedDir[index]} {untrackedFile[index]}
           </div>
           <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 text-sm">
@@ -186,14 +189,13 @@ export default function GitTrackedComponent(props) {
       case FILE_VIEW:
         return (
           <div className="shadow-sm rounded-sm my-2 block justify-center mx-auto border border-gray-300">
-
             {gitDiffFilesState ? (
               diffPane()
             ) : (
-                <div className="rounded-lg shadow-md text-center p-4 font-sans">
-                  Getting file based status...
-                </div>
-              )}
+              <div className="rounded-lg shadow-md text-center p-4 font-sans">
+                Getting file based status...
+              </div>
+            )}
             {gitUntrackedFilesState ? untrackedPane() : null}
           </div>
         );
@@ -212,7 +214,6 @@ export default function GitTrackedComponent(props) {
     return (
       <>
         <div className="flex my-4 mx-auto w-11/12 justify-around font-sans font-semibold rounded-sm shadow-md cursor-pointer">
-
           {topMenuItems.map((item) => {
             let styleSelector =
               "w-full py-3 px-1 text-center border-r border-blue-400 ";
@@ -242,7 +243,6 @@ export default function GitTrackedComponent(props) {
 
   return (
     <>
-
       {noChangeMarker ? (
         <>
           <div className="mt-10 w-11/12 rounded-sm shadow-sm h-full my-auto bock mx-auto text-center align-middle p-6 bg-pink-200 text-xl text-pink-600">
@@ -261,8 +261,8 @@ export default function GitTrackedComponent(props) {
           </div>
         </>
       ) : (
-          presentChangeComponent()
-        )}
+        presentChangeComponent()
+      )}
     </>
   );
 }

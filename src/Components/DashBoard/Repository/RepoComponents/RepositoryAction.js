@@ -6,7 +6,11 @@ import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Redirect } from "react-router";
 import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
-import { globalAPIEndpoint, ROUTE_FETCH_REPO, ROUTE_REPO_DETAILS } from "../../../../util/env_config";
+import {
+  globalAPIEndpoint,
+  ROUTE_FETCH_REPO,
+  ROUTE_REPO_DETAILS,
+} from "../../../../util/env_config";
 import GitTrackedComponent from "../GitComponents/GitTrackedComponent";
 
 export default function RepositoryAction() {
@@ -174,7 +178,9 @@ export default function RepositoryAction() {
               <div className="mt-3 mx-3 p-3 rounded-md shadow-sm flex mx-auto justify-center border-2 border-gray-300">
                 {getTopPaneComponent(
                   "code-branch",
-                  selectedRepoDetails.gitBranchList.length + " Branches"
+                  selectedRepoDetails.gitBranchList && selectedRepoDetails.gitBranchList.length > 0
+                    ? selectedRepoDetails.gitBranchList.length
+                    : 0 + " Branches"
                 )}
                 {getTopPaneComponent(
                   "sort-amount-up",
