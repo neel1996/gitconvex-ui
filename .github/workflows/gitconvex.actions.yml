@@ -16,20 +16,10 @@ jobs:
         node-version: [14.x]
 
     steps:
+    - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: "Checking out gitconvex server repo"
-      uses: actions/checkout@master
-      with: 
-        repository: neel1996/gitconvex-server
     - run: npm install
-    - run: node server.js
-    - name: "Checking out react gitconvex repo"
-      uses: actions/checkout@v2
-      with: neel1996/gitconvex
-    - run: npm install
-    - run: npm start 
-    - run: npm test && npm build
-    
+    - run: npm test && npm build 
