@@ -70,7 +70,11 @@ export default function CommitComponent(props) {
       },
     })
       .then((res) => {
-        if (res.data.data && !res.data.error) {
+        if (
+          res.data.data &&
+          !res.data.error &&
+          res.data.data.commitChanges === "COMMIT_DONE"
+        ) {
           setCommitDone(true);
         } else {
           setCommitError(true);
