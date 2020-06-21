@@ -60,7 +60,7 @@ export default function RepoComponent(props) {
 
     return (
       <>
-        <div className="w-full mx-auto justify-around flex flex-wrap">
+        <div className="w-full mx-auto justify-around flex flex-wrap pb-40">
           <>
             {repoArray.map((entry) => {
               return <RepoCard key={entry.id} repoData={entry}></RepoCard>;
@@ -69,15 +69,15 @@ export default function RepoComponent(props) {
         </div>
         <>
           <div
-            className="my-20 rounded-lg pt-4 pl-2 pr-2 pb-8 w-1/5 mx-auto justify-center shadow-md bg-gray-100 hover:bg-gray-300 border-2 border-gray-300 border-dotted cursor-pointer"
+            className="mx-auto fixed bottom-0 rounded-t-lg mt-30 pl-2 pr-2 pb-8 w-1/2 justify-center shadow-md bg-gray-400 hover:bg-gray-300 border-2 border-gray-300 border-dotted cursor-pointer"
             onClick={() => {
               setRepoFormEnable(true);
             }}
           >
-            <div className="text-6xl font-bold text-black-800 text-center">
+            <div className="text-2xl font-bold text-gray-800 text-center">
               +
             </div>
-            <div className="text-1xl text-gray-700">Click to add a Repo</div>
+            <div className="text-xl text-gray-900">Click to add a Repo</div>
           </div>
         </>
       </>

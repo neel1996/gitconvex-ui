@@ -32,7 +32,8 @@ export default function RepoCard(props) {
                   gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
                     gitRepoStatus {
                       gitTotalCommits
-                      gitTotalTrackedFiles    
+                      gitTotalTrackedFiles  
+                      gitCurrentBranch  
                     }
                   }
                 }
@@ -62,33 +63,52 @@ export default function RepoCard(props) {
     }
   }
 
+  function avatarColorGenerator() {
+    const r = Math.round(Math.random(255) * 0);
+    const g = Math.round(Math.random(255) * 0);
+    const b = Math.round(Math.random(255) * 128);
+
+    return `rgba(${r}, ${g}, ${b}, 0.6)`;
+  }
+
   return (
     <NavLink
       to={`/dashboard/repository/${repoData.id}`}
-      className="w-1/4 block p-6 mx-6 rounded-lg border border-gray-300 shadow-md my-6 text-center bg-blue-100 cursor-pointer hover:shadow-xl"
+      className="w-11/12 xl:w-1/3 lg:w-2/3 md:w-1/2 block p-6 mx-6 rounded-lg border border-gray-300 shadow-md my-6 text-center bg-indigo-500 cursor-pointer hover:shadow-xl"
       key={repoData.repoName}
     >
-      <div className="text-center bg-blue-600 text-white text-5xl my-2 px-10 py-5">
+      <div className="text-center bg-indigo-300 text-white text-5xl my-2 px-10 py-5 rounded shadow">
         {avatar}
       </div>
-      <div className="my-4 font-sans text-2xl">{repoData.repoName}</div>
-      <div className="flex justify-center mx-auto my-2 text-center rounded-md shadow-sm">
-        <div className="flex p-2 bg-pink-200 my-2">
+      <div className="my-4 font-sans text-2xl text-white border-dashed border-b-2 pb-2 border-indigo-300">
+        {repoData.repoName}
+      </div>
+      <div className="w-full flex justify-center mx-auto my-2 text-center rounded-md shadow-sm align-middle">
+        <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-l-md my-2 items-center">
           <FontAwesomeIcon
             className="my-auto"
             icon={["fas", "grip-lines"]}
           ></FontAwesomeIcon>
-          <div className="mx-2 text-center font-sans text-center">
+          <div className="mx-2 text-sm text-center font-sans text-center">
             {repoFooterData.gitTotalCommits} Commits
           </div>
         </div>
-        <div className="flex p-2 bg-red-200 my-2">
+        <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 my-2 items-center">
           <FontAwesomeIcon
             className="my-auto"
             icon={["fas", "file-alt"]}
           ></FontAwesomeIcon>
-          <div className="mx-2 text-center font-sans text-center">
+          <div className="mx-2 text-sm text-center font-sans text-center">
             {repoFooterData.gitTotalTrackedFiles} Tracked Files
+          </div>
+        </div>
+        <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-r-md my-2 items-center">
+          <FontAwesomeIcon
+            className="my-auto"
+            icon={["fas", "code-branch"]}
+          ></FontAwesomeIcon>
+          <div className="mx-2  text-sm text-center font-sans text-center font-semibold">
+            {repoFooterData.gitCurrentBranch}
           </div>
         </div>
       </div>

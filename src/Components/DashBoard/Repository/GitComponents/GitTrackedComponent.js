@@ -28,13 +28,13 @@ export default function GitTrackedComponent(props) {
 
   const memoizedGitDiffView = useMemo(() => {
     return <GitDiffViewComponent></GitDiffViewComponent>;
-  }, []);
+  }, [props]);
 
   const memoizedGitOperationView = useMemo(() => {
     return (
       <GitOperationComponent repoId={props.repoId}></GitOperationComponent>
     );
-  }, []);
+  }, [props]);
 
   useEffect(() => {
     let apiEndPoint = globalAPIEndpoint;
@@ -187,20 +187,24 @@ export default function GitTrackedComponent(props) {
 
     switch (topMenuItemState) {
       case FILE_VIEW:
-        return (
-          <div className="shadow-sm rounded-sm my-2 block justify-center mx-auto border border-gray-300">
-            {gitDiffFilesState ? (
-              diffPane()
-            ) : (
-              <div className="rounded-lg shadow-md text-center p-4 font-sans">
-                Getting file based status...
-              </div>
-            )}
-            {gitUntrackedFilesState ? untrackedPane() : null}
-          </div>
-        );
+        if (!noChangeMarker) {
+          return (
+            <div className="shadow-sm rounded-sm my-2 block justify-center mx-auto border border-gray-300">
+              {gitDiffFilesState ? (
+                diffPane()
+              ) : (
+                <div className="rounded-lg shadow-md text-center p-4 font-sans">
+                  Getting file based status...
+                </div>
+              )}
+              {gitUntrackedFilesState ? untrackedPane() : null}
+            </div>
+          );
+        }
       case GIT_DIFFERENCE:
-        return memoizedGitDiffView;
+        if (!noChangeMarker) {
+          return memoizedGitDiffView;
+        }
       case GIT_OPERATIONS:
         return memoizedGitOperationView;
       default:
@@ -236,7 +240,7 @@ export default function GitTrackedComponent(props) {
             );
           })}
         </div>
-        <div className="w-11/12 block mx-auto my-6"> {menuComponent()} </div>
+        {/* <div className="w-11/12 block mx-auto my-6"> {menuComponent()} </div> */}
       </>
     );
   }
@@ -245,6 +249,9 @@ export default function GitTrackedComponent(props) {
     <>
       {noChangeMarker ? (
         <>
+          <div className="w-11/12 block mx-auto my-6">
+            {memoizedGitOperationView}
+          </div>
           <div className="mt-10 w-11/12 rounded-sm shadow-sm h-full my-auto bock mx-auto text-center align-middle p-6 bg-pink-200 text-xl text-pink-600">
             No changes found in the selected git repo
           </div>
@@ -261,7 +268,10 @@ export default function GitTrackedComponent(props) {
           </div>
         </>
       ) : (
-        presentChangeComponent()
+        <>
+          {presentChangeComponent()}
+          <div className="w-11/12 block mx-auto my-6"> {menuComponent()} </div>
+        </>
       )}
     </>
   );

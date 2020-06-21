@@ -16,6 +16,8 @@ export default function RepositoryDetails(props) {
   const [repoFetchFailed, setRepoFetchFailed] = useState(false);
   const [repoIdState, setRepoIdState] = useState("");
   const [showCommitLogs, setShowCommitLogs] = useState(false);
+  const [isMultiRemote, setIsMultiRemote] = useState(false);
+  const [multiRemoteCount, setMultiRemoteCount] = useState(0);
 
   const memoizedCommitLogComponent = useMemo(() => {
     return (
@@ -68,6 +70,16 @@ export default function RepositoryDetails(props) {
       })
         .then((res) => {
           if (res.data && res.data.data && !res.data.error) {
+            let gitRemoteLocal =
+              res.data.data.gitConvexApi.gitRepoStatus.gitRemoteData;
+            if (gitRemoteLocal.includes("||")) {
+              setIsMultiRemote(true);
+              res.data.data.gitConvexApi.gitRepoStatus.gitRemoteData = gitRemoteLocal.split(
+                "||"
+              )[0];
+              setIsMultiRemote(true);
+              setMultiRemoteCount(gitRemoteLocal.split("||").length);
+            }
             setGitRepoStatus(res.data.data.gitConvexApi.gitRepoStatus);
           } else {
             setRepoFetchFailed(true);
@@ -112,7 +124,7 @@ export default function RepositoryDetails(props) {
   const gitRepoLeftPane = () => {
     var remoteLogo = "";
 
-    if (gitRemoteHost && gitRemoteHost) {
+    if (gitRemoteHost) {
       if (gitRemoteHost.match(/github/i)) {
         remoteLogo = (
           <FontAwesomeIcon
@@ -202,6 +214,16 @@ export default function RepositoryDetails(props) {
                     <span className="text-blue-400 hover:text-blue-500 cursor-pointer">
                       {gitRemoteData}
                     </span>
+                    <div>
+                      {isMultiRemote ? (
+                        <>
+                          <span className="font-sans text-gray-800 font-semibold mr-2">
+                            Entry truncated!
+                          </span>
+                          <span>Remote repos : {multiRemoteCount}</span>
+                        </>
+                      ) : null}
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -247,16 +269,22 @@ export default function RepositoryDetails(props) {
                   </td>
                   <td>
                     {gitBranchList &&
+                      gitCurrentBranch &&
                       gitBranchList.map((entry) => {
                         return entry === gitCurrentBranch ? (
                           <div
-                            className="text-lg text-bold text-gray-800"
+                            className="text-lg font-semibold text-gray-800"
                             key={entry}
                           >
                             {entry}
                           </div>
                         ) : (
-                          <div key="entry-key">{entry}</div>
+                          <div
+                            className="my-1 font-sans font-semibold"
+                            key="entry-key"
+                          >
+                            - {entry}
+                          </div>
                         );
                       })}
                   </td>

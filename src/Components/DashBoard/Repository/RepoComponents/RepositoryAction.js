@@ -21,6 +21,7 @@ export default function RepositoryAction() {
   const [selectedFlag, setSelectedFlag] = useState(false);
   const [defaultRepo, setDefaultRepo] = useState({});
   const [availableRepos, setAvailableRepos] = useState([]);
+  const [activeBranch, setActiveBranch] = useState("");
   const [selectedRepoDetails, setSelectedRepoDetails] = useState({
     gitBranchList: "",
     gitCurrentBranch: "",
@@ -93,7 +94,7 @@ export default function RepositoryAction() {
                   gitBranchList
                   gitCurrentBranch
                   gitTotalCommits
-                  gitTotalTrackedFiles  
+                  gitTotalTrackedFiles 
                 }
               }
             }
@@ -119,38 +120,77 @@ export default function RepositoryAction() {
       invokeRepoFetchAPI();
       fetchSelectedRepoStatus();
     }
-  }, [defaultRepo]);
+  }, [defaultRepo, activeBranch]);
+
+  function setTrackingBranch(branchName) {
+    axios({
+      url: globalAPIEndpoint,
+      method: "POST",
+      data: {
+        query: `
+          mutation{
+            setBranch(repoId: "${defaultRepo.id}", branch: "${branchName}")
+          }
+        `,
+      },
+    })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   function activeRepoPane() {
     return (
-      <div className="text-center mx-auto my-auto justify-around mt-3 p-3 rounded-md shadow-sm flex border-2 border-gray-300 w-1/2">
-        <div className="font-sans font-semibold text-gray-900 my-1 mx-2">
-          Choose saved repository
+      <div className="text-center mx-auto my-auto justify-around mt-3 p-3 rounded-md shadow-sm block border-2 border-gray-300 w-1/2">
+        <div className="flex justify-evenly">
+          <div className="font-sans font-semibold text-gray-900 my-1 mx-2 w-1/2">
+            Choose saved repository
+          </div>
+          <select
+            className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500 w-1/2"
+            defaultValue="checked"
+            onChange={(event) => {
+              setSelectedFlag(true);
+              availableRepos.forEach((elm) => {
+                if (event.target.value === elm.repoName) {
+                  setDefaultRepo(elm);
+                  dispatch({ type: GIT_GLOBAL_REPOID, payload: elm.id });
+                }
+              });
+            }}
+          >
+            <option defaultChecked value="checked" hidden disabled>
+              Select a repo
+            </option>
+            {availableRepos.map((entry) => {
+              return (
+                <option value={entry.repoName} key={entry.repoName}>
+                  {entry.repoName}
+                </option>
+              );
+            })}
+          </select>
         </div>
-        <select
-          className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500 w-1/2"
-          defaultValue="checked"
-          onChange={(event) => {
-            setSelectedFlag(true);
-            availableRepos.forEach((elm) => {
-              if (event.target.value === elm.repoName) {
-                setDefaultRepo(elm);
-                dispatch({ type: GIT_GLOBAL_REPOID, payload: elm.id });
-              }
-            });
-          }}
-        >
-          <option defaultChecked value="checked" hidden disabled>
-            Select a repo
-          </option>
-          {availableRepos.map((entry) => {
-            return (
-              <option value={entry.repoName} key={entry.repoName}>
-                {entry.repoName}
-              </option>
-            );
-          })}
-        </select>
+        {selectedFlag ? (
+          <div className="text-center mx-auto my-auto mt-3 p-3 flex">
+            <div className="font-sans font-semibold text-gray-900 my-1 mx-2 w-1/2">
+              Branch
+            </div>
+            <select
+              className="bg-indigo-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-indigo-500 w-1/2"
+              defaultValue="checked"
+              onChange={(event) => {
+                setActiveBranch(event.currentTarget.value);
+                setTrackingBranch(event.target.value);
+              }}
+            >
+              {availableBranch()}
+            </select>
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -168,6 +208,20 @@ export default function RepositoryAction() {
     );
   }
 
+  function availableBranch() {
+    if (selectedRepoDetails && selectedRepoDetails.gitBranchList) {
+      const { gitBranchList } = selectedRepoDetails;
+
+      return gitBranchList.map((branch) => {
+        return (
+          <option key={branch} value={branch}>
+            {branch}
+          </option>
+        );
+      });
+    }
+  }
+
   return (
     <div className="overflow-scroll w-11/12 h-full mx-auto block justify-center overflow-x-hidden">
       {availableRepos ? (
@@ -175,10 +229,11 @@ export default function RepositoryAction() {
           <div className="flex text-center justify-center mt-6">
             {activeRepoPane()}
             {selectedRepoDetails && selectedFlag ? (
-              <div className="mt-3 mx-3 p-3 rounded-md shadow-sm flex mx-auto justify-center border-2 border-gray-300">
+              <div className="my-auto mx-3 p-6 rounded-md shadow-sm flex mx-auto justify-center border-2 border-gray-300">
                 {getTopPaneComponent(
                   "code-branch",
-                  selectedRepoDetails.gitBranchList && selectedRepoDetails.gitBranchList.length > 0
+                  selectedRepoDetails.gitBranchList &&
+                    selectedRepoDetails.gitBranchList.length > 0
                     ? selectedRepoDetails.gitBranchList.length
                     : 0 + " Branches"
                 )}
