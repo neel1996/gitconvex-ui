@@ -221,16 +221,18 @@ export default function PushComponent(props) {
                 <div className="my-2 font-sans text-2xl font-semibold">
                   Commits to be pushed
                 </div>
-                {unpushedCommits.map((commits, index) => {
-                  return (
-                    <div
-                      key={`unpushed-commit-${index}`}
-                      className="my-2 border-b-2 block justify-evenly mx-auto"
-                    >
-                      {commitModel(commits)}
-                    </div>
-                  );
-                })}
+                <div className="overflow-auto" style={{ height: "200px" }}>
+                  {unpushedCommits.map((commits, index) => {
+                    return (
+                      <div
+                        key={`unpushed-commit-${index}`}
+                        className="my-2 border-b-2 block justify-evenly mx-auto"
+                      >
+                        {commitModel(commits)}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             ) : (
               <div></div>
@@ -270,8 +272,10 @@ export default function PushComponent(props) {
           </div>
         </>
       ) : (
-        <div className="mx-auto my-2 p-3 bg-green-300 text-green-800 rounded- shadow">
-          All commits are pushed to remote
+        <div className="w-1/2 mx-auto my-auto p-6 rounded shadow bg-white block">
+          <div className="mx-auto my-2 p-3 bg-green-300 text-green-800 rounded shadow">
+            All commits are pushed to remote
+          </div>
         </div>
       )}
     </>
