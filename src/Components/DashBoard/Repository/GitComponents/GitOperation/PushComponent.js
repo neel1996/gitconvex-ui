@@ -19,6 +19,7 @@ export default function PushComponent(props) {
 
   const [pushDone, setPushDone] = useState(false);
   const [pushFailed, setPushFailed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const remoteRef = useRef();
   const branchRef = useRef();
@@ -150,6 +151,7 @@ export default function PushComponent(props) {
   }
 
   function pushHandler(remote, branch) {
+    setLoading(true);
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -164,12 +166,15 @@ export default function PushComponent(props) {
       .then((res) => {
         if (res.data.data && !res.data.error) {
           setPushDone(true);
+          setLoading(false);
         } else {
           setPushFailed(true);
+          setLoading(false);
         }
       })
       .catch((err) => {
         setPushFailed(true);
+        setLoading(false);
       });
   }
 
@@ -246,7 +251,10 @@ export default function PushComponent(props) {
               </>
             ) : null}
 
-            {isRemoteSet && isBranchSet && unpushedCommits.length > 0 ? (
+            {isRemoteSet &&
+            isBranchSet &&
+            unpushedCommits.length > 0 &&
+            !loading ? (
               <div
                 className="my-4 text-center bg-indigo-400 rounded shadow text-white text-xl font-sans p-2 mx-auto hover:bg-indigo-600 cursor-pointer"
                 onClick={() => {
@@ -269,6 +277,13 @@ export default function PushComponent(props) {
                 ) : null}
               </>
             )}
+            <>
+              {loading ? (
+                <div className="my-4 text-center border border-orange-800 text-orange-900 bg-orange-300 rounded shadow text-white text-xl font-sans p-2 mx-auto cursor-pointer">
+                  Pushing to remote...
+                </div>
+              ) : null}
+            </>
           </div>
         </>
       ) : (
