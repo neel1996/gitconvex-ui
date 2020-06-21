@@ -118,7 +118,7 @@ export default function CommitComponent(props) {
                 ref={commitRef}
               ></textarea>
               {commitError ? (
-                <div className="my-2 mx-auto text-center p-2 rounded shadow bg-red-200 borrder-red-400 text-red-800">
+                <div className="my-2 mx-auto text-center p-2 rounded shadow bg-red-200 border-red-400 text-red-800">
                   Commit Failed!
                 </div>
               ) : null}
