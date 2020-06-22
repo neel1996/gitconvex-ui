@@ -32,7 +32,7 @@ jobs:
         key: ${{ secrets.DROPLET_PRIVATE_KEY }}
         port: ${{ secrets.DROPLET_PORT }}
         source: "./build"
-        target: "/opt/workroom/gitconvex-ui/"
+        target: "/opt/workroom/gitconvex-package/"
     - name: Droplet commands
       uses: appleboy/ssh-action@master
       with:
