@@ -54,7 +54,7 @@ export default function SplashScreen(props) {
         console.log(err);
         setShowAlert(true);
       });
-  }, []);
+  }, [dispatch]);
 
   return (
     <>

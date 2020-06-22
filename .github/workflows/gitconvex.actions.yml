@@ -24,3 +24,24 @@ jobs:
     - run: npm install
     - run: npm i -g create-react-app
     - run: npm test && npm run build 
+    - name: Copy react build content to DO Droplet
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.DROPLET_HOST }}
+        username: ${{ secrets.DROPLET_USERNAME }}
+        key: ${{ secrets.DROPLET_PRIVATE_KEY }}
+        port: ${{ secrets.DROPLET_PORT }}
+        source: "./build"
+        target: "/opt/workroom/gitconvex-ui/"
+    - name: Droplet commands
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DROPLET_HOST }}
+        username: ${{ secrets.DROPLET_USERNAME }}
+        key: ${{ secrets.DROPLET_PRIVATE_KEY }}
+        port: ${{ secrets.DROPLET_PORT }}
+        script: |
+          cd /opt/workroom/gitconvex-package
+          git status
+          git add --all
+          echo "Commit deployment - `date`" | git commit -m 

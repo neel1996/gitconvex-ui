@@ -1,14 +1,12 @@
-import React, { useContext, useState, useEffect } from "react";
-import { ContextProvider } from "../../../../../context";
 import axios from "axios";
-
-import StageComponent from "./StageComponent";
-import CommitComponent from "./CommitComponent";
-import PushComponent from "./PushComponent";
+import React, { useEffect, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_TRACKED_DIFF,
 } from "../../../../../util/env_config";
+import CommitComponent from "./CommitComponent";
+import PushComponent from "./PushComponent";
+import StageComponent from "./StageComponent";
 
 export default function GitOperationComponent(props) {
   const { repoId } = props;
@@ -19,6 +17,7 @@ export default function GitOperationComponent(props) {
   const [action, setAction] = useState("");
   const [list, setList] = useState([]);
   const [viewReload, setViewReload] = useState(0);
+  const [currentStageItem, setCurrensStageitem] = useState("");
 
   useEffect(() => {
     const payload = JSON.stringify(
@@ -58,8 +57,30 @@ export default function GitOperationComponent(props) {
           setGitTrackedFiles([...apiData.gitChangedFiles]);
           setGitUntrackedFiles([...apiData.gitUntrackedFiles]);
 
-          const listElm = getComponentList();
-          setList([...listElm]);
+          const apiTrackedFiles = [...apiData.gitChangedFiles];
+          const apiUnTrackedFiles = [...apiData.gitUntrackedFiles];
+
+          let componentList = [];
+
+          apiTrackedFiles &&
+            apiTrackedFiles.forEach((item) => {
+              if (item.split(",").length > 0) {
+                const trackedItem = item.split(",")[1];
+                componentList.push(trackedItem);
+              }
+            });
+
+          apiUnTrackedFiles &&
+            apiUnTrackedFiles.forEach((item) => {
+              if (item) {
+                item = item.replace("NO_DIR", "");
+                item.split(",")
+                  ? componentList.push(item.split(",").join(""))
+                  : componentList.push(item);
+              }
+            });
+
+          setList([...componentList]);
         }
       })
       .catch((err) => {
@@ -69,7 +90,7 @@ export default function GitOperationComponent(props) {
     return () => {
       source.cancel();
     };
-  }, [props, viewReload]);
+  }, [props, viewReload, currentStageItem]);
 
   const actionButtons = [
     {
@@ -92,37 +113,27 @@ export default function GitOperationComponent(props) {
   const tableColumns = ["Changes", "File Status", "Action"];
 
   function stageGitComponent(stageItem) {
-    let indexItem;
-
-    list &&
-      list.forEach((item, index) => {
-        if (item === stageItem) {
-          indexItem = index;
+    axios({
+      url: globalAPIEndpoint,
+      method: "POST",
+      data: {
+        query: `
+          mutation GitConvexMutation{
+            stageItem(repoId: "${repoId}", item: "${stageItem}")
+          }
+        `,
+      },
+    })
+      .then((res) => {
+        if (res.data.data && !res.data.error) {
+          if (res.data.data.stageItem === "ADD_ITEM_SUCCES") {
+            setCurrensStageitem(stageItem);
+          }
         }
+      })
+      .catch((err) => {
+        console.log(err);
       });
-  }
-
-  function getComponentList() {
-    let componentList = [];
-
-    gitTrackedFiles &&
-      gitTrackedFiles.forEach((item) => {
-        if (item.split(",").length > 0) {
-          const trackedItem = item.split(",")[1];
-          componentList.push(trackedItem);
-        }
-      });
-
-    gitUntrackedFiles &&
-      gitUntrackedFiles.forEach((item) => {
-        if (item) {
-          item = item.replace("NO_DIR", "");
-          item.split(",")
-            ? componentList.push(item.split(",").join(""))
-            : componentList.push(item);
-        }
-      });
-    return componentList;
   }
 
   function getTableData() {
@@ -188,12 +199,15 @@ export default function GitOperationComponent(props) {
   function actionComponent(action) {
     switch (action) {
       case "stage":
-        return (
-          <StageComponent
-            repoId={repoId}
-            stageComponents={getComponentList()}
-          ></StageComponent>
-        );
+        if (list && list.length > 0) {
+          return (
+            <StageComponent
+              repoId={repoId}
+              stageComponents={list}
+            ></StageComponent>
+          );
+        }
+        break;
       case "commit":
         return <CommitComponent repoId={repoId}></CommitComponent>;
       case "push":

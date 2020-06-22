@@ -33,86 +33,89 @@ export default function RepositoryAction() {
     return <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>;
   }, [defaultRepo]);
 
-  async function invokeRepoFetchAPI() {
-    return await axios({
-      url: globalAPIEndpoint,
-      method: "POST",
-      data: {
-        query: `
-            query GitConvexApi{
-              gitConvexApi(route: "${ROUTE_FETCH_REPO}"){
-                fetchRepo{
-                  repoId
-                  repoName
-                  repoPath
+  useEffect(() => {
+    //Effect dep function
+
+    function fetchSelectedRepoStatus() {
+      const repoId = defaultRepo.id;
+
+      if (repoId) {
+        const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
+
+        axios({
+          url: globalAPIEndpoint,
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          data: {
+            query: `
+              query GitConvexApi
+              {
+                gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
+                  gitRepoStatus {
+                    gitBranchList
+                    gitCurrentBranch
+                    gitTotalCommits
+                    gitTotalTrackedFiles 
+                  }
                 }
               }
+            `,
+          },
+        })
+          .then((res) => {
+            setSelectedRepoDetails(res.data.data.gitConvexApi.gitRepoStatus);
+          })
+          .catch((err) => {
+            if (err) {
+              console.log("API GitStatus error occurred : " + err);
             }
-        `,
-      },
-    }).then((res) => {
-      const apiResponse = res.data.data.gitConvexApi.fetchRepo;
-
-      if (apiResponse) {
-        const repoContent = apiResponse.repoId.map((entry, index) => {
-          return {
-            id: apiResponse.repoId[index],
-            repoName: apiResponse.repoName[index],
-            repoPath: apiResponse.repoPath[index],
-          };
-        });
-
-        dispatch({
-          type: PRESENT_REPO,
-          payload: repoContent,
-        });
-        setDefaultRepo(repoContent[0]);
-        setAvailableRepos(repoContent);
-        return repoContent;
+          });
       }
-    });
-  }
+    }
 
-  function fetchSelectedRepoStatus() {
-    const repoId = defaultRepo.id;
-
-    if (repoId) {
-      const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
-
-      axios({
+    //Effect dep function
+    async function invokeRepoFetchAPI() {
+      return await axios({
         url: globalAPIEndpoint,
         method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
         data: {
           query: `
-            query GitConvexApi
-            {
-              gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-                gitRepoStatus {
-                  gitBranchList
-                  gitCurrentBranch
-                  gitTotalCommits
-                  gitTotalTrackedFiles 
+              query GitConvexApi{
+                gitConvexApi(route: "${ROUTE_FETCH_REPO}"){
+                  fetchRepo{
+                    repoId
+                    repoName
+                    repoPath
+                  }
                 }
               }
-            }
           `,
         },
-      })
-        .then((res) => {
-          setSelectedRepoDetails(res.data.data.gitConvexApi.gitRepoStatus);
-        })
-        .catch((err) => {
-          if (err) {
-            console.log("API GitStatus error occurred : " + err);
-          }
-        });
-    }
-  }
+      }).then((res) => {
+        const apiResponse = res.data.data.gitConvexApi.fetchRepo;
 
-  useEffect(() => {
+        if (apiResponse) {
+          const repoContent = apiResponse.repoId.map((entry, index) => {
+            return {
+              id: apiResponse.repoId[index],
+              repoName: apiResponse.repoName[index],
+              repoPath: apiResponse.repoPath[index],
+            };
+          });
+
+          dispatch({
+            type: PRESENT_REPO,
+            payload: repoContent,
+          });
+          setDefaultRepo(repoContent[0]);
+          setAvailableRepos(repoContent);
+          return repoContent;
+        }
+      });
+    }
+
     if (presentRepo && presentRepo.length >= 1) {
       setAvailableRepos(presentRepo[0]);
       fetchSelectedRepoStatus();
@@ -120,7 +123,7 @@ export default function RepositoryAction() {
       invokeRepoFetchAPI();
       fetchSelectedRepoStatus();
     }
-  }, [defaultRepo, activeBranch]);
+  }, [defaultRepo, activeBranch, presentRepo, dispatch]);
 
   function setTrackingBranch(branchName) {
     axios({

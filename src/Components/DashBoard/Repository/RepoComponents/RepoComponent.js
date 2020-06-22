@@ -53,7 +53,7 @@ export default function RepoComponent(props) {
         });
       }
     });
-  }, [repoFormEnable]);
+  }, [repoFormEnable, dispatch]);
 
   const showAvailableRepo = () => {
     const repoArray = repo;

@@ -16,7 +16,7 @@ export default function CommitComponent(props) {
   const commitRef = useRef();
 
   useEffect(() => {
-    const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
+    const payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
 

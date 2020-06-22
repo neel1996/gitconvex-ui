@@ -13,11 +13,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 export default function RepoCard(props) {
   library.add(fab, fas);
   const { repoData } = props;
-  const payload = JSON.stringify(JSON.stringify({ repoId: repoData.id }));
 
   const [repoFooterData, setRepoFooterData] = useState("");
 
   useEffect(() => {
+    let repoId = props.repoData.id;
+    const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
+
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -61,14 +63,6 @@ export default function RepoCard(props) {
     } else {
       avatar = repoName.substring(0, 1).toUpperCase();
     }
-  }
-
-  function avatarColorGenerator() {
-    const r = Math.round(Math.random(255) * 0);
-    const g = Math.round(Math.random(255) * 0);
-    const b = Math.round(Math.random(255) * 128);
-
-    return `rgba(${r}, ${g}, ${b}, 0.6)`;
   }
 
   return (

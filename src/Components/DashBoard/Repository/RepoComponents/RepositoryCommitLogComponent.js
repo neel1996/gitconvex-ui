@@ -11,13 +11,13 @@ import {
 
 export default function RepositoryCommitLogComponent(props) {
   library.add(fab, fas);
-  const { repoId } = props;
-  const payload = JSON.stringify(JSON.stringify({ repoId }));
 
   const [commitLogs, setCommitLogs] = useState([]);
   const [isCommitEmpty, setIsCommitEmpty] = useState(false);
 
   useEffect(() => {
+    const payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
+
     axios({
       url: globalAPIEndpoint,
       method: "POST",

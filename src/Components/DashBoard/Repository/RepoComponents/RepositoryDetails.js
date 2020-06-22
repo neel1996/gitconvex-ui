@@ -25,7 +25,7 @@ export default function RepositoryDetails(props) {
         repoId={repoIdState}
       ></RepositoryCommitLogComponent>
     );
-  });
+  }, [repoIdState]);
 
   useEffect(() => {
     const endpointURL = globalAPIEndpoint;

@@ -24,10 +24,10 @@ export default function GitTrackedComponent(props) {
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
   const [noChangeMarker, setNoChangeMarker] = useState(false);
 
-  const { state, dispatch } = useContext(ContextProvider);
+  const { dispatch } = useContext(ContextProvider);
 
   const memoizedGitDiffView = useMemo(() => {
-    return <GitDiffViewComponent></GitDiffViewComponent>;
+    return <GitDiffViewComponent repoId={props.repoId}></GitDiffViewComponent>;
   }, [props]);
 
   const memoizedGitOperationView = useMemo(() => {
@@ -100,7 +100,7 @@ export default function GitTrackedComponent(props) {
       .catch((err) => {
         setNoChangeMarker(true);
       });
-  }, [props]);
+  }, [props, dispatch]);
 
   function diffPane() {
     var deletedArtifacts = [];
@@ -201,10 +201,12 @@ export default function GitTrackedComponent(props) {
             </div>
           );
         }
+        break;
       case GIT_DIFFERENCE:
         if (!noChangeMarker) {
           return memoizedGitDiffView;
         }
+        break;
       case GIT_OPERATIONS:
         return memoizedGitOperationView;
       default:

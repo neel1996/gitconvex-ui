@@ -9,8 +9,6 @@ import {
 export default function PushComponent(props) {
   const { repoId } = props;
 
-  const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
-
   const [remoteData, setRemoteData] = useState();
   const [isRemoteSet, setIsRemoteSet] = useState(false);
   const [isBranchSet, setIsBranchSet] = useState(false);
@@ -25,6 +23,8 @@ export default function PushComponent(props) {
   const branchRef = useRef();
 
   useEffect(() => {
+    let payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
+
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -57,6 +57,8 @@ export default function PushComponent(props) {
   }, [props]);
 
   function getUnpushedCommits() {
+    let payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
+
     axios({
       url: globalAPIEndpoint,
       method: "POST",
