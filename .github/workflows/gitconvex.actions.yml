@@ -41,7 +41,4 @@ jobs:
         key: ${{ secrets.DROPLET_PRIVATE_KEY }}
         port: ${{ secrets.DROPLET_PORT }}
         script: |
-          cd /opt/workroom/gitconvex-package
-          git status
-          git add --all
-          echo "Commit deployment - `date`" | git commit -m 
+          sh /opt/workroom/github-deploy.sh 
