@@ -216,11 +216,15 @@ export default function RepositoryAction() {
       const { gitBranchList } = selectedRepoDetails;
 
       return gitBranchList.map((branch) => {
-        return (
-          <option key={branch} value={branch}>
-            {branch}
-          </option>
-        );
+        if (branch !== "NO_BRANCH") {
+          return (
+            <option key={branch} value={branch}>
+              {branch}
+            </option>
+          );
+        }
+
+        return null;
       });
     }
   }
@@ -236,7 +240,8 @@ export default function RepositoryAction() {
                 {getTopPaneComponent(
                   "code-branch",
                   selectedRepoDetails.gitBranchList &&
-                    selectedRepoDetails.gitBranchList.length > 0
+                    selectedRepoDetails.gitBranchList.length > 0 &&
+                    !selectedRepoDetails.gitBranchList[0].match(/NO_BRANCH/gi)
                     ? selectedRepoDetails.gitBranchList.length
                     : 0 + " Branches"
                 )}

@@ -1,5 +1,5 @@
 import React from "react";
-import FetchRepoComponent from "../Repository/RepoComponents/RepoComponent";
+import RepoComponent from "../Repository/RepoComponents/RepoComponent";
 
 export default function RightPane(props) {
   const { platform, gitVersion, nodeVersion } = props.params;
@@ -50,7 +50,7 @@ export default function RightPane(props) {
 
   function repoEntry() {
     if (platform && gitVersion && nodeVersion) {
-      return <FetchRepoComponent parentProps={props}></FetchRepoComponent>;
+      return <RepoComponent parentProps={props}></RepoComponent>;
     }
   }
 }

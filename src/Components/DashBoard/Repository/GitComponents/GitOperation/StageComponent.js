@@ -5,6 +5,8 @@ import { globalAPIEndpoint } from "../../../../../util/env_config";
 export default function StageComponent(props) {
   const { stageComponents, repoId } = props;
 
+  console.log(props);
+
   const [allStaged, setAllStaged] = useState(false);
   const [errorInd, setErrorInd] = useState(false);
 

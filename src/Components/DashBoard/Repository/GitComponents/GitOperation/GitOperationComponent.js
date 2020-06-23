@@ -206,8 +206,15 @@ export default function GitOperationComponent(props) {
               stageComponents={list}
             ></StageComponent>
           );
+        } else {
+          return (
+            <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md">
+              <div className="p-5 bg-white text-black font-sans font-semibold rounded shadow border border-gray-100">
+                No Changes for staging...
+              </div>
+            </div>
+          );
         }
-        break;
       case "commit":
         return <CommitComponent repoId={repoId}></CommitComponent>;
       case "push":

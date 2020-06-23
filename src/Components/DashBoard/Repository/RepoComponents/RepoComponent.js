@@ -69,15 +69,13 @@ export default function RepoComponent(props) {
         </div>
         <>
           <div
-            className="mx-auto fixed bottom-0 rounded-t-lg mt-30 pl-2 pr-2 pb-8 w-1/2 justify-center shadow-md bg-gray-400 hover:bg-gray-300 border-2 border-gray-300 border-dotted cursor-pointer"
+            className="fixed bottom-0 right-0 mb-10 mr-20 cursor-pointer border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
+            title="Add a Git repo"
             onClick={() => {
               setRepoFormEnable(true);
             }}
           >
-            <div className="text-2xl font-bold text-gray-800 text-center">
-              +
-            </div>
-            <div className="text-xl text-gray-900">Click to add a Repo</div>
+            +
           </div>
         </>
       </>

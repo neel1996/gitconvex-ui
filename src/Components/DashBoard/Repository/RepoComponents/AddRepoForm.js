@@ -10,10 +10,19 @@ export default function AddRepoForm(props) {
 
   const repoNameRef = useRef();
   const repoPathRef = useRef();
+  const initCheckRef = useRef();
 
   function storeRepoAPI(repoName, repoPath) {
     if (repoName && repoPath) {
-      let payload = JSON.stringify(JSON.stringify({ repoName, repoPath }));
+      let initCheck = false;
+
+      if (initCheckRef.current.checked) {
+        initCheck = true;
+      }
+
+      let payload = JSON.stringify(
+        JSON.stringify({ repoName, repoPath, initCheck })
+      );
 
       axios({
         url: globalAPIEndpoint,
@@ -31,13 +40,19 @@ export default function AddRepoForm(props) {
         },
       })
         .then((res) => {
-          const { message } = res.data.data.gitConvexApi.addRepo;
+          if (res.data && res.data.data && !res.data.error) {
+            const { message } = res.data.data.gitConvexApi.addRepo;
 
-          if (message && !message.match(/FAIL/g)) {
-            setRepoAddSuccess(true);
-            setRepoAddFailed(false);
-            repoNameRef.current.value = "";
-            repoPathRef.current.value = "";
+            if (message && !message.match(/FAIL/g)) {
+              setRepoAddSuccess(true);
+              setRepoAddFailed(false);
+              repoNameRef.current.value = "";
+              repoPathRef.current.value = "";
+              initCheckRef.current.value = "";
+            } else {
+              setRepoAddFailed(true);
+              setRepoAddSuccess(false);
+            }
           } else {
             setRepoAddFailed(true);
             setRepoAddSuccess(false);
@@ -51,7 +66,7 @@ export default function AddRepoForm(props) {
     }
   }
 
-  function resetAlertBanner(event) {
+  function resetAlertBanner() {
     setRepoAddFailed(false);
     setRepoAddSuccess(false);
   }
@@ -109,6 +124,20 @@ export default function AddRepoForm(props) {
             }}
           ></input>
         </div>
+        <div className="cursor-pointer my-4">
+          <input
+            id="initCheck"
+            type="checkbox"
+            value="initRepo"
+            ref={initCheckRef}
+          ></input>
+          <label
+            htmlFor="initCheck"
+            className="mx-2 text-gray-700 font-sans font-semibold"
+          >
+            Check this if the folder is not a git repo
+          </label>
+        </div>
         <div className="flex w-11/12 justify-start mx-auto my-5 cursor-pointer">
           <div
             className="block w-1/2 mx-3 p-3 my-2 bg-green-400 rounded-md shadow-md hover:bg-green-500"
@@ -121,7 +150,6 @@ export default function AddRepoForm(props) {
           <div
             className="my-2 w-1/2 block mx-3 p-3 bg-red-400 rounded-md shadow-md hover:bg-red-500"
             onClick={() => {
-              console.log(props);
               props.formEnable(false);
             }}
           >

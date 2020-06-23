@@ -94,7 +94,6 @@ export default function PushComponent(props) {
       const { gitRemoteData } = remoteData;
       if (gitRemoteData.includes("||")) {
         return gitRemoteData.split("||").map((item) => {
-          console.log(item);
           return (
             <option value={item} key={item}>
               {item}
@@ -112,11 +111,14 @@ export default function PushComponent(props) {
       const { gitBranchList } = remoteData;
 
       return gitBranchList.map((branch) => {
-        return (
-          <option value={branch} key={branch}>
-            {branch}
-          </option>
-        );
+        if (branch !== "NO_BRANCH") {
+          return (
+            <option value={branch} key={branch}>
+              {branch}
+            </option>
+          );
+        }
+        return null;
       });
     }
   }

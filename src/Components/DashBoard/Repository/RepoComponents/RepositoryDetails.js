@@ -30,7 +30,7 @@ export default function RepositoryDetails(props) {
   useEffect(() => {
     const endpointURL = globalAPIEndpoint;
 
-    if (props.parentProps) {
+    if (props.parentProps.location) {
       const repoId = props.parentProps.location.pathname.split(
         "/repository/"
       )[1];
