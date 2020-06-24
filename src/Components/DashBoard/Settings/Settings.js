@@ -1,13 +1,13 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import axios from "axios";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_SETTINGS_DBPATH,
-  ROUTE_SETTINGS_REPODETAILS,
+  ROUTE_SETTINGS_REPODETAILS
 } from "../../../util/env_config";
 
 export default function Settings(props) {
