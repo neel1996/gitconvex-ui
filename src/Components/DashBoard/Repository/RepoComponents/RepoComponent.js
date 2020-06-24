@@ -62,17 +62,34 @@ export default function RepoComponent(props) {
       <>
         <div className="w-full mx-auto justify-around flex flex-wrap pb-40">
           <>
-            {repoArray.map((entry) => {
-              return <RepoCard key={entry.id} repoData={entry}></RepoCard>;
-            })}
+            {repoArray.length > 0 ? (
+              <>
+                {repoArray.map((entry) => {
+                  return <RepoCard key={entry.id} repoData={entry}></RepoCard>;
+                })}
+              </>
+            ) : (
+              <div className="mx-auto w-3/4 rounded-md text-center shadow bg-gray-200 text-gray-500 font-sans p-10 my-10 text-xl">
+                No repos present. Press + to add a new repo
+              </div>
+            )}
           </>
         </div>
         <>
           <div
-            className="fixed bottom-0 right-0 mb-10 mr-20 cursor-pointer border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
-            title="Add a Git repo"
+            className="fixed bottom-0 right-0 mb-16 mr-20 cursor-pointer border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
             onClick={() => {
               setRepoFormEnable(true);
+            }}
+            onMouseEnter={(event) => {
+              event.stopPropagation();
+              event.preventDefault();
+              let popUp =
+                '<div class="p-2 rounded bg-white text-gray-700 w-48 mt-16 text-center font-sans font-medium border border-gray-300 text-sm my-2 fixed">Click to add a new repo</div>';
+              event.target.innerHTML += popUp;
+            }}
+            onMouseLeave={(event) => {
+              event.target.innerHTML = "+";
             }}
           >
             +

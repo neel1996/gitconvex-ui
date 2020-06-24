@@ -5,7 +5,7 @@ import {
   GIT_TRACKED_FILES,
   GIT_GLOBAL_REPOID,
   GIT_ACTION_TRACKED_FILES,
-  GIT_ACTION_UNTRACKED_FILES
+  GIT_ACTION_UNTRACKED_FILES,
 } from "./actionStore";
 
 export default function reducer(state, action) {
@@ -16,9 +16,7 @@ export default function reducer(state, action) {
         hcDone: action.payload,
       };
     case HC_PARAM_ACTION:
-      const {
-        osCheck, gitCheck, nodeCheck
-      } = action.payload;
+      const { osCheck, gitCheck, nodeCheck } = action.payload;
 
       const parseValue = (payload) => {
         return JSON.parse(JSON.parse(JSON.stringify(payload))).message;
@@ -31,7 +29,6 @@ export default function reducer(state, action) {
       return {
         ...state,
         hcParams: {
-          ...state.hcParams,
           osCheck: parseValue(osCheck),
           gitCheck: parseValue(gitCheck),
           nodeCheck: parseValue(nodeCheck),
@@ -55,17 +52,17 @@ export default function reducer(state, action) {
         globalRepoId: action.payload,
       };
     case GIT_ACTION_TRACKED_FILES:
-      state.gitTrackedFiles = []
+      state.gitTrackedFiles = [];
       return {
         ...state,
-        gitTrackedFiles: [...state.gitTrackedFiles, action.payload]
-      }
+        gitTrackedFiles: [...state.gitTrackedFiles, action.payload],
+      };
     case GIT_ACTION_UNTRACKED_FILES:
-      state.gitUntrackedFiles = []
+      state.gitUntrackedFiles = [];
       return {
         ...state,
-        gitUntrackedFiles: [...state.gitUntrackedFiles, action.payload]
-      }
+        gitUntrackedFiles: [...state.gitUntrackedFiles, action.payload],
+      };
     default:
       return {
         ...state,

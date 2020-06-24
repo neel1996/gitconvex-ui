@@ -244,36 +244,54 @@ export default function RepositoryDetails(props) {
               </tbody>
             </table>
           </div>
-          <div className="block rounded-lg shadow-sm border-2 border-dotted border-gray-400 p-2 my-2 mx-3">
+          <div className="block rounded-lg shadow-sm border-2 border-dotted border-gray-400 p-2 my-2 mx-3 w-1/2">
             <table className="table-light" cellPadding="10">
               <tbody>
                 <tr>
-                  <td className="text-lg text-gray-500">Total Commits</td>
-                  <td className="text-left text-md text-bold text-black-800">
+                  <td className="text-lg text-gray-500 w-1/2">Total Commits</td>
+                  <td className="text-left text-md text-bold text-black-800 w-1/2">
                     {gitTotalCommits} Commits
                   </td>
                 </tr>
               </tbody>
               <tbody>
                 <tr>
-                  <td className="text-lg text-gray-500">Latest Commit</td>
-                  <td className="text-left text-sm text-bold text-black-900">
+                  <td className="text-lg text-gray-500 w-1/2">Latest Commit</td>
+                  <td className="text-left text-sm text-bold w-1/2 text-black-900 w-1/2">
                     {gitLatestCommit}
                   </td>
                 </tr>
               </tbody>
               <tbody>
                 <tr>
-                  <td className="text-lg text-gray-500 align-text-top">
-                    Available Branches
+                  <td className="text-lg text-gray-500 align-text-top w-1/2">
+                    <div className="flex p-2 items-center align-middle">
+                      <div>Available Branches</div>
+                      <div
+                        id="addBranch"
+                        className="mx-10 rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-green-400 text-center mx-auto shadow hover:bg-green-500 cursor-pointer"
+                        onMouseEnter={(event) => {
+                          event.stopPropagation();
+                          event.preventDefault();
+                          let popUp =
+                            '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative">Click to add a new branch</div>';
+                          event.target.innerHTML += popUp;
+                        }}
+                        onMouseLeave={(event) => {
+                          event.target.innerHTML = "+";
+                        }}
+                      >
+                        +
+                      </div>
+                    </div>
                   </td>
-                  <td>
+                  <td className="w-1/2">
                     {gitBranchList &&
                       gitCurrentBranch &&
                       gitBranchList.map((entry) => {
                         return entry === gitCurrentBranch ? (
                           <div
-                            className="text-lg font-semibold text-gray-800"
+                            className="text-lg font-semibold text-indigo-500"
                             key={entry}
                           >
                             {entry}
@@ -287,6 +305,18 @@ export default function RepositoryDetails(props) {
                           </div>
                         );
                       })}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="w-1/2">
+                    <div className="rounded text-center cursor-pointer p-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xl font-sans">
+                      Fetch from remote
+                    </div>
+                  </td>
+                  <td className="w-1/2">
+                    <div className="mx-auto text-center cursor-pointer rounded text-white p-2 bg-blue-500 hover:bg-blue-600 text-xl font-sans">
+                      Pull from remote
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -415,31 +445,34 @@ export default function RepositoryDetails(props) {
   };
 
   return (
-    <div className="rp_repo-view w-screen h-screen p-6 mx-auto rounded-lg justify-evenly overflow-auto">
-      {gitRepoStatus && !repoFetchFailed ? (
-        <>
-          <div className="flex px-3 py-2">
-            {gitRepoStatus ? gitRepoHeaderContent() : null}
-          </div>
-          <div className="w-full">
-            <div className="flex my-4 mx-auto justify-around">
-              {gitRepoStatus ? gitRepoLeftPane() : null}
+    <>
+      <div className="w-full fixed bg-gray-600 opacity-50"></div>
+      <div className="rp_repo-view w-screen h-screen p-6 mx-auto rounded-lg justify-evenly overflow-auto">
+        {gitRepoStatus && !repoFetchFailed ? (
+          <>
+            <div className="flex px-3 py-2">
+              {gitRepoStatus ? gitRepoHeaderContent() : null}
             </div>
+            <div className="w-full">
+              <div className="flex my-4 mx-auto justify-around">
+                {gitRepoStatus ? gitRepoLeftPane() : null}
+              </div>
+            </div>
+            <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
+              {gitRepoStatus ? gitTrackedFileComponent() : null}
+            </div>
+          </>
+        ) : (
+          <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
+            Fetching repo details...
           </div>
-          <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
-            {gitRepoStatus ? gitTrackedFileComponent() : null}
+        )}
+        {repoFetchFailed ? (
+          <div className="p-2 text-center mx-auto rounded-lg bg-red-200 text-xl">
+            Repo details fetch failed!
           </div>
-        </>
-      ) : (
-        <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
-          Fetching repo details...
-        </div>
-      )}
-      {repoFetchFailed ? (
-        <div className="p-2 text-center mx-auto rounded-lg bg-red-200 text-xl">
-          Repo details fetch failed!
-        </div>
-      ) : null}
-    </div>
+        ) : null}
+      </div>
+    </>
   );
 }

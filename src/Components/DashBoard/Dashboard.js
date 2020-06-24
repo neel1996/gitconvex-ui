@@ -5,6 +5,9 @@ import LeftPane from "./DashboardPaneComponents/LeftPane";
 import RightPane from "./DashboardPaneComponents/RightPane";
 import RepositoryAction from "./Repository/RepoComponents/RepositoryAction";
 import RepositoryDetails from "./Repository/RepoComponents/RepositoryDetails";
+import { globalAPIEndpoint } from "../../util/env_config";
+import axios from "axios";
+import Settings from "./Settings/Settings";
 
 export default function Dashboard(props) {
   const { state } = useContext(ContextProvider);
@@ -17,17 +20,63 @@ export default function Dashboard(props) {
     return <RepositoryDetails parentProps={props}></RepositoryDetails>;
   }, [props]);
 
+  const memoizedSettings = useMemo(() => {
+    return <Settings></Settings>;
+  }, []);
+
   useEffect(() => {
     const { osCheck, gitCheck, nodeCheck } = state.hcParams;
+
+    const localStorageItems = ["OS_TYPE", "NODE_VERSION", "GIT_VERSION"];
 
     if (osCheck && gitCheck && nodeCheck) {
       setPlatform(osCheck);
       setGitVersion(gitCheck);
       setNodeVersion(nodeCheck);
     } else {
-      setPlatform(localStorage.getItem("OS_TYPE"));
-      setNodeVersion(localStorage.getItem("GIT_VERSION"));
-      setGitVersion(localStorage.getItem("NODE_VERSION"));
+      let checkArray = localStorageItems.filter((item) => {
+        return localStorage.getItem(item) ? true : false;
+      });
+
+      if (checkArray.length === 3) {
+        setPlatform(localStorage.getItem("OS_TYPE"));
+        setNodeVersion(localStorage.getItem("NODE_VERSION"));
+        setGitVersion(localStorage.getItem("GIT_VERSION"));
+      } else {
+        axios({
+          url: globalAPIEndpoint,
+          method: "POST",
+          data: {
+            query: `
+              query GitConvexAPI{
+                gitConvexApi(route:"HEALTH_CHECK"){
+                  healthCheck{
+                    osCheck
+                    gitCheck
+                    nodeCheck
+                  }
+                }
+              }
+            `,
+          },
+        })
+          .then((res) => {
+            if (res.data.data && !res.data.error) {
+              const {
+                osCheck,
+                gitCheck,
+                nodeCheck,
+              } = res.data.data.gitConvexApi.healthCheck;
+
+              setPlatform(JSON.parse(osCheck).message);
+              setGitVersion(JSON.parse(gitCheck).message);
+              setNodeVersion(JSON.parse(nodeCheck).message);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   }, [state.hcParams]);
 
@@ -43,6 +92,8 @@ export default function Dashboard(props) {
         return <RightPane params={params}></RightPane>;
       case "/dashboard/repository":
         return <RepositoryAction></RepositoryAction>;
+      case "/dashboard/settings":
+        return memoizedSettings;
       default:
         return (
           <BrowserRouter>
