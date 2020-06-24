@@ -23,7 +23,8 @@ export default function App(props) {
       <ContextProvider.Provider value={{ state, dispatch }}>
         <BrowserRouter>
           <Route path="/" exact component={SplashScreen}></Route>
-          <Route path="/dashboard*" component={Dashboard}></Route>
+          <Route path="/dashboard" component={Dashboard}></Route>
+          <Route path="/dashboard/*" component={Dashboard}></Route>
         </BrowserRouter>
       </ContextProvider.Provider>
     </div>

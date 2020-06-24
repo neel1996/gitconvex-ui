@@ -7,7 +7,7 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_SETTINGS_DBPATH,
-  ROUTE_SETTINGS_REPODETAILS
+  ROUTE_SETTINGS_REPODETAILS,
 } from "../../../util/env_config";
 
 export default function Settings(props) {
@@ -146,7 +146,7 @@ export default function Settings(props) {
             </>
           ) : (
             <div className="my-4 mx-auto bg-gray-200 text-center p-3 rounded shadow w-3/4">
-              No repos are being managed by Gitconvex. YOu can add one from the
+              No repos are being managed by Gitconvex. You can add one from the
               dashboard
             </div>
           )}
