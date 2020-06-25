@@ -242,7 +242,6 @@ export default function GitTrackedComponent(props) {
             );
           })}
         </div>
-        {/* <div className="w-11/12 block mx-auto my-6"> {menuComponent()} </div> */}
       </>
     );
   }

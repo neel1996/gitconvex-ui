@@ -1,6 +1,6 @@
 import React, { useReducer } from "react";
 import { Route } from "react-router";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Switch } from "react-router-dom";
 import "./App.css";
 import Dashboard from "./Components/DashBoard/Dashboard";
 import SplashScreen from "./Components/SplashScreen";
@@ -22,9 +22,11 @@ export default function App(props) {
     <div className="App w-full h-full">
       <ContextProvider.Provider value={{ state, dispatch }}>
         <BrowserRouter>
-          <Route path="/" exact component={SplashScreen}></Route>
-          <Route path="/dashboard" component={Dashboard}></Route>
-          <Route path="/dashboard/*" component={Dashboard}></Route>
+          <Switch>
+            <Route path="/" exact component={SplashScreen}></Route>
+            <Route path="/dashboard" exact component={Dashboard}></Route>
+            <Route path="/dashboard/*" exact component={Dashboard}></Route>
+          </Switch>
         </BrowserRouter>
       </ContextProvider.Provider>
     </div>

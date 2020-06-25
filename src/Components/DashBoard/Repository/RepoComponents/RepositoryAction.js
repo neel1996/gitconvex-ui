@@ -28,6 +28,7 @@ export default function RepositoryAction() {
     gitTotalCommits: 0,
     gitTotalTrackedFiles: 0,
   });
+  const [branchError, setBranchError] = useState(false);
 
   const memoizedGitTracker = useMemo(() => {
     return <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>;
@@ -123,9 +124,9 @@ export default function RepositoryAction() {
       invokeRepoFetchAPI();
       fetchSelectedRepoStatus();
     }
-  }, [defaultRepo, activeBranch, presentRepo, dispatch]);
+  }, [defaultRepo, activeBranch, presentRepo, dispatch, branchError]);
 
-  function setTrackingBranch(branchName) {
+  function setTrackingBranch(branchName, event) {
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -138,10 +139,15 @@ export default function RepositoryAction() {
       },
     })
       .then((res) => {
-        console.log(res);
+        if (res.data.data && !res.data.error) {
+          setActiveBranch(branchName);
+        }
       })
       .catch((err) => {
-        console.log(err);
+        if (err) {
+          setBranchError(true);
+          event.target.selectedIndex = 0;
+        }
       });
   }
 
@@ -186,8 +192,12 @@ export default function RepositoryAction() {
               className="bg-indigo-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-indigo-500 w-1/2"
               defaultValue="checked"
               onChange={(event) => {
+                event.persist();
                 setActiveBranch(event.currentTarget.value);
-                setTrackingBranch(event.target.value);
+                setTrackingBranch(event.target.value, event);
+              }}
+              onClick={() => {
+                setBranchError(false);
               }}
             >
               {availableBranch()}
@@ -276,6 +286,11 @@ export default function RepositoryAction() {
             </>
           ) : null}
           <div>
+            {branchError ? (
+              <div className="p-2 rounded my-2 mx-auto text-center font-sand bg-red-200 text-red-800">
+                Branch switching failed.Commit your changes and try again
+              </div>
+            ) : null}
             {selectedRepoDetails && selectedFlag ? memoizedGitTracker : null}
           </div>
         </div>
