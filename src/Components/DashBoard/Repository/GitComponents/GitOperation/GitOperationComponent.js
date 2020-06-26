@@ -324,7 +324,10 @@ export default function GitOperationComponent(props) {
             <div className="w-3/4">Staged File</div>
             <div className="w-1/4">Action</div>
           </div>
-          <div className="block mx-auto">
+          <div
+            className="block mx-auto overflow-auto"
+            style={{ height: "450px" }}
+          >
             {stageItems.map((item) => {
               if (item) {
                 return (
@@ -435,49 +438,54 @@ export default function GitOperationComponent(props) {
         })}
       </div>
       {getTableData() && getTableData().length > 0 ? (
-        <table
-          className="table border-0 w-full cursor-pointer"
-          cellPadding="10"
+        <div
+          className="overflow-auto p-2 mx-auto rounded shadow border"
+          style={{ height: "450px" }}
         >
-          <thead>
-            <tr className="bg-orange-300 p-3 text-xl font-sans">
-              {tableColumns.map((column) => {
-                return (
-                  <th
-                    key={column}
-                    className="font-bold border-r border-gray-200"
-                  >
-                    {column}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            {getTableData() &&
-              getTableData().map((tableData, index) => {
-                return (
-                  <tr
-                    className="text-md font-sans border-b border-gray-300"
-                    key={`tableItem-${index}`}
-                  >
-                    {tableData.map((data, index) => {
-                      return (
-                        <td
-                          key={`${data}-${index}`}
-                          className={`${
-                            index === 0 ? "text-left" : "text-center"
-                          }`}
-                        >
-                          {data}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-          </tbody>
-        </table>
+          <table
+            className="table border-0 w-full cursor-pointer"
+            cellPadding="10"
+          >
+            <thead>
+              <tr className="bg-orange-300 p-3 text-xl font-sans">
+                {tableColumns.map((column) => {
+                  return (
+                    <th
+                      key={column}
+                      className="font-bold border-r border-gray-200"
+                    >
+                      {column}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {getTableData() &&
+                getTableData().map((tableData, index) => {
+                  return (
+                    <tr
+                      className="text-md font-sans border-b border-gray-300"
+                      key={`tableItem-${index}`}
+                    >
+                      {tableData.map((data, index) => {
+                        return (
+                          <td
+                            key={`${data}-${index}`}
+                            className={`${
+                              index === 0 ? "text-left" : "text-center"
+                            }`}
+                          >
+                            {data}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <>{noChangesComponent()}</>
       )}

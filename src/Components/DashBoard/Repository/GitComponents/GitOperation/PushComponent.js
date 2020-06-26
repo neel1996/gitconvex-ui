@@ -134,7 +134,7 @@ export default function PushComponent(props) {
 
     const localModelFormat = (left, right) => {
       return (
-        <div className="flex justify-evenly">
+        <div className="flex justify-evenly" key={left}>
           <div className="font-sans text-gray-900 font-bold mx-2 w-1/4 break-words">
             {left}
           </div>

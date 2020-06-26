@@ -24,8 +24,13 @@ export default function App(props) {
         <BrowserRouter>
           <Switch>
             <Route path="/" exact component={SplashScreen}></Route>
-            <Route path="/dashboard" exact component={Dashboard}></Route>
-            <Route path="/dashboard/*" exact component={Dashboard}></Route>
+            <Route path="/dashboard" component={Dashboard}></Route>
+            <Route
+              path="/dashboard/repository"
+              exact
+              component={Dashboard}
+            ></Route>
+            <Route path="/dashboard/repository/*" component={Dashboard}></Route>
           </Switch>
         </BrowserRouter>
       </ContextProvider.Provider>

@@ -18,6 +18,8 @@ export default function RepositoryDetails(props) {
   const [showCommitLogs, setShowCommitLogs] = useState(false);
   const [isMultiRemote, setIsMultiRemote] = useState(false);
   const [multiRemoteCount, setMultiRemoteCount] = useState(0);
+  const [backdropToggle, setBackdropToggle] = useState(false);
+  const [action, setAction] = useState("");
 
   const memoizedCommitLogComponent = useMemo(() => {
     return (
@@ -26,6 +28,14 @@ export default function RepositoryDetails(props) {
       ></RepositoryCommitLogComponent>
     );
   }, [repoIdState]);
+
+  const memoizedFetchRemoteComponent = useMemo(() => {
+    return <FetchRemoteComponent></FetchRemoteComponent>;
+  }, []);
+
+  const memoizedPullRemoteComponent = useMemo(() => {
+    return <PullRemoteComponent></PullRemoteComponent>;
+  }, []);
 
   useEffect(() => {
     const endpointURL = globalAPIEndpoint;
@@ -92,7 +102,161 @@ export default function RepositoryDetails(props) {
           }
         });
     }
-  }, [props.parentProps]);
+  }, [props.parentProps, backdropToggle]);
+
+  function FetchRemoteComponent() {
+    const [fetchResult, setFecthResult] = useState([]);
+
+    useEffect(() => {
+      axios({
+        url: globalAPIEndpoint,
+        method: "POST",
+        data: {
+          query: `
+            mutation GitConvexMutation{
+              fetchFromRemote(repoId: "${repoIdState}"){
+                status
+                fetchedItems
+              }
+            }
+          `,
+        },
+      })
+        .then((res) => {
+          if (res.data.data && !res.data.error) {
+            const fetchResponse = res.data.data.fetchFromRemote;
+            if (fetchResponse.status === "FETCH_ABSENT") {
+              setFecthResult([
+                <div className="text-xl p-2 text-gray-900 font-semibold">
+                  No changes to Fetch from remote
+                </div>,
+              ]);
+            } else if (fetchResponse === "FETCH_ERROR") {
+              setFecthResult([
+                <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
+                  Error while fetching from remote!
+                </div>,
+              ]);
+            } else {
+              const fetchArray = fetchResponse.fetchedItems;
+              setFecthResult([...fetchArray]);
+            }
+          }
+        })
+        .catch((err) => {
+          setFecthResult([
+            <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
+              Error while fetching from remote!
+            </div>,
+          ]);
+        });
+    }, []);
+
+    return (
+      <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
+        <div className="mx-3 my-3 text-3xl font-sans text-gray-800">
+          Fetch Result
+        </div>
+        {fetchResult && fetchResult.length > 0 ? (
+          <>
+            <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700">
+              {fetchResult.map((result) => {
+                return (
+                  <div className="my-1 mx-2 break-normal" key={result}>
+                    {result}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="rounded mx-auto p-4 my-auto w-11/12 shadow bg-orange-200 border-orange-700 text-xl font-sand font-semibold">
+              Fetching changes from remote...
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  function PullRemoteComponent() {
+    const [pullResult, setPullResult] = useState([]);
+
+    useEffect(() => {
+      axios({
+        url: globalAPIEndpoint,
+        method: "POST",
+        data: {
+          query: `
+            mutation GitConvexMutation{
+              pullFromRemote(repoId: "${repoIdState}"){
+                status
+                pulledItems
+              }
+            }
+          `,
+        },
+      })
+        .then((res) => {
+          if (res.data.data && !res.data.error) {
+            const pullResponse = res.data.data.pullFromRemote;
+
+            if (pullResponse.status === "PULL_FAILED") {
+              setPullResult([
+                <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
+                  Error while pulling from remote!
+                </div>,
+              ]);
+            } else if (pullResponse.status === "PULL_EMPTY") {
+              setPullResult([
+                <div className="text-xl p-2 text-gray-900 font-semibold">
+                  No changes to Pull from remote
+                </div>,
+              ]);
+            } else {
+              const pullArray = pullResponse.pulledItems;
+              setPullResult([...pullArray]);
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setPullResult([
+            <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
+              Error while pulling from remote!
+            </div>,
+          ]);
+        });
+    }, []);
+
+    return (
+      <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
+        <div className="mx-3 my-3 text-3xl font-sans text-gray-800">
+          Pull Result
+        </div>
+        {pullResult && pullResult.length > 0 ? (
+          <>
+            <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700">
+              {pullResult.map((result) => {
+                return (
+                  <div className="my-1 mx-2 break-normal" key={result}>
+                    {result}
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="rounded mx-auto p-4 my-auto w-11/12 shadow bg-orange-200 border-orange-700 text-xl font-sand font-semibold">
+              Pulling changes from remote...
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
 
   const {
     gitRemoteData,
@@ -174,7 +338,6 @@ export default function RepositoryDetails(props) {
                   if (event.target.id === "commit-log__backdrop") {
                     setShowCommitLogs(false);
                   }
-                  console.log("Press");
                 }}
               >
                 <div
@@ -309,12 +472,24 @@ export default function RepositoryDetails(props) {
                 </tr>
                 <tr>
                   <td className="w-1/2">
-                    <div className="rounded text-center cursor-pointer p-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xl font-sans">
+                    <div
+                      className="rounded text-center cursor-pointer p-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xl font-sans"
+                      onClick={() => {
+                        setBackdropToggle(true);
+                        setAction("fetch");
+                      }}
+                    >
                       Fetch from remote
                     </div>
                   </td>
                   <td className="w-1/2">
-                    <div className="mx-auto text-center cursor-pointer rounded text-white p-2 bg-blue-500 hover:bg-blue-600 text-xl font-sans">
+                    <div
+                      className="mx-auto text-center cursor-pointer rounded text-white p-2 bg-blue-500 hover:bg-blue-600 text-xl font-sans"
+                      onClick={() => {
+                        setBackdropToggle(true);
+                        setAction("pull");
+                      }}
+                    >
                       Pull from remote
                     </div>
                   </td>
@@ -446,6 +621,31 @@ export default function RepositoryDetails(props) {
 
   return (
     <>
+      {backdropToggle ? (
+        <div
+          className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
+          id="repo-backdrop"
+          style={{ background: "rgba(0,0,0,0.6)" }}
+          onClick={(event) => {
+            if (event.target.id === "repo-backdrop") {
+              setBackdropToggle(false);
+              setAction("");
+            }
+          }}
+        >
+          <>{action === "fetch" ? memoizedFetchRemoteComponent : null}</>
+          <>{action === "pull" ? memoizedPullRemoteComponent : null}</>
+          <div
+            className="float-right p-1 my-2 bg-red-500 text-2xl cursor-pointer text-center text-white my-5 pl-2 pr-2 h-12 align-middle rounded-sm shadow-md mr-5"
+            onClick={() => {
+              setBackdropToggle(false);
+              setAction("");
+            }}
+          >
+            X
+          </div>
+        </div>
+      ) : null}
       <div className="w-full fixed bg-gray-600 opacity-50"></div>
       <div className="rp_repo-view w-screen h-screen p-6 mx-auto rounded-lg justify-evenly overflow-auto">
         {gitRepoStatus && !repoFetchFailed ? (
