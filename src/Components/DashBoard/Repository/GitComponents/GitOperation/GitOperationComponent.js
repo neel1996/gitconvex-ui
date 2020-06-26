@@ -138,7 +138,7 @@ export default function GitOperationComponent(props) {
     return () => {
       return source.cancel();
     };
-  }, [list, props.repoId]);
+  }, [list, props.repoId, viewReload]);
 
   const actionButtons = [
     {
@@ -258,7 +258,8 @@ export default function GitOperationComponent(props) {
         },
       })
         .then((res) => {
-          setViewReload(!viewReload);
+          let localReload = viewReload + 1;
+          setViewReload(localReload);
           if (res.data.data && !res.data.error) {
             if (res.data.data.removeStagedItem === "STAGE_REMOVE_SUCCESS") {
               let localStagedItems = stageItems;
@@ -290,7 +291,8 @@ export default function GitOperationComponent(props) {
         },
       })
         .then((res) => {
-          setViewReload(!viewReload);
+          let localReload = viewReload + 1;
+          setViewReload(localReload);
           if (res.data.data && !res.data.error) {
             if (
               res.data.data.removeAllStagedItem === "STAGE_ALL_REMOVE_SUCCESS"
@@ -402,6 +404,7 @@ export default function GitOperationComponent(props) {
               setAction("");
               let closeViewCount = viewReload + 1;
               setViewReload(closeViewCount);
+              setStagedItems([]);
             }
           }}
         >

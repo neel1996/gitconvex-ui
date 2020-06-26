@@ -58,6 +58,10 @@ export default function CommitComponent(props) {
   }, [props]);
 
   function commitHandler(commitMsg) {
+    commitMsg = commitMsg.toString().split("\n");
+
+    console.log(commitMsg.join("||"));
+
     axios({
       url: globalAPIEndpoint,
       method: "POST",
