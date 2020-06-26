@@ -30,12 +30,12 @@ export default function RepositoryDetails(props) {
   }, [repoIdState]);
 
   const memoizedFetchRemoteComponent = useMemo(() => {
-    return <FetchRemoteComponent></FetchRemoteComponent>;
-  }, []);
+    return <FetchRemoteComponent repoId={repoIdState}></FetchRemoteComponent>;
+  }, [repoIdState]);
 
   const memoizedPullRemoteComponent = useMemo(() => {
-    return <PullRemoteComponent></PullRemoteComponent>;
-  }, []);
+    return <PullRemoteComponent repoId={repoIdState}></PullRemoteComponent>;
+  }, [repoIdState]);
 
   useEffect(() => {
     const endpointURL = globalAPIEndpoint;
@@ -104,7 +104,8 @@ export default function RepositoryDetails(props) {
     }
   }, [props.parentProps, backdropToggle]);
 
-  function FetchRemoteComponent() {
+  function FetchRemoteComponent(props) {
+    const { repoId } = props;
     const [fetchResult, setFecthResult] = useState([]);
 
     useEffect(() => {
@@ -114,7 +115,7 @@ export default function RepositoryDetails(props) {
         data: {
           query: `
             mutation GitConvexMutation{
-              fetchFromRemote(repoId: "${repoIdState}"){
+              fetchFromRemote(repoId: "${repoId}"){
                 status
                 fetchedItems
               }
@@ -150,7 +151,7 @@ export default function RepositoryDetails(props) {
             </div>,
           ]);
         });
-    }, []);
+    }, [repoId]);
 
     return (
       <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
@@ -180,7 +181,9 @@ export default function RepositoryDetails(props) {
     );
   }
 
-  function PullRemoteComponent() {
+  function PullRemoteComponent(props) {
+    const { repoId } = props;
+
     const [pullResult, setPullResult] = useState([]);
 
     useEffect(() => {
@@ -190,7 +193,7 @@ export default function RepositoryDetails(props) {
         data: {
           query: `
             mutation GitConvexMutation{
-              pullFromRemote(repoId: "${repoIdState}"){
+              pullFromRemote(repoId: "${repoId}"){
                 status
                 pulledItems
               }
@@ -228,7 +231,7 @@ export default function RepositoryDetails(props) {
             </div>,
           ]);
         });
-    }, []);
+    }, [repoId]);
 
     return (
       <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
