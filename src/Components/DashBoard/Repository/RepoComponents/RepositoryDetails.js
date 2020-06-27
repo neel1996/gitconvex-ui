@@ -344,7 +344,7 @@ export default function RepositoryDetails(props) {
                 }}
               >
                 <div
-                  className="float-right text-2xl font-sans pl-2 pr-2 p-1 cursor-pointer rounded-lg shadow-sm bg-red-500"
+                  className="float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
                   onClick={() => {
                     setShowCommitLogs(false);
                   }}
@@ -628,7 +628,7 @@ export default function RepositoryDetails(props) {
         <div
           className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
           id="repo-backdrop"
-          style={{ background: "rgba(0,0,0,0.6)" }}
+          style={{ background: "rgba(0,0,0,0.7)" }}
           onClick={(event) => {
             if (event.target.id === "repo-backdrop") {
               setBackdropToggle(false);
@@ -639,7 +639,7 @@ export default function RepositoryDetails(props) {
           <>{action === "fetch" ? memoizedFetchRemoteComponent : null}</>
           <>{action === "pull" ? memoizedPullRemoteComponent : null}</>
           <div
-            className="float-right p-1 my-2 bg-red-500 text-2xl cursor-pointer text-center text-white my-5 pl-2 pr-2 h-12 align-middle rounded-sm shadow-md mr-5"
+            className="float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
               setBackdropToggle(false);
               setAction("");

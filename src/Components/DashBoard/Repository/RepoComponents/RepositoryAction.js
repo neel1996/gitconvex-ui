@@ -31,14 +31,18 @@ export default function RepositoryAction() {
   const [branchError, setBranchError] = useState(false);
 
   const memoizedGitTracker = useMemo(() => {
-    return <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>;
+    if (defaultRepo && defaultRepo.id) {
+      return (
+        <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>
+      );
+    }
   }, [defaultRepo]);
 
   useEffect(() => {
     //Effect dep function
 
     function fetchSelectedRepoStatus() {
-      const repoId = defaultRepo.id;
+      const repoId = defaultRepo && defaultRepo.id;
 
       if (repoId) {
         const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
@@ -291,7 +295,9 @@ export default function RepositoryAction() {
                 Branch switching failed.Commit your changes and try again
               </div>
             ) : null}
-            {selectedRepoDetails && selectedFlag ? memoizedGitTracker : null}
+            {selectedRepoDetails && selectedFlag && defaultRepo.id
+              ? memoizedGitTracker
+              : null}
           </div>
         </div>
       ) : (

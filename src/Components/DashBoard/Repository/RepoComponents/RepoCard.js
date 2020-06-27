@@ -68,7 +68,7 @@ export default function RepoCard(props) {
   return (
     <NavLink
       to={`/dashboard/repository/${repoData.id}`}
-      className="w-11/12 xl:w-1/3 lg:w-2/3 md:w-1/2 block p-6 mx-6 rounded-lg border border-gray-300 shadow-md my-6 text-center bg-indigo-500 cursor-pointer hover:shadow-xl"
+      className="w-11/12 xl:w-1/2 lg:w-2/3 md:w-1/2 block p-6 mx-6 rounded-lg border border-gray-300 shadow-md my-6 text-center bg-indigo-500 cursor-pointer hover:shadow-xl"
       key={repoData.repoName}
     >
       <div className="text-center bg-indigo-300 text-white text-5xl my-2 px-10 py-5 rounded shadow">

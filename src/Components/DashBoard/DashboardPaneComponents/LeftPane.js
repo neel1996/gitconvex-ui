@@ -36,7 +36,7 @@ export default function LeftPane(props) {
   ];
 
   return (
-    <div className="dashboard-leftpane w-1/4 shadow-md block p-3 bg-white-400">
+    <div className="dashboard-leftpane overflow-auto w-1/4 lg:w-1/3 shadow-md block p-3 bg-white-400">
       <div
         className="flex justify-center items-center bg-blue-100 cursor-pointer"
         onClick={(event) => {

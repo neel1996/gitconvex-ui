@@ -322,7 +322,7 @@ export default function GitOperationComponent(props) {
           </div>
           <div className="flex mx-auto p-2 text-center font-sans text-lg text-white bg-indigo-400 rounded">
             <div className="w-3/4">Staged File</div>
-            <div className="w-1/4">Action</div>
+            <div className="w-1/2">Action</div>
           </div>
           <div
             className="block mx-auto overflow-auto"
@@ -338,9 +338,9 @@ export default function GitOperationComponent(props) {
                     <div className="w-3/4 break-all mx-4 text-xl text-gray-800 font-sans">
                       {item}
                     </div>
-                    <div className="w-1/4 mx-auto">
+                    <div className="w-1/2 mx-auto">
                       <div
-                        className="mx-auto w-1/4 text-white cursor-pointer break-all text-center p-2 rounded bg-red-500 shadow hover:bg-red-600 hover:shadow-md"
+                        className="mx-auto w-1/2 text-white cursor-pointer break-all text-center p-2 rounded bg-red-500 shadow hover:bg-red-600 hover:shadow-md"
                         onClick={() => {
                           removeStagedItem(item);
                         }}
@@ -414,7 +414,7 @@ export default function GitOperationComponent(props) {
           {actionComponent(action)}
 
           <div
-            className="float-right p-1 my-2 bg-red-500 text-2xl cursor-pointer text-center text-white my-5 pl-2 pr-2 h-12 align-middle rounded-sm shadow-md mr-5"
+            className="float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
               setAction("");
             }}
