@@ -21,8 +21,8 @@ export default function RightPane(props) {
 
   return (
     <>
-      <div className="dashboard-rightpane w-11/12 mx-auto justify-center overflow-auto">
-        <div className="w-11/12 p-3 my-4 rounded-lg shadow-md flex rightpane-details flex justify-between mx-auto bg-blue-100 border-2 border-blue-100">
+      <div className="dashboard-rightpane w-full mx-auto justify-center overflow-auto">
+        <div className="w-11/12 p-3 my-6 rounded-lg shadow-md flex rightpane-details flex justify-between mx-auto bg-blue-100 border-2 border-blue-100">
           {hcParams.map((entry) => {
             return (
               <div key={entry.label}>

@@ -3,11 +3,13 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { DELETE_PRESENT_REPO } from "../../../actionStore";
+import { ContextProvider } from "../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_SETTINGS_DBPATH,
-  ROUTE_SETTINGS_REPODETAILS,
+  ROUTE_SETTINGS_REPODETAILS
 } from "../../../util/env_config";
 
 export default function Settings(props) {
@@ -15,17 +17,24 @@ export default function Settings(props) {
 
   const dbPathTextRef = useRef();
 
+  const { state, dispatch } = useContext(ContextProvider);
+  const { presentRepo } = state;
+
   const [dbPath, setDbPath] = useState("");
   const [repoDetails, setRepoDetails] = useState([]);
   const [backdropToggle, setBacldropToggle] = useState(false);
   const [deleteRepo, setDeleteRepo] = useState({});
   const [deleteRepoStatus, setDeleteRepoStatus] = useState("");
-  const [viewReload, setViewReload] = useState(false);
+  const [viewReload, setViewReload] = useState(0);
 
   useEffect(() => {
+    const token = axios.CancelToken;
+    const source = token.source();
+
     axios({
       url: globalAPIEndpoint,
       method: "POST",
+      cancelToken: source.token,
       data: {
         query: `
           query GitConvexResults{
@@ -50,6 +59,7 @@ export default function Settings(props) {
     axios({
       url: globalAPIEndpoint,
       method: "POST",
+      cancelToken: source.token,
       data: {
         query: `
             query GitConvexResults{
@@ -75,6 +85,10 @@ export default function Settings(props) {
       .catch((err) => {
         console.log(err);
       });
+
+    return () => {
+      source.cancel();
+    };
   }, [props, viewReload]);
 
   const databasePathSettings = () => {
@@ -174,8 +188,25 @@ export default function Settings(props) {
     })
       .then((res) => {
         if (res.data.data && !res.data.eror) {
-          const { status } = res.data.data.deleteRepo;
+          const { status, repoId } = res.data.data.deleteRepo;
           if (status === "DELETE_SUCCESS") {
+            if (presentRepo && presentRepo.length > 0) {
+              let localState = presentRepo[0];
+
+              localState = localState.map((item) => {
+                if (item.id.toString() === repoId.toString()) {
+                  return null;
+                } else {
+                  return item;
+                }
+              });
+
+              dispatch({
+                action: DELETE_PRESENT_REPO,
+                payload: [...localState],
+              });
+            }
+
             setDeleteRepoStatus("success");
           } else {
             setDeleteRepoStatus("failed");
@@ -262,8 +293,10 @@ export default function Settings(props) {
           style={{ background: "rgba(0,0,0,0.7)" }}
           onClick={(event) => {
             if (event.target.id === "settings-backdrop") {
+              setDeleteRepoStatus("");
               setBacldropToggle(false);
-              setViewReload(true);
+              let localViewReload = viewReload + 1;
+              setViewReload(localViewReload);
             }
           }}
         >
@@ -272,7 +305,8 @@ export default function Settings(props) {
             className="top-0 right-0 fixed float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
               setBacldropToggle(false);
-              setViewReload(true);
+              let localViewReload = viewReload + 1;
+              setViewReload(localViewReload);
             }}
           >
             X

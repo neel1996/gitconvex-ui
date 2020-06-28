@@ -1,8 +1,11 @@
 import axios from "axios";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useContext } from "react";
 import { globalAPIEndpoint, ROUTE_ADD_REPO } from "../../../../util/env_config";
+import { DELETE_PRESENT_REPO } from "../../../../actionStore";
+import { ContextProvider } from "../../../../context";
 
 export default function AddRepoForm(props) {
+  const { state, dispatch } = useContext(ContextProvider);
   const [repoNameState, setRepoName] = useState("");
   const [repoPathState, setRepoPath] = useState("");
   const [repoAddFailed, setRepoAddFailed] = useState(false);
@@ -49,6 +52,13 @@ export default function AddRepoForm(props) {
               repoNameRef.current.value = "";
               repoPathRef.current.value = "";
               initCheckRef.current.value = "";
+
+              dispatch({
+                action: DELETE_PRESENT_REPO,
+                payload: [],
+              });
+
+              console.log(state.presentRepo);
             } else {
               setRepoAddFailed(true);
               setRepoAddSuccess(false);
@@ -90,7 +100,7 @@ export default function AddRepoForm(props) {
   }
 
   return (
-    <div className="block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 w-1/2 mx-auto">
+    <div className="block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 mx-auto">
       <div className="repo-form block">
         {repoAddStatusBanner()}
         <div className="my-3 text-center block text-3xl font-sans text-gray-800">
@@ -140,20 +150,20 @@ export default function AddRepoForm(props) {
         </div>
         <div className="flex w-11/12 justify-start mx-auto my-5 cursor-pointer">
           <div
-            className="block w-1/2 mx-3 p-3 my-2 bg-green-400 rounded-md shadow-md hover:bg-green-500"
-            onClick={() => {
-              storeRepoAPI(repoNameState, repoPathState);
-            }}
-          >
-            Submit
-          </div>
-          <div
             className="my-2 w-1/2 block mx-3 p-3 bg-red-400 rounded-md shadow-md hover:bg-red-500"
             onClick={() => {
               props.formEnable(false);
             }}
           >
             Close
+          </div>
+          <div
+            className="block w-1/2 mx-3 p-3 my-2 bg-green-400 rounded-md shadow-md hover:bg-green-500"
+            onClick={() => {
+              storeRepoAPI(repoNameState, repoPathState);
+            }}
+          >
+            Submit
           </div>
         </div>
       </div>

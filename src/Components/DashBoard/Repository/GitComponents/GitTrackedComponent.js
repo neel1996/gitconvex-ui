@@ -117,8 +117,10 @@ export default function GitTrackedComponent(props) {
             styleSelector += "text-yellow-900 bg-yellow-200";
             modifiedArtifacts.push(
               <div className="flex mx-auto justify-between" key={name}>
-                <div className={`${styleSelector} w-11/12`}> {name} </div>
-                <div className="rounded-lg shadow-sm border border-gray-300 p-2 text-center w-1/6">
+                <div className={`${styleSelector} w-11/12 break-all`}>
+                  {name}
+                </div>
+                <div className="rounded-lg shadow-sm border border-gray-300 p-2 text-center w-1/6 my-auto">
                   Modified
                 </div>
               </div>

@@ -29,6 +29,9 @@ export default function Dashboard(props) {
 
     const localStorageItems = ["OS_TYPE", "NODE_VERSION", "GIT_VERSION"];
 
+    const token = axios.CancelToken;
+    const source = token.source();
+
     if (osCheck && gitCheck && nodeCheck) {
       setPlatform(osCheck);
       setGitVersion(gitCheck);
@@ -46,6 +49,7 @@ export default function Dashboard(props) {
         axios({
           url: globalAPIEndpoint,
           method: "POST",
+          cancelToken: source.token,
           data: {
             query: `
               query GitConvexAPI{
@@ -78,6 +82,9 @@ export default function Dashboard(props) {
           });
       }
     }
+    return () => {
+      source.cancel();
+    };
   }, [state.hcParams]);
 
   const params = {
@@ -107,7 +114,7 @@ export default function Dashboard(props) {
 
   return (
     <>
-      <div className="flex w-full h-full">
+      <div className="xl:flex lg:flex md:block w-full h-full">
         <LeftPane parentProps={props}></LeftPane>
         {renderRightPaneComponent()}
       </div>

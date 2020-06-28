@@ -160,7 +160,10 @@ export default function GitOperationComponent(props) {
 
   const tableColumns = ["Changes", "File Status", "Action"];
 
-  function stageGitComponent(stageItem) {
+  function stageGitComponent(stageItem, event) {
+    let localViewReload = viewReload + 1;
+    setViewReload(localViewReload);
+
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -190,13 +193,13 @@ export default function GitOperationComponent(props) {
     let statusPill = (status) => {
       if (status === "M") {
         return (
-          <div className="p-1 text-center text-yellow-700 border border-yellow-500 rounded-md shadow-sm">
+          <div className="p-1 mx-auto text-center w-2/3 text-yellow-700 border border-yellow-500 rounded-md shadow-sm">
             Modified
           </div>
         );
       } else {
         return (
-          <div className="p-1 text-center text-indigo-700 border border-indigo-500 rounded-md shadow-sm">
+          <div className="p-1 mx-auto text-center w-2/3 text-indigo-700 border border-indigo-500 rounded-md shadow-sm">
             Untracked
           </div>
         );
@@ -206,9 +209,9 @@ export default function GitOperationComponent(props) {
     let actionButton = (stageItem) => {
       return (
         <div
-          className="p-1 bg-green-300 text-white rounded-md shadow-sm hover:shadow-md hover:bg-green-600"
+          className="p-1 mx-auto cursor-pointer bg-green-300 text-white w-2/3 rounded-md shadow-sm hover:shadow-md hover:bg-green-600"
           onClick={(event) => {
-            stageGitComponent(stageItem);
+            stageGitComponent(stageItem, event);
           }}
         >
           Add
@@ -245,7 +248,10 @@ export default function GitOperationComponent(props) {
   }
 
   function getStagedFilesComponent() {
-    function removeStagedItem(item) {
+    function removeStagedItem(item, event) {
+      let localViewReload = viewReload + 1;
+      setViewReload(localViewReload);
+
       axios({
         url: globalAPIEndpoint,
         method: "POST",
@@ -278,7 +284,10 @@ export default function GitOperationComponent(props) {
         .catch((err) => {});
     }
 
-    function removeAllStagedItems() {
+    function removeAllStagedItems(event) {
+      let localViewReload = viewReload + 1;
+      setViewReload(localViewReload);
+
       axios({
         url: globalAPIEndpoint,
         method: "POST",
@@ -313,8 +322,8 @@ export default function GitOperationComponent(props) {
             </div>
             <div
               className="p-2 rounded text-white bg-red-700 text-xl rounded shadow cursor-pointer hover:bg-red-800"
-              onClick={() => {
-                removeAllStagedItems();
+              onClick={(event) => {
+                removeAllStagedItems(event);
               }}
             >
               Remove All Items
@@ -341,8 +350,8 @@ export default function GitOperationComponent(props) {
                     <div className="w-1/2 mx-auto">
                       <div
                         className="mx-auto w-1/2 text-white cursor-pointer break-all text-center p-2 rounded bg-red-500 shadow hover:bg-red-600 hover:shadow-md"
-                        onClick={() => {
-                          removeStagedItem(item);
+                        onClick={(event) => {
+                          removeStagedItem(item, event);
                         }}
                       >
                         Remove
@@ -414,7 +423,7 @@ export default function GitOperationComponent(props) {
           {actionComponent(action)}
 
           <div
-            className="float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="float-right fixed right-0 top-0 font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
               setAction("");
             }}
@@ -428,7 +437,7 @@ export default function GitOperationComponent(props) {
           const { label, color, key } = item;
           return (
             <div
-              className={`my-auto align-middle item-center w-1/4 text-center p-2 rounded-md bg-0 border border-${color}-500 text-${color}-700 font-sans text-xl cursor-pointer hover:bg-${color}-500 hover:text-white`}
+              className={`my-auto align-middle item-center w-1/4 text-center p-2 rounded-md bg-0 border border-${color}-500 text-${color}-700 font-sans cursor-pointer hover:bg-${color}-500 hover:text-white`}
               key={key}
               onClick={() => setAction(key)}
             >
@@ -438,53 +447,53 @@ export default function GitOperationComponent(props) {
         })}
       </div>
       {getTableData() && getTableData().length > 0 ? (
-        <div
-          className="overflow-auto p-2 mx-auto rounded shadow border"
-          style={{ height: "450px" }}
-        >
-          <table
-            className="table border-0 w-full cursor-pointer"
-            cellPadding="10"
+        <div className="p-2 mx-auto rounded shadow border">
+          <div className="table-header flex justify-between w-full bg-orange-300 p-3 text-xl font-sans">
+            {tableColumns.map((column, index) => {
+              return (
+                <div
+                  key={column}
+                  className={`font-bold text-center border-r border-gray-200 ${
+                    index === 0 ? "w-3/4" : "w-1/4"
+                  }`}
+                >
+                  {column}
+                </div>
+              );
+            })}
+          </div>
+
+          <div
+            className="block table-rows w-full overflow-auto"
+            style={{ height: "400px" }}
           >
-            <thead>
-              <tr className="bg-orange-300 p-3 text-xl font-sans">
-                {tableColumns.map((column) => {
-                  return (
-                    <th
-                      key={column}
-                      className="font-bold border-r border-gray-200"
-                    >
-                      {column}
-                    </th>
-                  );
-                })}
-              </tr>
-            </thead>
-            <tbody>
+            <div>
               {getTableData() &&
                 getTableData().map((tableData, index) => {
                   return (
-                    <tr
-                      className="text-md font-sans border-b border-gray-300"
+                    <div
+                      className="flex font-sans p-3 border-b-2 border-b border-gray-300"
                       key={`tableItem-${index}`}
                     >
                       {tableData.map((data, index) => {
                         return (
-                          <td
+                          <div
                             key={`${data}-${index}`}
-                            className={`${
-                              index === 0 ? "text-left" : "text-center"
+                            className={`break-all items-center align-middle my-auto ${
+                              index === 0
+                                ? "w-3/4 text-left"
+                                : "w-1/4 text-center"
                             }`}
                           >
                             {data}
-                          </td>
+                          </div>
                         );
                       })}
-                    </tr>
+                    </div>
                   );
                 })}
-            </tbody>
-          </table>
+            </div>
+          </div>
         </div>
       ) : (
         <>{noChangesComponent()}</>

@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { PRESENT_REPO } from "../../../../actionStore";
+import { PRESENT_REPO, DELETE_PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
@@ -18,9 +18,13 @@ export default function RepoComponent(props) {
   useEffect(() => {
     const fetchRepoURL = globalAPIEndpoint;
 
+    const token = axios.CancelToken;
+    const source = token.source();
+
     axios({
       url: fetchRepoURL,
       method: "POST",
+      cancelToken: source.token,
       data: {
         query: `
           query GitConvexResults{
@@ -48,11 +52,20 @@ export default function RepoComponent(props) {
         setRepo(repoContent);
 
         dispatch({
-          type: PRESENT_REPO,
-          payload: repoContent,
+          type: DELETE_PRESENT_REPO,
+          payload: [],
+        });
+
+        dispatch({
+          action: PRESENT_REPO,
+          payload: [...repoContent],
         });
       }
     });
+
+    return () => {
+      source.cancel();
+    };
   }, [repoFormEnable, dispatch]);
 
   const showAvailableRepo = () => {

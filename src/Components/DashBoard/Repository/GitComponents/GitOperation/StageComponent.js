@@ -8,6 +8,7 @@ export default function StageComponent(props) {
   console.log(props);
 
   const [allStaged, setAllStaged] = useState(false);
+  const [loading, setLodaing] = useState(false);
   const [errorInd, setErrorInd] = useState(false);
 
   useEffect(() => {
@@ -17,6 +18,7 @@ export default function StageComponent(props) {
   }, [props]);
 
   function stageAllChanges() {
+    setLodaing(true);
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -29,6 +31,7 @@ export default function StageComponent(props) {
       },
     })
       .then((res) => {
+        setLodaing(false);
         if (res.data.data && !res.data.error) {
           if (res.data.data.stageAllItems === "ALL_STAGED") {
             setAllStaged(true);
@@ -36,13 +39,14 @@ export default function StageComponent(props) {
         }
       })
       .catch((err) => {
+        setLodaing(false);
         setErrorInd(true);
       });
   }
 
   return (
     <>
-      <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md">
+      <div className="w-5/6 mx-auto my-auto bg-gray-200 p-6 rounded-md">
         <>
           {stageComponents.length > 0 && !allStaged ? (
             <>
@@ -65,14 +69,20 @@ export default function StageComponent(props) {
                   Staging Failed!
                 </div>
               ) : null}
-              <div
-                className="mx-auto my-4 text-center bg-green-600 text-xl p-3 rounded-md shadow-md font-sans text-white hover:bg-green-400 cursor-pointer"
-                onClick={() => {
-                  stageAllChanges();
-                }}
-              >
-                Confirm Staging
-              </div>
+              {loading ? (
+                <div className="mx-auto my-4 text-center bg-gray-600 text-xl p-3 rounded-md shadow-md font-sans text-white hover:bg-gray-400 cursor-pointer">
+                  Staging in prgoress...
+                </div>
+              ) : (
+                <div
+                  className="mx-auto my-4 text-center bg-green-600 text-xl p-3 rounded-md shadow-md font-sans text-white hover:bg-green-400 cursor-pointer"
+                  onClick={() => {
+                    stageAllChanges();
+                  }}
+                >
+                  Confirm Staging
+                </div>
+              )}
             </>
           ) : (
             <div className="p-5 bg-white text-black font-sans font-semibold rounded shadow border border-gray-100">

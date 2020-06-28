@@ -6,6 +6,7 @@ import {
   GIT_GLOBAL_REPOID,
   GIT_ACTION_TRACKED_FILES,
   GIT_ACTION_UNTRACKED_FILES,
+  DELETE_PRESENT_REPO,
 } from "./actionStore";
 
 export default function reducer(state, action) {
@@ -38,6 +39,11 @@ export default function reducer(state, action) {
       return {
         ...state,
         presentRepo: [...state.presentRepo, action.payload],
+      };
+    case DELETE_PRESENT_REPO:
+      return {
+        ...state,
+        presentRepo: [...action.payload],
       };
     case GIT_TRACKED_FILES:
       state.modifiedGitFiles = [];

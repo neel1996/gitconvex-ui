@@ -275,7 +275,7 @@ export default function RepositoryDetails(props) {
 
   const gitRepoHeaderContent = () => {
     return (
-      <div className="mx-auto w-5/6 flex rounded-md shadow-md border-2 border-gray-100 p-4 justify-evenly">
+      <div className="mx-auto w-full flex rounded-md shadow-md border-2 border-gray-100 p-4 justify-evenly">
         <div className="text-xl p-2 mx-2">Repo Name</div>
         <div className="bg-blue-100 text-blue-900 p-3 rounded-sm border border-blue-200">
           {gitRepoName}
@@ -358,100 +358,79 @@ export default function RepositoryDetails(props) {
             </>
           ) : null}
 
-          <div className="block rounded-md shadow-sm border-2 border-dotted border-gray-400 p-6 my-6 mx-3">
-            <table className="table-auto" cellSpacing="10" cellPadding="20">
-              <tbody>
-                <tr>
-                  <td className="text-xl text-gray-600">Remote Host</td>
-                  <td>
-                    <div className="p-1 rounded-md border-2 shadow-md text-center w-full border-gray-200">
-                      <span className="p-3">{remoteLogo}</span>
-                      <span className="text-center text-lg">
-                        {gitRemoteHost}
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td className="text-xl text-gray-600">{gitRemoteHost} URL</td>
-                  <td>
-                    <span className="text-blue-400 hover:text-blue-500 cursor-pointer">
-                      {gitRemoteData}
-                    </span>
-                    <div>
-                      {isMultiRemote ? (
-                        <>
-                          <span className="font-sans text-gray-800 font-semibold mr-2">
-                            Entry truncated!
-                          </span>
-                          <span>Remote repos : {multiRemoteCount}</span>
-                        </>
-                      ) : null}
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td className="text-xl text-gray-600">Commit Logs</td>
-                  <td>
-                    <div
-                      className="rounded-md shadow-md p-3 text-center bg-orange-300 cursor-pointer"
-                      onClick={(event) => {
-                        setShowCommitLogs(true);
-                      }}
-                    >
-                      Show Commit Logs
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="block rounded-lg shadow-sm border-2 border-dotted border-gray-400 p-2 my-2 mx-3 w-1/2">
-            <table className="table-light" cellPadding="10">
-              <tbody>
-                <tr>
-                  <td className="text-lg text-gray-500 w-1/2">Total Commits</td>
-                  <td className="text-left text-md text-bold text-black-800 w-1/2">
-                    {gitTotalCommits} Commits
-                  </td>
-                </tr>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td className="text-lg text-gray-500 w-1/2">Latest Commit</td>
-                  <td className="text-left text-sm text-bold w-1/2 text-black-900 w-1/2">
-                    {gitLatestCommit}
-                  </td>
-                </tr>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td className="text-lg text-gray-500 align-text-top w-1/2">
-                    <div className="flex p-2 items-center align-middle">
-                      <div>Available Branches</div>
-                      <div
-                        id="addBranch"
-                        className="mx-10 rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-green-400 text-center mx-auto shadow hover:bg-green-500 cursor-pointer"
-                        onMouseEnter={(event) => {
-                          event.stopPropagation();
-                          event.preventDefault();
-                          let popUp =
-                            '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative">Click to add a new branch</div>';
-                          event.target.innerHTML += popUp;
-                        }}
-                        onMouseLeave={(event) => {
-                          event.target.innerHTML = "+";
-                        }}
-                      >
-                        +
+          <div className="block rounded-md w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
+            <div>
+              <div className="flex justify-evenly p-2 align-middle items-center">
+                <div className="text-xl text-gray-600 w-1/4">Remote Host</div>
+                <div className="text-center w-1/2 flex justify-center rounded-md border-2 shadow-md text-center items-center align-middle border-gray-200">
+                  <div className="p-3">{remoteLogo}</div>
+                  <div className="text-center text-lg">{gitRemoteHost}</div>
+                </div>
+              </div>
+
+              <div className="block mx-auto my-6">
+                <div className="flex justify-evenly">
+                  <div className="text-xl text-gray-600 w-1/4">
+                    {`${gitRemoteHost} URL`}
+                  </div>
+                  <div className="text-blue-400 hover:text-blue-500 cursor-pointer w-1/2 break-words">
+                    {gitRemoteData}
+                  </div>
+                </div>
+
+                <div className="flex justify-evenly my-1">
+                  {isMultiRemote ? (
+                    <>
+                      <div className="font-sans text-gray-800 font-semibold w-1/4 border-dotted border-b-2 border-gray-200">
+                        Entry truncated!
                       </div>
-                    </div>
-                  </td>
-                  <td className="w-1/2">
+                      <div className="w-1/2 border-dotted border-b-2 border-gray-200">
+                        {`Remote repos : ${multiRemoteCount}`}
+                      </div>
+                    </>
+                  ) : null}
+                </div>
+              </div>
+
+              <div className="block mx-auto my-6">
+                <div className="flex justify-evenly my-3">
+                  <div className="w-1/4 text-xl text-gray-600">Commit Logs</div>
+                  <div
+                    className="w-1/2 rounded-md shadow-md p-3 text-center bg-orange-300 cursor-pointer"
+                    onClick={(event) => {
+                      setShowCommitLogs(true);
+                    }}
+                  >
+                    Show Commit Logs
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="block rounded-md w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
+            <div className="block mx-auto my-2">
+              <div className="flex justify-around my-3">
+                <div className="text-lg text-gray-500 w-1/4">Total Commits</div>
+                <div className="text-left text-md text-bold text-black-800 w-1/2">
+                  {`${gitTotalCommits} Commits`}
+                </div>
+              </div>
+
+              <div className="flex justify-around my-3">
+                <div className="text-lg text-gray-500 w-1/4">Latest Commit</div>
+                <div className="text-left text-sm text-bold text-black-900 w-1/2">
+                  {gitLatestCommit}
+                </div>
+              </div>
+
+              <div className="flex justify-around mx-auto my-2 align-middle items-center">
+                <div className="text-lg text-gray-500 w-1/4">
+                  Available Branches
+                </div>
+
+                <div className="w-1/2 flex justify-evenly">
+                  <div className="w-1/4 my-auto">
                     {gitBranchList &&
                       gitCurrentBranch &&
                       gitBranchList.map((entry) => {
@@ -471,34 +450,45 @@ export default function RepositoryDetails(props) {
                           </div>
                         );
                       })}
-                  </td>
-                </tr>
-                <tr>
-                  <td className="w-1/2">
-                    <div
-                      className="rounded text-center cursor-pointer p-2 bg-indigo-500 hover:bg-indigo-600 text-white text-xl font-sans"
-                      onClick={() => {
-                        setBackdropToggle(true);
-                        setAction("fetch");
-                      }}
-                    >
-                      Fetch from remote
-                    </div>
-                  </td>
-                  <td className="w-1/2">
-                    <div
-                      className="mx-auto text-center cursor-pointer rounded text-white p-2 bg-blue-500 hover:bg-blue-600 text-xl font-sans"
-                      onClick={() => {
-                        setBackdropToggle(true);
-                        setAction("pull");
-                      }}
-                    >
-                      Pull from remote
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </div>
+                  <div
+                    id="addBranch"
+                    className="rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-green-400 text-center mx-auto shadow hover:bg-green-500 cursor-pointer"
+                    onMouseEnter={(event) => {
+                      let popUp =
+                        '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative">Click to add a new branch</div>';
+                      event.target.innerHTML += popUp;
+                    }}
+                    onMouseLeave={(event) => {
+                      event.target.innerHTML = "+";
+                    }}
+                  >
+                    +
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-around mx-auto mt-4">
+                <div
+                  className="w-1/3 rounded text-center cursor-pointer p-2 bg-indigo-500 hover:bg-indigo-600 text-white font-sans nowrap"
+                  onClick={() => {
+                    setBackdropToggle(true);
+                    setAction("fetch");
+                  }}
+                >
+                  Fetch from remote
+                </div>
+                <div
+                  className="w-1/3 text-center cursor-pointer rounded text-white p-2 bg-blue-500 hover:bg-blue-600 font-sans"
+                  onClick={() => {
+                    setBackdropToggle(true);
+                    setAction("pull");
+                  }}
+                >
+                  Pull from remote
+                </div>
+              </div>
+            </div>
           </div>
         </>
       );
@@ -657,7 +647,7 @@ export default function RepositoryDetails(props) {
               {gitRepoStatus ? gitRepoHeaderContent() : null}
             </div>
             <div className="w-full">
-              <div className="flex my-4 mx-auto justify-around">
+              <div className="xl:flex lg:block md:block sm:block my-4 mx-auto justify-around">
                 {gitRepoStatus ? gitRepoLeftPane() : null}
               </div>
             </div>

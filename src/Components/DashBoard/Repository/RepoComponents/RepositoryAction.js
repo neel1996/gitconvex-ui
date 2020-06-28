@@ -3,13 +3,15 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Redirect } from "react-router";
-import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../../actionStore";
+import {
+  GIT_GLOBAL_REPOID,
+  PRESENT_REPO
+} from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_FETCH_REPO,
-  ROUTE_REPO_DETAILS,
+  ROUTE_REPO_DETAILS
 } from "../../../../util/env_config";
 import GitTrackedComponent from "../GitComponents/GitTrackedComponent";
 
@@ -40,6 +42,8 @@ export default function RepositoryAction() {
 
   useEffect(() => {
     //Effect dep function
+    const token = axios.CancelToken;
+    const source = token.source();
 
     function fetchSelectedRepoStatus() {
       const repoId = defaultRepo && defaultRepo.id;
@@ -53,6 +57,7 @@ export default function RepositoryAction() {
           headers: {
             "Content-type": "application/json",
           },
+          cancelToken: source.token,
           data: {
             query: `
               query GitConvexApi
@@ -85,6 +90,7 @@ export default function RepositoryAction() {
       return await axios({
         url: globalAPIEndpoint,
         method: "POST",
+        cancelToken: source.token,
         data: {
           query: `
               query GitConvexApi{
@@ -112,8 +118,9 @@ export default function RepositoryAction() {
 
           dispatch({
             type: PRESENT_REPO,
-            payload: repoContent,
+            payload: [...repoContent],
           });
+
           setDefaultRepo(repoContent[0]);
           setAvailableRepos(repoContent);
           return repoContent;
@@ -121,13 +128,17 @@ export default function RepositoryAction() {
       });
     }
 
-    if (presentRepo && presentRepo.length >= 1) {
+    if (presentRepo && presentRepo[0]) {
       setAvailableRepos(presentRepo[0]);
       fetchSelectedRepoStatus();
     } else {
       invokeRepoFetchAPI();
       fetchSelectedRepoStatus();
     }
+
+    return () => {
+      source.cancel();
+    };
   }, [defaultRepo, activeBranch, presentRepo, dispatch, branchError]);
 
   function setTrackingBranch(branchName, event) {
@@ -157,43 +168,45 @@ export default function RepositoryAction() {
 
   function activeRepoPane() {
     return (
-      <div className="text-center mx-auto my-auto justify-around mt-3 p-3 rounded-md shadow-sm block border-2 border-gray-300 w-1/2">
-        <div className="flex justify-evenly">
-          <div className="font-sans font-semibold text-gray-900 my-1 mx-2 w-1/2">
+      <div className="flex justify-around mx-auto align-middle items-around my-4">
+        <div className="flex">
+          <div className="font-sans font-semibold text-gray-900 my-1">
             Choose saved repository
           </div>
           <select
-            className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500 w-1/2"
+            className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500"
             defaultValue="checked"
             onChange={(event) => {
               setSelectedFlag(true);
-              availableRepos.forEach((elm) => {
-                if (event.target.value === elm.repoName) {
-                  setDefaultRepo(elm);
-                  dispatch({ type: GIT_GLOBAL_REPOID, payload: elm.id });
-                }
-              });
+              availableRepos.length &&
+                availableRepos.forEach((elm) => {
+                  if (event.target.value === elm.repoName) {
+                    setDefaultRepo(elm);
+                    dispatch({ type: GIT_GLOBAL_REPOID, payload: elm.id });
+                  }
+                });
             }}
           >
             <option defaultChecked value="checked" hidden disabled>
               Select a repo
             </option>
-            {availableRepos.map((entry) => {
-              return (
-                <option value={entry.repoName} key={entry.repoName}>
-                  {entry.repoName}
-                </option>
-              );
-            })}
+            {availableRepos.length &&
+              availableRepos.map((entry) => {
+                return (
+                  <option value={entry.repoName} key={entry.repoName}>
+                    {entry.repoName}
+                  </option>
+                );
+              })}
           </select>
         </div>
         {selectedFlag ? (
-          <div className="text-center mx-auto my-auto mt-3 p-3 flex">
-            <div className="font-sans font-semibold text-gray-900 my-1 mx-2 w-1/2">
+          <div className="flex">
+            <div className="font-sans font-semibold text-gray-900 my-1">
               Branch
             </div>
             <select
-              className="bg-indigo-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-indigo-500 w-1/2"
+              className="bg-indigo-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-indigo-500"
               defaultValue="checked"
               onChange={(event) => {
                 event.persist();
@@ -215,7 +228,7 @@ export default function RepositoryAction() {
   function getTopPaneComponent(icon, value) {
     return (
       <>
-        <div className="flex justify-between mx-2 font-sans text-lg text-gray-700">
+        <div className="flex p-2 border-b-2 border-indigo-400 border-dashed justify-between mx-2 font-sans text-lg text-gray-700">
           <div className="mx-2">
             <FontAwesomeIcon icon={["fas", icon]}></FontAwesomeIcon>
           </div>
@@ -244,20 +257,29 @@ export default function RepositoryAction() {
   }
 
   return (
-    <div className="overflow-scroll w-11/12 h-full mx-auto block justify-center overflow-x-hidden">
+    <div className="overflow-scroll w-full h-full mx-auto block justify-center overflow-x-hidden">
       {availableRepos ? (
-        <div>
-          <div className="flex text-center justify-center mt-6">
+        <div className="">
+          <div className="mx-auto my-6 w-11/12 rounded shadow border border-gray-200">
             {activeRepoPane()}
             {selectedRepoDetails && selectedFlag ? (
-              <div className="my-auto mx-3 p-6 rounded-md shadow-sm flex mx-auto justify-center border-2 border-gray-300">
+              <div className="my-auto flex justify-around p-3 mx-auto">
                 {getTopPaneComponent(
                   "code-branch",
                   selectedRepoDetails.gitBranchList &&
                     selectedRepoDetails.gitBranchList.length > 0 &&
-                    !selectedRepoDetails.gitBranchList[0].match(/NO_BRANCH/gi)
-                    ? selectedRepoDetails.gitBranchList.length
-                    : 0 + " Branches"
+                    !selectedRepoDetails.gitBranchList[0].match(
+                      /NO_BRANCH/gi
+                    ) ? (
+                    <>
+                      {selectedRepoDetails.gitBranchList.length === 1
+                        ? 1 + " branch"
+                        : selectedRepoDetails.gitBranchList.length +
+                          " branches"}
+                    </>
+                  ) : (
+                    "No Branches"
+                  )
                 )}
                 {getTopPaneComponent(
                   "sort-amount-up",
@@ -300,12 +322,7 @@ export default function RepositoryAction() {
               : null}
           </div>
         </div>
-      ) : (
-        <div className="block p-4 mx-auto my-auto text-center font-sans bg-pink-200 rounded-md shadow-lg text-red-800 font-bold h-auto justify-center">
-          {alert("Please add a repository!")}
-          <Redirect to="/dashboard"></Redirect>
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }
