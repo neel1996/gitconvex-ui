@@ -59,7 +59,7 @@ export default function LeftPane(props) {
               className="flex border-b border-black-100 p-3 hover:bg-gray-100 mx-2"
               key={entry.label}
             >
-              <div className="flex">
+              <div className="flex align-middle items-center my-auto">
                 <div className="text-sm">{entry.icon}</div>
                 <div className="ml-2 xl:text-2xl lg:text-2xl md:text-xl text-gray-700">
                   {entry.label}

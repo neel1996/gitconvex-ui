@@ -3,15 +3,12 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import {
-  GIT_GLOBAL_REPOID,
-  PRESENT_REPO
-} from "../../../../actionStore";
+import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_FETCH_REPO,
-  ROUTE_REPO_DETAILS
+  ROUTE_REPO_DETAILS,
 } from "../../../../util/env_config";
 import GitTrackedComponent from "../GitComponents/GitTrackedComponent";
 
@@ -257,9 +254,9 @@ export default function RepositoryAction() {
   }
 
   return (
-    <div className="overflow-scroll w-full h-full mx-auto block justify-center overflow-x-hidden">
+    <div className="w-full h-full mx-auto block justify-center overflow-x-hidden">
       {availableRepos ? (
-        <div className="">
+        <div>
           <div className="mx-auto my-6 w-11/12 rounded shadow border border-gray-200">
             {activeRepoPane()}
             {selectedRepoDetails && selectedFlag ? (
@@ -305,7 +302,7 @@ export default function RepositoryAction() {
                     className="flex text-6xl mt-20 text-center text-gray-300 font-bold mx-auto my-auto h-full w-full"
                   ></FontAwesomeIcon>
                 </div>
-                <div className="block text-6xl text-gray-200 mx-auto text-center align-middle">
+                <div className="block xl:text-6xl lg:text-3xl md:text-2xl my-4 text-gray-200 mx-auto text-center align-middle">
                   No repositories selected
                 </div>
               </div>

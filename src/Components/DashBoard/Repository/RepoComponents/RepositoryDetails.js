@@ -3,7 +3,7 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
@@ -275,12 +275,12 @@ export default function RepositoryDetails(props) {
 
   const gitRepoHeaderContent = () => {
     return (
-      <div className="mx-auto w-full flex rounded-md shadow-md border-2 border-gray-100 p-4 justify-evenly">
-        <div className="text-xl p-2 mx-2">Repo Name</div>
+      <div className="align-middle items-center mx-auto w-full flex rounded-md shadow-md border-2 border-gray-100 p-4 justify-evenly">
+        <div className="text-md p-2 mx-2">Repo Name</div>
         <div className="bg-blue-100 text-blue-900 p-3 rounded-sm border border-blue-200">
           {gitRepoName}
         </div>
-        <div className="text-xl p-2 mx-2">Active Branch</div>
+        <div className="text-md p-2 mx-2">Active Branch</div>
         <div className="bg-orange-200 rounded-sm text-orange-900 p-3 border border-orange-400">
           {gitCurrentBranch}
         </div>
@@ -361,7 +361,7 @@ export default function RepositoryDetails(props) {
           <div className="block rounded-md w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
             <div>
               <div className="flex justify-evenly p-2 align-middle items-center">
-                <div className="text-xl text-gray-600 w-1/4">Remote Host</div>
+                <div className="text-lg text-gray-600 w-1/4">Remote Host</div>
                 <div className="text-center w-1/2 flex justify-center rounded-md border-2 shadow-md text-center items-center align-middle border-gray-200">
                   <div className="p-3">{remoteLogo}</div>
                   <div className="text-center text-lg">{gitRemoteHost}</div>
@@ -370,7 +370,7 @@ export default function RepositoryDetails(props) {
 
               <div className="block mx-auto my-6">
                 <div className="flex justify-evenly">
-                  <div className="text-xl text-gray-600 w-1/4">
+                  <div className="text-lg text-gray-600 w-1/4">
                     {`${gitRemoteHost} URL`}
                   </div>
                   <div className="text-blue-400 hover:text-blue-500 cursor-pointer w-1/2 break-words">
@@ -394,7 +394,7 @@ export default function RepositoryDetails(props) {
 
               <div className="block mx-auto my-6">
                 <div className="flex justify-evenly my-3">
-                  <div className="w-1/4 text-xl text-gray-600">Commit Logs</div>
+                  <div className="w-1/4 text-md text-gray-600">Commit Logs</div>
                   <div
                     className="w-1/2 rounded-md shadow-md p-3 text-center bg-orange-300 cursor-pointer"
                     onClick={(event) => {
@@ -419,7 +419,7 @@ export default function RepositoryDetails(props) {
 
               <div className="flex justify-around my-3">
                 <div className="text-lg text-gray-500 w-1/4">Latest Commit</div>
-                <div className="text-left text-sm text-bold text-black-900 w-1/2">
+                <div className="text-left text-sm text-bold text-black-900 w-1/2 truncate ...">
                   {gitLatestCommit}
                 </div>
               </div>
@@ -461,6 +461,10 @@ export default function RepositoryDetails(props) {
                     }}
                     onMouseLeave={(event) => {
                       event.target.innerHTML = "+";
+                    }}
+                    onClick={() => {
+                      setBackdropToggle(true);
+                      setAction("addBranch");
                     }}
                   >
                     +
@@ -516,63 +520,62 @@ export default function RepositoryDetails(props) {
 
         if (splitEntry[1].includes("directory")) {
           directoryEntry.push(
-            <tbody key={`dir-entry-${index}`}>
-              <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
-                <td>
+            <div
+              className="block w-full p-2 border-b border-gray-300"
+              key={`directory-key-${index}`}
+            >
+              <div className="flex">
+                <div className="w-1/6">
                   <FontAwesomeIcon
                     icon={["fas", "folder"]}
                     className="font-sans text-xl text-blue-600"
                   ></FontAwesomeIcon>
-                </td>
-                <td>
-                  <div className="text-gray-800 text-lg mx-3 font-sans">
-                    {splitEntry[0]}
-                  </div>
-                </td>
-                <td>
-                  <div className="p-2 bg-green-200 text-green-900 rounded-lg text-left mx-auto w-3/5">
-                    {gitFileBasedCommit[index]
-                      ? gitFileBasedCommit[index]
-                          .split(" ")
-                          .filter((entry, index) => {
-                            return index !== 0 ? entry : null;
-                          })
-                          .join(" ")
-                      : null}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                </div>
+                <div className="w-2/4 text-gray-800 text-lg mx-3 font-sans">
+                  {splitEntry[0]}
+                </div>
+
+                <div className="w-2/4 p-2 bg-green-200 text-green-900 truncate ... rounded-lg text-left mx-auto w-3/5">
+                  {gitFileBasedCommit[index]
+                    ? gitFileBasedCommit[index]
+                        .split(" ")
+                        .filter((entry, index) => {
+                          return index !== 0 ? entry : null;
+                        })
+                        .join(" ")
+                    : null}
+                </div>
+              </div>
+            </div>
           );
         } else {
           fileEntry.push(
-            <tbody key={`file-entry-${index}`}>
-              <tr className="border-b border-gray-300 p-1 shadow-sm hover:bg-indigo-100">
-                <td>
+            <div
+              className="block w-full p-2 border-b border-gray-300"
+              key={`file-key-${index}`}
+            >
+              <div className="flex">
+                <div className="w-1/6">
                   <FontAwesomeIcon
                     icon={["fas", "file"]}
                     className="font-sans text-xl text-gray-700"
                   ></FontAwesomeIcon>
-                </td>
-                <td>
-                  <div className="text-gray-800 text-lg mx-3 font-sans">
-                    {splitEntry[0]}
-                  </div>
-                </td>
-                <td>
-                  <div className="p-2 bg-indigo-200 text-indigo-900 rounded-lg text-left mx-auto w-3/5">
-                    {gitFileBasedCommit[index]
-                      ? gitFileBasedCommit[index]
-                          .split(" ")
-                          .filter((entry, index) => {
-                            return index !== 0 ? entry : null;
-                          })
-                          .join(" ")
-                      : null}
-                  </div>
-                </td>
-              </tr>
-            </tbody>
+                </div>
+                <div className="w-2/4 text-gray-800 text-lg mx-3 font-sans">
+                  {splitEntry[0]}
+                </div>
+                <div className="w-2/4 p-2 bg-indigo-200 truncate ... text-indigo-900 rounded-lg text-left mx-auto w-3/5">
+                  {gitFileBasedCommit[index]
+                    ? gitFileBasedCommit[index]
+                        .split(" ")
+                        .filter((entry, index) => {
+                          return index !== 0 ? entry : null;
+                        })
+                        .join(" ")
+                    : null}
+                </div>
+              </div>
+            </div>
           );
         }
       });
@@ -585,16 +588,12 @@ export default function RepositoryDetails(props) {
           className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto"
           key="repo-key"
         >
-          <table className="table-auto w-full p-2 mx-auto" cellPadding="10">
-            <tbody>
-              <tr className="pb-6 border-b border-blue-400">
-                <th></th>
-                <th>File / Directory</th>
-                <th>Latest commit</th>
-              </tr>
-            </tbody>
-            {formattedFiles}
-          </table>
+          <div className="flex justify-around w-full p-2 mx-auto pb-6 border-b border-blue-400">
+            <div className="w-1/6"></div>
+            <div className="w-2/4">File / Directory</div>
+            <div className="w-2/4">Latest commit</div>
+          </div>
+          {formattedFiles}
         </div>
       );
     } else if (gitTrackedFiles && gitTrackedFiles[0] === "NO_TRACKED_FILES") {
@@ -612,6 +611,89 @@ export default function RepositoryDetails(props) {
     }
   };
 
+  function AddBranchComponent({ repoId }) {
+    const [branchName, setBranchName] = useState("");
+    const [branchAddStatus, setBranchAddStatus] = useState("");
+    const branchNameRef = useRef();
+
+    function resetBranchNameText() {
+      branchNameRef.current.value = "";
+      setBranchName("");
+    }
+
+    function addBranchClickHandler() {
+      axios({
+        url: globalAPIEndpoint,
+        method: "POST",
+        data: {
+          query: `
+            mutation GitConvexMutation{
+              addBranch(repoId: "${repoId}", branchName: "${branchName}")
+            }
+          `,
+        },
+      })
+        .then((res) => {
+          if (res.data.data && !res.data.error) {
+            const branchStatus = res.data.data.addBranch;
+            setBranchAddStatus(branchStatus);
+            resetBranchNameText();
+          } else {
+            setBranchAddStatus("BRANCH_ADD_FAILED");
+            resetBranchNameText();
+          }
+        })
+        .catch((err) => {
+          setBranchAddStatus("BRANCH_ADD_FAILED");
+          resetBranchNameText();
+        });
+    }
+
+    return (
+      <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md">
+        <div className="my-auto">
+          <div className="mx-auto">
+            <input
+              type="text"
+              ref={branchNameRef}
+              placeholder="Branch Name"
+              className="p-3 rounded bg-white text-xl text-gray-700 font-sans font-mono w-full border border-grau-200 shadow"
+              onChange={(event) => {
+                setBranchName(event.target.value);
+              }}
+              onClick={() => {
+                setBranchAddStatus("");
+              }}
+            ></input>
+          </div>
+          <div
+            className="bg-indigo-500 p-3 rounded mt-6 mx-auto text-xl font-sans text-white hover:bg-indigo-600 text-center mx-auto cursor-pointer"
+            onClick={(event) => {
+              if (branchName) {
+                console.log(branchName);
+                addBranchClickHandler();
+              } else {
+                setBranchAddStatus("BRANCH_ADD_FAILED");
+              }
+            }}
+          >
+            Add Branch
+          </div>
+          {branchAddStatus === "BRANCH_CREATION_SUCCESS" ? (
+            <div className="w-1/2 bg-green-200 p-1 rounded my-6 mx-auto text-md font-sans text-center mx-auto cursor-pointer">
+              New branch has been added to your repo successfully
+            </div>
+          ) : null}
+          {branchAddStatus === "BRANCH_ADD_FAILED" ? (
+            <div className="w-1/2 bg-red-200 p-1 rounded my-6 mx-auto text-md font-sans text-center mx-auto cursor-pointer">
+              New branch addition failed!
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {backdropToggle ? (
@@ -628,6 +710,11 @@ export default function RepositoryDetails(props) {
         >
           <>{action === "fetch" ? memoizedFetchRemoteComponent : null}</>
           <>{action === "pull" ? memoizedPullRemoteComponent : null}</>
+          <>
+            {action === "addBranch" ? (
+              <AddBranchComponent repoId={repoIdState}></AddBranchComponent>
+            ) : null}
+          </>
           <div
             className="float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {

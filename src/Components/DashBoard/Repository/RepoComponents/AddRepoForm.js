@@ -108,6 +108,7 @@ export default function AddRepoForm(props) {
         </div>
         <div>
           <input
+            id="repoNameText"
             type="text"
             placeholder="Enter a Repository Name"
             className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
@@ -122,6 +123,7 @@ export default function AddRepoForm(props) {
         </div>
         <div>
           <input
+            id="repoPathText"
             type="text"
             placeholder="Enter repository path"
             className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
@@ -151,6 +153,7 @@ export default function AddRepoForm(props) {
         <div className="flex w-11/12 justify-start mx-auto my-5 cursor-pointer">
           <div
             className="my-2 w-1/2 block mx-3 p-3 bg-red-400 rounded-md shadow-md hover:bg-red-500"
+            id="addRepoClose"
             onClick={() => {
               props.formEnable(false);
             }}
@@ -159,6 +162,7 @@ export default function AddRepoForm(props) {
           </div>
           <div
             className="block w-1/2 mx-3 p-3 my-2 bg-green-400 rounded-md shadow-md hover:bg-green-500"
+            id="addRepoSubmit"
             onClick={() => {
               storeRepoAPI(repoNameState, repoPathState);
             }}

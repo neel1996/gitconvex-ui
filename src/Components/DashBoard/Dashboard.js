@@ -114,7 +114,7 @@ export default function Dashboard(props) {
 
   return (
     <>
-      <div className="xl:flex lg:flex md:block w-full h-full">
+      <div className="xl:flex lg:flex md:block w-full h-screen">
         <LeftPane parentProps={props}></LeftPane>
         {renderRightPaneComponent()}
       </div>

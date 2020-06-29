@@ -90,6 +90,7 @@ export default function RepoComponent(props) {
         </div>
         <>
           <div
+            id="addRepoButton"
             className="fixed bottom-0 right-0 mb-16 mr-20 cursor-pointer border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
             onClick={() => {
               setRepoFormEnable(true);
