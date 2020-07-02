@@ -3,7 +3,7 @@ import axios from "axios";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
-  GIT_UNPUSHED_COMMITS,
+  ROUTE_GIT_UNPUSHED_COMMITS,
 } from "../../../../../util/env_config";
 
 export default function PushComponent(props) {
@@ -66,7 +66,7 @@ export default function PushComponent(props) {
         query: `
           query GitConvexApi
           {
-            gitConvexApi(route: "${GIT_UNPUSHED_COMMITS}", payload: ${payload}){
+            gitConvexApi(route: "${ROUTE_GIT_UNPUSHED_COMMITS}", payload: ${payload}){
               gitUnpushedCommits{
                 commits
               }

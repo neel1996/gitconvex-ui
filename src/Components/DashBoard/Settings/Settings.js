@@ -9,6 +9,7 @@ import { ContextProvider } from "../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_SETTINGS_DBPATH,
+  ROUTE_SETTINGS_PORT,
   ROUTE_SETTINGS_REPODETAILS,
 } from "../../../util/env_config";
 
@@ -21,11 +22,15 @@ export default function Settings(props) {
   const { presentRepo } = state;
 
   const [dbPath, setDbPath] = useState("");
+  const [port, setPort] = useState(0);
   const [repoDetails, setRepoDetails] = useState([]);
   const [backdropToggle, setBacldropToggle] = useState(false);
   const [deleteRepo, setDeleteRepo] = useState({});
   const [deleteRepoStatus, setDeleteRepoStatus] = useState("");
   const [viewReload, setViewReload] = useState(0);
+  const [newDbPath, setNewDbPath] = useState("");
+  const [dbUpdateFailed, setDbUpdateFailed] = useState(false);
+  const [portUpdateFailed, setPortUpdateFailed] = useState(false);
 
   useEffect(() => {
     const token = axios.CancelToken;
@@ -49,6 +54,8 @@ export default function Settings(props) {
         if (res.data.data && !res.data.error) {
           const dbPathText = res.data.data.gitConvexApi.settingsDatabasePath;
           setDbPath(dbPathText);
+          setNewDbPath(dbPathText);
+
           dbPathTextRef.current.value = dbPathText;
         }
       })
@@ -86,12 +93,61 @@ export default function Settings(props) {
         console.log(err);
       });
 
+    axios({
+      url: globalAPIEndpoint,
+      method: "POST",
+      cancelToken: source.token,
+      data: {
+        query: `
+            query GitConvexResults{
+              gitConvexApi(route: "${ROUTE_SETTINGS_PORT}"){
+                settingsPortDetails
+              }
+            }
+          `,
+      },
+    }).then((res) => {
+      if (res.data.data && !res.data.error) {
+        const localPort = res.data.data.gitConvexApi.settingsPortDetails;
+        setPort(localPort);
+      }
+    });
+
     return () => {
       source.cancel();
     };
   }, [props, viewReload]);
 
   const databasePathSettings = () => {
+    const updateDbFileHandler = () => {
+      if (newDbPath) {
+        axios({
+          url: globalAPIEndpoint,
+          method: "POST",
+          data: {
+            query: `
+              mutation GitConvexMutation{
+                updateRepoDataFile(newDbFile: "${newDbPath.toString()}")
+              }
+            `,
+          },
+        })
+          .then((res) => {
+            if (res.data.data && !res.data.error) {
+              const updateStatus = res.data.data.updateRepoDataFile;
+              console.log(updateStatus);
+              const localViewReload = viewReload + 1;
+              setViewReload(localViewReload);
+            } else {
+              setDbUpdateFailed(true);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            setDbUpdateFailed(true);
+          });
+      }
+    };
     return (
       <div className="settings-data">
         <div className="text-xl text-gray-700 font-sans font-semibold">
@@ -100,15 +156,35 @@ export default function Settings(props) {
         <div className="my-4">
           <input
             type="text"
-            className="p-2 rounded border border-gray-500 bg-gray-200 text-gray-800 w-1/2"
+            className="p-2 rounded border border-gray-500 bg-gray-200 text-gray-800 w-2/3"
             ref={dbPathTextRef}
+            onChange={(event) => {
+              setNewDbPath(event.target.value);
+              setDbUpdateFailed(false);
+            }}
           ></input>
-          <div className="text-justify font-sand font-light text-sm my-4 text-gray-500 italic w-1/2">
+          <div className="text-justify font-sand font-light text-sm my-4 text-gray-500 italic w-2/3">
             The data file can be updated. The data file must be an accessible
             JSON file with read / write permissions set to it. Also make sure
             you enter the full path for the file
             <pre className="my-2">E.g: /opt/my_data/data-file.json</pre>
           </div>
+          {dbPath !== newDbPath ? (
+            <div
+              className="my-4 text-center p-2 font-sans text-white border-green-400 border-2 bg-green-500 rounded-md cursor-pointer shadow w-1/4 hover:bg-green-600"
+              onClick={() => {
+                updateDbFileHandler();
+                setDbUpdateFailed(false);
+              }}
+            >
+              Update Data file
+            </div>
+          ) : null}
+          {dbUpdateFailed ? (
+            <div className="my-2 p-2 rounded border border-red-300 text-red-700 font-sans font-semibold w-2/3 text-center">
+              Data file update failed
+            </div>
+          ) : null}
         </div>
       </div>
     );
@@ -235,9 +311,7 @@ export default function Settings(props) {
                 <div className="w-1/2 border-r text-center">Repo ID</div>
                 <div className="w-1/2 border-r text-center">Repo Name</div>
                 <div className="w-1/2 border-r text-center">Repo Path</div>
-                <div className="w-1/2 border-r text-center">
-                  Created Timestamp
-                </div>
+                <div className="w-1/2 border-r text-center">Timestamp</div>
                 <div className="w-1/2 border-r text-center">Action</div>
               </div>
               {repoDetails.map((repo) => {
@@ -287,6 +361,70 @@ export default function Settings(props) {
     );
   };
 
+  function portDetailsSettings() {
+    function portUpdateHandler() {
+      if (port) {
+        axios({
+          url: globalAPIEndpoint,
+          method: "POST",
+          data: {
+            query: `
+              mutation GitConvexMutation{
+                settingsEditPort(newPort: ${port})
+              }
+            `,
+          },
+        })
+          .then((res) => {
+            if (res.data.data && !res.data.error) {
+              console.log(res.data.data.settingsEditPort);
+            } else {
+              portUpdateFailed(true);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+            setPortUpdateFailed(true);
+          });
+      }
+    }
+
+    return (
+      <div className="my-2 mx-auto">
+        <div className="text-xl font-sans text-gray-800 my-2">
+          Active Gitconvex port
+        </div>
+        <div className="flex my-4">
+          <input
+            type="text"
+            className="p-2 rounded border border-gray-500 bg-gray-200 text-gray-800 w-1/3"
+            value={port}
+            onChange={(event) => {
+              setPort(event.target.value);
+            }}
+          ></input>
+          <div
+            className="p-2 text-center mx-4 rounded border text-white bg-indigo-500 w-1/6 hover:bg-indigo-600 cursor-pointer"
+            onClick={() => {
+              portUpdateHandler();
+            }}
+          >
+            Update Port
+          </div>
+        </div>
+        <div className="text-justify font-sand font-light text-sm my-4 text-gray-500 italic w-2/3">
+          Make sure to restart the app and to change the port in the URL after
+          updating it
+        </div>
+        {portUpdateFailed ? (
+          <div className="my-2 p-2 rounded border border-red-300 text-red-700 font-sans font-semibold w-1/2 text-center">
+            Port update failed
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <>
       {backdropToggle ? (
@@ -327,6 +465,7 @@ export default function Settings(props) {
         <div className="block my-10 justify-center mx-auto w-11/12">
           {dbPath ? databasePathSettings() : null}
           {repoDetails ? repoDetailsSettings() : null}
+          {portDetailsSettings()}
         </div>
       </div>
     </>

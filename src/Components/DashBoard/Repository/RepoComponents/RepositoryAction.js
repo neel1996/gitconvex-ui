@@ -254,7 +254,7 @@ export default function RepositoryAction() {
   }
 
   return (
-    <div className="w-full h-full mx-auto block justify-center overflow-x-hidden">
+    <div className="w-full mx-auto block justify-center overflow-x-hidden">
       {availableRepos ? (
         <div>
           <div className="mx-auto my-6 w-11/12 rounded shadow border border-gray-200">

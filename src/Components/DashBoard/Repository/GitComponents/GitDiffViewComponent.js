@@ -174,7 +174,7 @@ export default function GitDiffViewComponent() {
 
   function fileLineDiffComponent() {
     let splitLines = [];
-    if (fileLineDiffState) {
+    if (fileLineDiffState && fileLineDiffState.join("").split(/@@.*@@/gi)) {
       let partFile = fileLineDiffState
         .join("|__HASH_SEPARATOR__|")
         .split(/@@.*@@/gi)[1]

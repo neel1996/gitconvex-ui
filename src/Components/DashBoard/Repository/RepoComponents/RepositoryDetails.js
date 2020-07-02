@@ -154,7 +154,7 @@ export default function RepositoryDetails(props) {
     }, [repoId]);
 
     return (
-      <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
+      <div className="w-5/6 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
         <div className="mx-3 my-3 text-3xl font-sans text-gray-800">
           Fetch Result
         </div>
@@ -234,7 +234,7 @@ export default function RepositoryDetails(props) {
     }, [repoId]);
 
     return (
-      <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
+      <div className="w-5/6 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
         <div className="mx-3 my-3 text-3xl font-sans text-gray-800">
           Pull Result
         </div>
@@ -243,7 +243,7 @@ export default function RepositoryDetails(props) {
             <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700">
               {pullResult.map((result) => {
                 return (
-                  <div className="my-1 mx-2 break-normal" key={result}>
+                  <div className="my-1 mx-2 truncate ..." key={result}>
                     {result}
                   </div>
                 );
@@ -344,7 +344,7 @@ export default function RepositoryDetails(props) {
                 }}
               >
                 <div
-                  className="float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+                  className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
                   onClick={() => {
                     setShowCommitLogs(false);
                   }}
@@ -446,7 +446,7 @@ export default function RepositoryDetails(props) {
                             className="my-1 font-sans font-semibold"
                             key="entry-key"
                           >
-                            - {entry}
+                            {entry}
                           </div>
                         );
                       })}
@@ -716,7 +716,7 @@ export default function RepositoryDetails(props) {
             ) : null}
           </>
           <div
-            className="float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
               setBackdropToggle(false);
               setAction("");
