@@ -1,5 +1,5 @@
 import axios from "axios";
-import Prism from "prismjs";
+import * as Prism from "prismjs";
 import React, { useContext, useEffect, useState } from "react";
 import { GIT_TRACKED_FILES } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
@@ -8,6 +8,8 @@ import {
   ROUTE_REPO_FILE_DIFF,
   ROUTE_REPO_TRACKED_DIFF,
 } from "../../../../util/env_config";
+import "../../../../prism.css";
+import loadLanguages from "prismjs/components/index";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -22,10 +24,41 @@ export default function GitDiffViewComponent() {
   const [fileLineDiffState, setFileLineDiffState] = useState([]);
   const [activeFileName, setActiveFileName] = useState("");
   const [isApiCalled, setIsApiCalled] = useState(false);
+  const [isLangSelected, setIsLangSelected] = useState(false);
+  const [lang, setLang] = useState("");
+
+  const langEnum = {
+    js: "javascript",
+    java: "java",
+    py: "python",
+    c: "c",
+    cpp: "cpp",
+    go: "go",
+    rust: "rust",
+    ts: "typescript",
+    dart: "dart",
+    php: "php",
+    html: "markup",
+    json: "json",
+    xml: "markup",
+    yaml: "yaml",
+    yml: "yaml",
+    rb: "ruby",
+    jsx: "jsx",
+    kt: "kotlin",
+    ktm: "kotlin",
+    kts: "kotlin",
+    cs: "csharp",
+    vb: "visual-basic",
+    css: "css",
+  };
 
   useEffect(() => {
     let repoId = state.globalRepoId;
 
+    loadLanguages();
+
+    setIsLangSelected(false);
     setActiveFileName("");
     setFileLineDiffState("Click on a file item to see the difference");
     setDiffStatState("Click on a file item to see the difference");
@@ -96,8 +129,23 @@ export default function GitDiffViewComponent() {
       </>
     );
   }
+
+  const languageDetector = (fileName) => {
+    const fileType = fileName.split(".")[fileName.split(".").length - 1];
+
+    if (fileType) {
+      setIsLangSelected(true);
+      if (fileType in langEnum) {
+        return langEnum[fileType];
+      } else {
+        return "markup";
+      }
+    }
+  };
+
   function fileDiffStatComponent(repoId, fileName) {
     const apiEndPoint = globalAPIEndpoint;
+    setIsLangSelected(false);
 
     const payload = JSON.stringify(
       JSON.stringify({ repoId: repoId, fileName: fileName })
@@ -131,6 +179,7 @@ export default function GitDiffViewComponent() {
 
         setDiffStatState(diffStat[1]);
         setFileLineDiffState(fileDiff);
+        setLang(languageDetector(fileName));
       })
       .catch((err) => {
         console.log(err);
@@ -174,7 +223,12 @@ export default function GitDiffViewComponent() {
 
   function fileLineDiffComponent() {
     let splitLines = [];
-    if (fileLineDiffState && fileLineDiffState.join("").split(/@@.*@@/gi)) {
+    if (
+      fileLineDiffState &&
+      fileLineDiffState.join("").split(/@@.*@@/gi) &&
+      isLangSelected &&
+      lang
+    ) {
       let partFile = fileLineDiffState
         .join("|__HASH_SEPARATOR__|")
         .split(/@@.*@@/gi)[1]
@@ -189,8 +243,8 @@ export default function GitDiffViewComponent() {
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
                       line.replace("+", ""),
-                      Prism.languages.javascript,
-                      "javascript"
+                      Prism.languages[lang],
+                      lang
                     ),
                   }}
                 ></code>
@@ -201,17 +255,15 @@ export default function GitDiffViewComponent() {
           return (
             <div className="bg-red-200 w-screen" key={`${line}-${uuidv4()}`}>
               <pre>
-                <pre>
-                  <code
-                    dangerouslySetInnerHTML={{
-                      __html: Prism.highlight(
-                        line.replace("-", ""),
-                        Prism.languages.javascript,
-                        "javascript"
-                      ),
-                    }}
-                  ></code>
-                </pre>
+                <code
+                  dangerouslySetInnerHTML={{
+                    __html: Prism.highlight(
+                      line.replace("-", ""),
+                      Prism.languages[lang],
+                      lang
+                    ),
+                  }}
+                ></code>
               </pre>
             </div>
           );
@@ -221,11 +273,7 @@ export default function GitDiffViewComponent() {
               <pre>
                 <code
                   dangerouslySetInnerHTML={{
-                    __html: Prism.highlight(
-                      line,
-                      Prism.languages.javascript,
-                      "javascript"
-                    ),
+                    __html: Prism.highlight(line, Prism.languages[lang], lang),
                   }}
                 ></code>
               </pre>
@@ -235,7 +283,11 @@ export default function GitDiffViewComponent() {
       });
     }
 
-    return <div className="break-all my-6 mx-auto">{splitLines}</div>;
+    return (
+      <div className="break-all my-6 mx-auto">
+        <code>{splitLines}</code>
+      </div>
+    );
   }
 
   return (

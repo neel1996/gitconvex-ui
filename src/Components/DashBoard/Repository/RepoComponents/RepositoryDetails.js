@@ -9,6 +9,7 @@ import {
   ROUTE_REPO_DETAILS,
 } from "../../../../util/env_config";
 import RepositoryCommitLogComponent from "./RepositoryCommitLogComponent";
+import { v4 as uuid } from "uuid";
 
 export default function RepositoryDetails(props) {
   library.add(fab, fas);
@@ -163,7 +164,10 @@ export default function RepositoryDetails(props) {
             <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700">
               {fetchResult.map((result) => {
                 return (
-                  <div className="my-1 mx-2 break-normal" key={result}>
+                  <div
+                    className="my-1 mx-2 break-normal"
+                    key={result + `-${uuid()}`}
+                  >
                     {result}
                   </div>
                 );
@@ -433,18 +437,18 @@ export default function RepositoryDetails(props) {
                   <div className="w-1/4 my-auto">
                     {gitBranchList &&
                       gitCurrentBranch &&
-                      gitBranchList.map((entry) => {
+                      gitBranchList.map((entry, index) => {
                         return entry === gitCurrentBranch ? (
                           <div
                             className="text-lg font-semibold text-indigo-500"
-                            key={entry}
+                            key={`${entry}-${uuid()}`}
                           >
                             {entry}
                           </div>
                         ) : (
                           <div
                             className="my-1 font-sans font-semibold"
-                            key="entry-key"
+                            key={`entry-key-${uuid()}`}
                           >
                             {entry}
                           </div>
@@ -522,7 +526,7 @@ export default function RepositoryDetails(props) {
           directoryEntry.push(
             <div
               className="block w-full p-2 border-b border-gray-300"
-              key={`directory-key-${index}`}
+              key={`directory-key-${uuid()}`}
             >
               <div className="flex">
                 <div className="w-1/6">
@@ -552,7 +556,7 @@ export default function RepositoryDetails(props) {
           fileEntry.push(
             <div
               className="block w-full p-2 border-b border-gray-300"
-              key={`file-key-${index}`}
+              key={`file-key-${uuid()}`}
             >
               <div className="flex">
                 <div className="w-1/6">

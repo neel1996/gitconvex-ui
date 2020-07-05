@@ -397,14 +397,14 @@ export default function Settings(props) {
         <div className="flex my-4">
           <input
             type="text"
-            className="p-2 rounded border border-gray-500 bg-gray-200 text-gray-800 w-1/3"
+            className="p-2 rounded border border-gray-500 bg-gray-200 text-gray-800 xl:w-1/2 lg:w-1/3 md:w-1/2 sm:w-1/2 w-1/2"
             value={port}
             onChange={(event) => {
               setPort(event.target.value);
             }}
           ></input>
           <div
-            className="p-2 text-center mx-4 rounded border text-white bg-indigo-500 w-1/6 hover:bg-indigo-600 cursor-pointer"
+            className="p-2 text-center mx-4 rounded border text-white bg-indigo-500 xl:w-1/6 lg:w-1/6 md:w-1/5 sm:w-1/4 w-1/4 hover:bg-indigo-600 cursor-pointer"
             onClick={() => {
               portUpdateHandler();
             }}
@@ -454,7 +454,7 @@ export default function Settings(props) {
           </div>
         </div>
       ) : null}
-      <div className="block w-full h-full overflow-auto">
+      <div className="block w-full h-full">
         <div className="font-sans text-6xl my-4 mx-10 text-gray-700 block items-center align-middle">
           <FontAwesomeIcon
             className="text-5xl"
