@@ -9,7 +9,6 @@ import {
   ROUTE_REPO_TRACKED_DIFF,
 } from "../../../../util/env_config";
 import "../../../../prism.css";
-import loadLanguages from "prismjs/components/index";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -55,8 +54,6 @@ export default function GitDiffViewComponent() {
 
   useEffect(() => {
     let repoId = state.globalRepoId;
-
-    loadLanguages();
 
     setIsLangSelected(false);
     setActiveFileName("");
@@ -171,7 +168,7 @@ export default function GitDiffViewComponent() {
         `,
       },
     })
-      .then((res) => {
+      .then(async (res) => {
         const {
           diffStat,
           fileDiff,
@@ -179,7 +176,19 @@ export default function GitDiffViewComponent() {
 
         setDiffStatState(diffStat[1]);
         setFileLineDiffState(fileDiff);
-        setLang(languageDetector(fileName));
+
+        var selectedLang = languageDetector(fileName);
+        const packageName = "prismjs/components/prism-" + selectedLang + ".js";
+
+        await import("prismjs/components/prism-" + selectedLang + ".js")
+          .then(() => {
+            console.log("Package lang loaded : ", packageName);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
+        setLang(selectedLang);
       })
       .catch((err) => {
         console.log(err);
@@ -199,7 +208,6 @@ export default function GitDiffViewComponent() {
                 <span key={`${parts}-${new Date().getTime()}`}>
                   <span className="px-2">{parts.toString().split(" ")[1]}</span>
                   <span className="text-green-700 font-sans font-semibold">
-                    {" "}
                     insertions (+)
                   </span>
                 </span>
@@ -209,8 +217,7 @@ export default function GitDiffViewComponent() {
                 <span key={`${parts}-${new Date().getTime()}`}>
                   <span className="px-2">{parts.toString().split(" ")[1]}</span>
                   <span className="text-red-700 font-sans font-semibold">
-                    {" "}
-                    deletions (+)
+                    deletions (-)
                   </span>
                 </span>
               );

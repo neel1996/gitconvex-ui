@@ -437,7 +437,7 @@ export default function RepositoryDetails(props) {
                   <div className="w-1/4 my-auto">
                     {gitBranchList &&
                       gitCurrentBranch &&
-                      gitBranchList.map((entry, index) => {
+                      gitBranchList.map((entry) => {
                         return entry === gitCurrentBranch ? (
                           <div
                             className="text-lg font-semibold text-indigo-500"
