@@ -2,7 +2,9 @@
 
 //PORTS LIST
 
-export const PORT_GLOBAL_API = 9001;
+console.log(process.env.NODE_ENV);
+export const PORT_GLOBAL_API =
+  process.env.NODE_ENV === "development" ? 9001 : window.location.port;
 
 //CONFIG LIST
 
