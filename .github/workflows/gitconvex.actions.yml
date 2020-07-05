@@ -2,13 +2,12 @@ name: Gitconvex UI pipeline
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -16,29 +15,30 @@ jobs:
         node-version: [14.x]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm install
-    - run: npm i -g create-react-app
-    - run: npm test && npm run build 
-    - name: Copy react build content to DO Droplet
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.DROPLET_HOST }}
-        username: ${{ secrets.DROPLET_USERNAME }}
-        key: ${{ secrets.DROPLET_PRIVATE_KEY }}
-        port: ${{ secrets.DROPLET_PORT }}
-        source: "./build"
-        target: "/opt/workroom/gitconvex-package/"
-    - name: Droplet commands
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.DROPLET_HOST }}
-        username: ${{ secrets.DROPLET_USERNAME }}
-        key: ${{ secrets.DROPLET_PRIVATE_KEY }}
-        port: ${{ secrets.DROPLET_PORT }}
-        script: |
-          sh /opt/workroom/github-deploy.sh gitconvex
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: npm install
+      - run: npm i request@2.79.0
+      - run: npm i -g create-react-app
+      - run: npm test && npm run build
+      - name: Copy react build content to DO Droplet
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.DROPLET_PRIVATE_KEY }}
+          port: ${{ secrets.DROPLET_PORT }}
+          source: "./build"
+          target: "/opt/workroom/gitconvex-package/"
+      - name: Droplet commands
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_HOST }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.DROPLET_PRIVATE_KEY }}
+          port: ${{ secrets.DROPLET_PORT }}
+          script: |
+            sh /opt/workroom/github-deploy.sh gitconvex
