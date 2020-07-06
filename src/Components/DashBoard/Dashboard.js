@@ -1,12 +1,13 @@
+import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Route } from "react-router-dom";
 import { ContextProvider } from "../../context";
+import { globalAPIEndpoint } from "../../util/env_config";
 import LeftPane from "./DashboardPaneComponents/LeftPane";
 import RightPane from "./DashboardPaneComponents/RightPane";
+import Help from "./Help/Help";
 import RepositoryAction from "./Repository/RepoComponents/RepositoryAction";
 import RepositoryDetails from "./Repository/RepoComponents/RepositoryDetails";
-import { globalAPIEndpoint } from "../../util/env_config";
-import axios from "axios";
 import Settings from "./Settings/Settings";
 
 export default function Dashboard(props) {
@@ -22,6 +23,10 @@ export default function Dashboard(props) {
 
   const memoizedSettings = useMemo(() => {
     return <Settings></Settings>;
+  }, []);
+
+  const memoizedHelp = useMemo(() => {
+    return <Help></Help>;
   }, []);
 
   useEffect(() => {
@@ -101,6 +106,8 @@ export default function Dashboard(props) {
         return <RepositoryAction></RepositoryAction>;
       case "/dashboard/settings":
         return memoizedSettings;
+      case "/dashboard/help":
+        return memoizedHelp;
       default:
         return (
           <BrowserRouter>

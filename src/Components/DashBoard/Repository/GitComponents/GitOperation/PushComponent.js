@@ -186,7 +186,7 @@ export default function PushComponent(props) {
     <>
       {!pushDone ? (
         <>
-          <div className="w-1/2 mx-auto my-auto p-6 rounded shadow bg-white block">
+          <div className="w-3/4 mx-auto my-auto p-6 rounded shadow bg-white block">
             <div className="m-3 text-2xl font-sans text-ghray-800">
               Available remote repos
             </div>
