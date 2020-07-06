@@ -162,7 +162,7 @@ export default function CommitComponent(props) {
   }
 
   return (
-    <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md">
+    <div className="w-3/4 mx-auto my-auto bg-gray-200 p-6 rounded-md">
       {stagedFilesState && stagedFilesState.length > 0 ? (
         commitComponent()
       ) : (
