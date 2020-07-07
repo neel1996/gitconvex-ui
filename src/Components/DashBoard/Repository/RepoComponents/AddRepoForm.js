@@ -100,7 +100,7 @@ export default function AddRepoForm(props) {
   }
 
   return (
-    <div className="block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 mx-auto">
+    <div className="block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 sm:w-11/12 w-11/12 mx-auto">
       <div className="repo-form block">
         {repoAddStatusBanner()}
         <div className="my-3 text-center block text-3xl font-sans text-gray-800">

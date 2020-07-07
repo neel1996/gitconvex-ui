@@ -8,7 +8,7 @@ export default function Help() {
   library.add(fas, fab);
 
   return (
-    <div className="w-full h-full pb-10">
+    <div className="w-full h-full pb-10 xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none">
       <div className="flex text-5xl text-gray-700 mx-6 my-auto align-middle items-center">
         <FontAwesomeIcon icon={["fas", "question-circle"]}></FontAwesomeIcon>
         <div className="my-5 mx-5 font-sans">Help and Support</div>
@@ -77,18 +77,27 @@ export default function Help() {
         </div>
 
         <div className="xl:flex lg:block md:block justify-center items-center align-middle">
-          <div className="mx-auto h-full flex w-3/4 xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-3/4 cursor-pointer hover:shadow-lg align-middle my-4 items-center bg-white shadow-md rounded border border-gray-500">
+          <a
+            href="https://github.com/neel1996/gitconvex"
+            target="_blank"
+            className="mx-auto h-full flex w-3/4 xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-3/4 cursor-pointer hover:shadow-lg align-middle my-4 items-center bg-white shadow-md rounded border border-gray-500"
+          >
             <div className="bg-blue-500 text-white p-1 text-5xl w-1/4 align-middle my-auto items-center text-center rounded-l">
               <FontAwesomeIcon icon={["fab", "react"]}></FontAwesomeIcon>
             </div>
             <div className="text-md mx-2 text-gray-700">gitconvex UI</div>
-          </div>
-          <div className="mx-auto h-full flex w-3/4 xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-3/4 cursor-pointer hover:shadow-lg align-middle my-4 items-center bg-white shadow-md rounded border border-gray-500">
+          </a>
+
+          <a
+            href="https://github.com/neel1996/gitconvex-server"
+            target="_blank"
+            className="mx-auto h-full flex w-3/4 xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-3/4 cursor-pointer hover:shadow-lg align-middle my-4 items-center bg-white shadow-md rounded border border-gray-500"
+          >
             <div className="bg-green-500 text-white p-1 text-5xl w-1/4 align-middle my-auto items-center text-center rounded-l">
               <FontAwesomeIcon icon={["fab", "node-js"]}></FontAwesomeIcon>
             </div>
             <div className="text-md mx-2 text-gray-700">gitconvex server</div>
-          </div>
+          </a>
         </div>
       </div>
     </div>
