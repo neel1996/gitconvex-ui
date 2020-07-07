@@ -169,8 +169,14 @@ export default function PushComponent(props) {
     })
       .then((res) => {
         if (res.data.data && !res.data.error) {
-          setPushDone(true);
-          setLoading(false);
+          const pushStatus = res.data.data.pushToRemote;
+          if (pushStatus !== "PUSH_FAILED") {
+            setPushDone(true);
+            setLoading(false);
+          } else {
+            setPushFailed(true);
+            setLoading(false);
+          }
         } else {
           setPushFailed(true);
           setLoading(false);
