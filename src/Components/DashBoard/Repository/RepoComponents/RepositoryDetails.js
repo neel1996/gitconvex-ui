@@ -433,8 +433,8 @@ export default function RepositoryDetails(props) {
                   Available Branches
                 </div>
 
-                <div className="w-1/2 flex justify-evenly">
-                  <div className="w-1/4 my-auto">
+                <div className="w-1/2 flex justify-evenly align-middle items-center">
+                  <div className="w-3/4 my-auto">
                     {gitBranchList &&
                       gitCurrentBranch &&
                       gitBranchList.map((entry) => {
