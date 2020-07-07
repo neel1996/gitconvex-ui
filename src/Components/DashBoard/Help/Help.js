@@ -80,6 +80,7 @@ export default function Help() {
           <a
             href="https://github.com/neel1996/gitconvex"
             target="_blank"
+            rel="noopener noreferrer"
             className="mx-auto h-full flex w-3/4 xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-3/4 cursor-pointer hover:shadow-lg align-middle my-4 items-center bg-white shadow-md rounded border border-gray-500"
           >
             <div className="bg-blue-500 text-white p-1 text-5xl w-1/4 align-middle my-auto items-center text-center rounded-l">
@@ -91,6 +92,7 @@ export default function Help() {
           <a
             href="https://github.com/neel1996/gitconvex-server"
             target="_blank"
+            rel="noopener noreferrer"
             className="mx-auto h-full flex w-3/4 xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-3/4 cursor-pointer hover:shadow-lg align-middle my-4 items-center bg-white shadow-md rounded border border-gray-500"
           >
             <div className="bg-green-500 text-white p-1 text-5xl w-1/4 align-middle my-auto items-center text-center rounded-l">
