@@ -33,13 +33,9 @@ export default function Settings(props) {
   const [portUpdateFailed, setPortUpdateFailed] = useState(false);
 
   useEffect(() => {
-    const token = axios.CancelToken;
-    const source = token.source();
-
     axios({
       url: globalAPIEndpoint,
       method: "POST",
-      cancelToken: source.token,
       data: {
         query: `
           query GitConvexResults{
@@ -66,7 +62,6 @@ export default function Settings(props) {
     axios({
       url: globalAPIEndpoint,
       method: "POST",
-      cancelToken: source.token,
       data: {
         query: `
             query GitConvexResults{
@@ -96,7 +91,6 @@ export default function Settings(props) {
     axios({
       url: globalAPIEndpoint,
       method: "POST",
-      cancelToken: source.token,
       data: {
         query: `
             query GitConvexResults{
@@ -112,15 +106,13 @@ export default function Settings(props) {
         setPort(localPort);
       }
     });
-
-    return () => {
-      source.cancel();
-    };
   }, [props, viewReload]);
 
   const databasePathSettings = () => {
     const updateDbFileHandler = () => {
       if (newDbPath) {
+        const localViewReload = viewReload + 1;
+
         axios({
           url: globalAPIEndpoint,
           method: "POST",
@@ -136,15 +128,18 @@ export default function Settings(props) {
             if (res.data.data && !res.data.error) {
               const updateStatus = res.data.data.updateRepoDataFile;
               console.log(updateStatus);
-              const localViewReload = viewReload + 1;
+              setDbUpdateFailed(false);
               setViewReload(localViewReload);
+              window.location.reload();
             } else {
               setDbUpdateFailed(true);
+              setViewReload(localViewReload);
             }
           })
           .catch((err) => {
-            console.log(err);
+            console.log("Datafile update error", err);
             setDbUpdateFailed(true);
+            setViewReload(localViewReload);
           });
       }
     };
