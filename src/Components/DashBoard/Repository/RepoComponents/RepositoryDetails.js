@@ -552,7 +552,7 @@ export default function RepositoryDetails(props) {
               </div>
             </div>
           );
-        } else {
+        } else if (splitEntry[1].includes("File")) {
           fileEntry.push(
             <div
               className="block w-full p-2 border-b border-gray-300"
@@ -589,7 +589,7 @@ export default function RepositoryDetails(props) {
 
       return (
         <div
-          className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700 overflow-auto"
+          className="block mx-auto justify-center p-2 text-blue-600 cursor-pointer hover:text-blue-700"
           key="repo-key"
         >
           <div className="flex justify-around w-full p-2 mx-auto pb-6 border-b border-blue-400">
@@ -731,7 +731,7 @@ export default function RepositoryDetails(props) {
         </div>
       ) : null}
       <div className="w-full fixed bg-gray-600 opacity-50"></div>
-      <div className="rp_repo-view w-screen h-screen p-6 mx-auto rounded-lg justify-evenly overflow-auto">
+      <div className="rp_repo-view w-full h-full xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none overflow-auto p-6 mx-auto rounded-lg justify-evenly">
         {gitRepoStatus && !repoFetchFailed ? (
           <>
             <div className="flex px-3 py-2">

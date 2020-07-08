@@ -454,7 +454,7 @@ export default function Settings(props) {
           </div>
         </div>
       ) : null}
-      <div className="block w-full h-full pt-5 pb-10  xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none">
+      <div className="block w-full h-full pt-5 pb-10 xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none">
         <div className="font-sans text-6xl my-4 mx-10 text-gray-700 block items-center align-middle">
           <FontAwesomeIcon
             className="text-5xl"
