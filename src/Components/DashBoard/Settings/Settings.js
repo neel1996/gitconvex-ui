@@ -254,7 +254,7 @@ export default function Settings(props) {
 
   function deleteRepoApiHandler() {
     setDeleteRepoStatus("loading");
-    const { id, repoName, repoPath, timeStamp } = deleteRepo;
+    const { id } = deleteRepo;
     axios({
       url: globalAPIEndpoint,
       method: "POST",
