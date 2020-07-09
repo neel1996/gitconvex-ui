@@ -261,7 +261,7 @@ export default function Settings(props) {
       data: {
         query: `
           mutation GitConvexMutation{
-            deleteRepo(repoId: "${id}", name: "${repoName}", pathName: "${repoPath}", time: "${timeStamp}"){
+            deleteRepo(repoId: "${id}"){
               status
               repoId
             }
