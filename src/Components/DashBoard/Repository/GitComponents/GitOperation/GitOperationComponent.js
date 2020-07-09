@@ -300,8 +300,7 @@ export default function GitOperationComponent(props) {
         },
       })
         .then((res) => {
-          let localReload = viewReload + 1;
-          setViewReload(localReload);
+          setViewReload(localViewReload);
           if (res.data.data && !res.data.error) {
             if (
               res.data.data.removeAllStagedItem === "STAGE_ALL_REMOVE_SUCCESS"
@@ -310,7 +309,10 @@ export default function GitOperationComponent(props) {
             }
           }
         })
-        .catch((err) => {});
+        .catch((err) => {
+          console.log(err);
+          setViewReload(localViewReload);
+        });
     }
 
     if (stageItems && stageItems.length > 0) {
