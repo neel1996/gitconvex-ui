@@ -21,7 +21,7 @@ export default function RightPane(props) {
 
   return (
     <>
-      <div className="dashboard-rightpane w-full mx-auto justify-center">
+      <div className="dashboard-rightpane w-full mx-auto justify-center xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none">
         <div className="w-11/12 p-3 my-6 mx-auto rounded-lg shadow-md xl:flex lg:flex md:block sm:block rightpane-details block justify-between mx-auto bg-blue-100 border-2 border-blue-100">
           {hcParams.map((entry) => {
             return (

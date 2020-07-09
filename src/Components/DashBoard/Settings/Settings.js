@@ -126,11 +126,17 @@ export default function Settings(props) {
         })
           .then((res) => {
             if (res.data.data && !res.data.error) {
+              //DATAFILE_UPDATE_SUCCESS
               const updateStatus = res.data.data.updateRepoDataFile;
-              console.log(updateStatus);
-              setDbUpdateFailed(false);
-              setViewReload(localViewReload);
-              window.location.reload();
+
+              if (updateStatus === "DATAFILE_UPDATE_SUCCESS") {
+                setDbUpdateFailed(false);
+                setViewReload(localViewReload);
+                window.location.reload();
+              } else {
+                setDbUpdateFailed(true);
+                setViewReload(localViewReload);
+              }
             } else {
               setDbUpdateFailed(true);
               setViewReload(localViewReload);
@@ -155,6 +161,9 @@ export default function Settings(props) {
             ref={dbPathTextRef}
             onChange={(event) => {
               setNewDbPath(event.target.value);
+              setDbUpdateFailed(false);
+            }}
+            onClick={() => {
               setDbUpdateFailed(false);
             }}
           ></input>
