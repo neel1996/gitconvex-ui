@@ -70,6 +70,8 @@ export default function AddRepoForm(props) {
         })
         .catch((err) => {
           console.log(err);
+          setRepoAddFailed(true);
+          setRepoAddSuccess(false);
         });
     } else {
       setRepoAddFailed(true);
