@@ -3,13 +3,17 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { v4 as uuid } from "uuid";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
 } from "../../../../util/env_config";
+import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
+import FetchRemoteComponent from "./RepoDetailBackdrop/FetchFromRemoteComponent";
+import PullRemoteComponent from "./RepoDetailBackdrop/PullFromRemoteComponent";
 import RepositoryCommitLogComponent from "./RepositoryCommitLogComponent";
-import { v4 as uuid } from "uuid";
+import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
 
 export default function RepositoryDetails(props) {
   library.add(fab, fas);
@@ -36,6 +40,12 @@ export default function RepositoryDetails(props) {
 
   const memoizedPullRemoteComponent = useMemo(() => {
     return <PullRemoteComponent repoId={repoIdState}></PullRemoteComponent>;
+  }, [repoIdState]);
+
+  const memoizedAddRemoteRepoComponent = useMemo(() => {
+    return (
+      <AddRemoteRepoComponent repoId={repoIdState}></AddRemoteRepoComponent>
+    );
   }, [repoIdState]);
 
   useEffect(() => {
@@ -105,166 +115,6 @@ export default function RepositoryDetails(props) {
     }
   }, [props.parentProps, backdropToggle]);
 
-  function FetchRemoteComponent(props) {
-    const { repoId } = props;
-    const [fetchResult, setFecthResult] = useState([]);
-
-    useEffect(() => {
-      axios({
-        url: globalAPIEndpoint,
-        method: "POST",
-        data: {
-          query: `
-            mutation GitConvexMutation{
-              fetchFromRemote(repoId: "${repoId}"){
-                status
-                fetchedItems
-              }
-            }
-          `,
-        },
-      })
-        .then((res) => {
-          if (res.data.data && !res.data.error) {
-            const fetchResponse = res.data.data.fetchFromRemote;
-            if (fetchResponse.status === "FETCH_ABSENT") {
-              setFecthResult([
-                <div className="text-xl p-2 text-gray-900 font-semibold">
-                  No changes to Fetch from remote
-                </div>,
-              ]);
-            } else if (fetchResponse === "FETCH_ERROR") {
-              setFecthResult([
-                <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
-                  Error while fetching from remote!
-                </div>,
-              ]);
-            } else {
-              const fetchArray = fetchResponse.fetchedItems;
-              setFecthResult([...fetchArray]);
-            }
-          }
-        })
-        .catch((err) => {
-          setFecthResult([
-            <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
-              Error while fetching from remote!
-            </div>,
-          ]);
-        });
-    }, [repoId]);
-
-    return (
-      <div className="w-5/6 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
-        <div className="mx-3 my-3 text-3xl font-sans text-gray-800">
-          Fetch Result
-        </div>
-        {fetchResult && fetchResult.length > 0 ? (
-          <>
-            <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700">
-              {fetchResult.map((result) => {
-                return (
-                  <div
-                    className="my-1 mx-2 break-normal"
-                    key={result + `-${uuid()}`}
-                  >
-                    {result}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="rounded mx-auto p-4 my-auto w-11/12 shadow bg-orange-200 border-orange-700 text-xl font-sand font-semibold">
-              Fetching changes from remote...
-            </div>
-          </>
-        )}
-      </div>
-    );
-  }
-
-  function PullRemoteComponent(props) {
-    const { repoId } = props;
-
-    const [pullResult, setPullResult] = useState([]);
-
-    useEffect(() => {
-      axios({
-        url: globalAPIEndpoint,
-        method: "POST",
-        data: {
-          query: `
-            mutation GitConvexMutation{
-              pullFromRemote(repoId: "${repoId}"){
-                status
-                pulledItems
-              }
-            }
-          `,
-        },
-      })
-        .then((res) => {
-          if (res.data.data && !res.data.error) {
-            const pullResponse = res.data.data.pullFromRemote;
-
-            if (pullResponse.status === "PULL_FAILED") {
-              setPullResult([
-                <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
-                  Error while pulling from remote!
-                </div>,
-              ]);
-            } else if (pullResponse.status === "PULL_EMPTY") {
-              setPullResult([
-                <div className="text-xl p-2 text-gray-900 font-semibold">
-                  No changes to Pull from remote
-                </div>,
-              ]);
-            } else {
-              const pullArray = pullResponse.pulledItems;
-              setPullResult([...pullArray]);
-            }
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setPullResult([
-            <div className="text-xl p-2 text-pink-800 border border-pink-200 shadow rounded font-semibold">
-              Error while pulling from remote!
-            </div>,
-          ]);
-        });
-    }, [repoId]);
-
-    return (
-      <div className="w-5/6 mx-auto my-auto bg-gray-200 p-6 rounded-md pb-10">
-        <div className="mx-3 my-3 text-3xl font-sans text-gray-800">
-          Pull Result
-        </div>
-        {pullResult && pullResult.length > 0 ? (
-          <>
-            <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700">
-              {pullResult.map((result) => {
-                return (
-                  <div className="my-1 mx-2 truncate ..." key={result}>
-                    {result}
-                  </div>
-                );
-              })}
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="rounded mx-auto p-4 my-auto w-11/12 shadow bg-orange-200 border-orange-700 text-xl font-sand font-semibold">
-              Pulling changes from remote...
-            </div>
-          </>
-        )}
-      </div>
-    );
-  }
-
   const {
     gitRemoteData,
     gitRepoName,
@@ -300,35 +150,35 @@ export default function RepositoryDetails(props) {
         remoteLogo = (
           <FontAwesomeIcon
             icon={["fab", "github"]}
-            className="text-2xl text-center text-pink-500"
+            className="text-4xl text-center text-pink-500"
           ></FontAwesomeIcon>
         );
       } else if (gitRemoteHost.match(/gitlab/i)) {
         remoteLogo = (
           <FontAwesomeIcon
             icon={["fab", "gitlab"]}
-            className="text-2xl text-center text-pink-400"
+            className="text-4xl text-center text-pink-400"
           ></FontAwesomeIcon>
         );
       } else if (gitRemoteHost.match(/bitbucket/i)) {
         remoteLogo = (
           <FontAwesomeIcon
             icon={["fab", "bitbucket"]}
-            className="text-2xl text-center text-pink-400"
+            className="text-4xl text-center text-pink-400"
           ></FontAwesomeIcon>
         );
       } else if (gitRemoteHost.match(/codecommit/i)) {
         remoteLogo = (
           <FontAwesomeIcon
             icon={["fab", "aws"]}
-            className="text-2xl text-center text-pink-400"
+            className="text-4xl text-center text-pink-400"
           ></FontAwesomeIcon>
         );
       } else {
         remoteLogo = (
           <FontAwesomeIcon
             icon={["fab", "git-square"]}
-            className="text-2xl text-center text-pink-400"
+            className="text-4xl text-center text-pink-400"
           ></FontAwesomeIcon>
         );
       }
@@ -363,50 +213,70 @@ export default function RepositoryDetails(props) {
           ) : null}
 
           <div className="block rounded-md w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
-            <div>
-              <div className="flex justify-evenly p-2 align-middle items-center">
+            <div className="block mx-auto my-6">
+              <div className="flex justify-evenly items-center">
                 <div className="text-lg text-gray-600 w-1/4">Remote Host</div>
-                <div className="text-center w-1/2 flex justify-center rounded-md border-2 shadow-md text-center items-center align-middle border-gray-200">
-                  <div className="p-3">{remoteLogo}</div>
-                  <div className="text-center text-lg">{gitRemoteHost}</div>
+                <div className="flex justify-around items-center align-middle w-1/2">
+                  <div className="w-3/4 flex cursor-pointer justify-center p-4 rounded-md shadow-md border border-dashed my-auto items-center align-middle">
+                    <div className="mx-2">{remoteLogo}</div>
+                    <div className="text-xl text-gray-800 border-b border-dashed border-gray-400 w-3/4 text-center">
+                      {gitRemoteHost}
+                    </div>
+                  </div>
+                  <div className="w-1/4">
+                    <div
+                      id="addRemote"
+                      className="rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-indigo-400 text-center mx-auto shadow hover:bg-indigo-500 cursor-pointer"
+                      onMouseEnter={(event) => {
+                        let popUp =
+                          '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative" style="margin-left:-40px;">Click to add a new remote repo</div>';
+                        event.target.innerHTML += popUp;
+                      }}
+                      onMouseLeave={(event) => {
+                        event.target.innerHTML = "+";
+                      }}
+                      onClick={() => {
+                        setBackdropToggle(true);
+                        setAction("addRemoteRepo");
+                      }}
+                    >
+                      +
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="block mx-auto my-6">
-                <div className="flex justify-evenly">
-                  <div className="text-lg text-gray-600 w-1/4">
-                    {`${gitRemoteHost} URL`}
-                  </div>
-                  <div className="text-blue-400 hover:text-blue-500 cursor-pointer w-1/2 break-words">
-                    {gitRemoteData}
-                  </div>
+              <div className="flex justify-evenly my-4">
+                <div className="text-lg text-gray-600 w-1/4">
+                  {`${gitRemoteHost} URL`}
                 </div>
-
-                <div className="flex justify-evenly my-1">
-                  {isMultiRemote ? (
-                    <>
-                      <div className="font-sans text-gray-800 font-semibold w-1/4 border-dotted border-b-2 border-gray-200">
-                        Entry truncated!
-                      </div>
-                      <div className="w-1/2 border-dotted border-b-2 border-gray-200">
-                        {`Remote repos : ${multiRemoteCount}`}
-                      </div>
-                    </>
-                  ) : null}
+                <div className="text-blue-400 hover:text-blue-500 cursor-pointer w-1/2 break-words">
+                  {gitRemoteData}
                 </div>
               </div>
 
-              <div className="block mx-auto my-6">
-                <div className="flex justify-evenly my-3">
-                  <div className="w-1/4 text-md text-gray-600">Commit Logs</div>
-                  <div
-                    className="w-1/2 rounded-md shadow-md p-3 text-center bg-orange-300 cursor-pointer"
-                    onClick={(event) => {
-                      setShowCommitLogs(true);
-                    }}
-                  >
-                    Show Commit Logs
+              {isMultiRemote ? (
+                <div className="flex justify-evenly my-2">
+                  <div className="font-sans text-gray-800 font-semibold w-1/4 border-dotted border-b-2 border-gray-200">
+                    Entry truncated!
                   </div>
+                  <div className="w-1/2 border-dotted border-b-2 border-gray-200">
+                    {`Remote repos : ${multiRemoteCount}`}
+                  </div>
+                </div>
+              ) : null}
+            </div>
+
+            <div className="block mx-auto my-6">
+              <div className="flex justify-evenly my-3">
+                <div className="w-1/4 text-md text-gray-600">Commit Logs</div>
+                <div
+                  className="w-1/2 rounded-md shadow-md p-3 text-center bg-orange-300 cursor-pointer"
+                  onClick={(event) => {
+                    setShowCommitLogs(true);
+                  }}
+                >
+                  Show Commit Logs
                 </div>
               </div>
             </div>
@@ -460,7 +330,7 @@ export default function RepositoryDetails(props) {
                     className="rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-green-400 text-center mx-auto shadow hover:bg-green-500 cursor-pointer"
                     onMouseEnter={(event) => {
                       let popUp =
-                        '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative">Click to add a new branch</div>';
+                        '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative" style="margin-left:-40px;">Click to add a new branch</div>';
                       event.target.innerHTML += popUp;
                     }}
                     onMouseLeave={(event) => {
@@ -615,89 +485,6 @@ export default function RepositoryDetails(props) {
     }
   };
 
-  function AddBranchComponent({ repoId }) {
-    const [branchName, setBranchName] = useState("");
-    const [branchAddStatus, setBranchAddStatus] = useState("");
-    const branchNameRef = useRef();
-
-    function resetBranchNameText() {
-      branchNameRef.current.value = "";
-      setBranchName("");
-    }
-
-    function addBranchClickHandler() {
-      axios({
-        url: globalAPIEndpoint,
-        method: "POST",
-        data: {
-          query: `
-            mutation GitConvexMutation{
-              addBranch(repoId: "${repoId}", branchName: "${branchName}")
-            }
-          `,
-        },
-      })
-        .then((res) => {
-          if (res.data.data && !res.data.error) {
-            const branchStatus = res.data.data.addBranch;
-            setBranchAddStatus(branchStatus);
-            resetBranchNameText();
-          } else {
-            setBranchAddStatus("BRANCH_ADD_FAILED");
-            resetBranchNameText();
-          }
-        })
-        .catch((err) => {
-          setBranchAddStatus("BRANCH_ADD_FAILED");
-          resetBranchNameText();
-        });
-    }
-
-    return (
-      <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md">
-        <div className="my-auto">
-          <div className="mx-auto">
-            <input
-              type="text"
-              ref={branchNameRef}
-              placeholder="Branch Name"
-              className="p-3 rounded bg-white text-xl text-gray-700 font-sans font-mono w-full border border-grau-200 shadow"
-              onChange={(event) => {
-                setBranchName(event.target.value);
-              }}
-              onClick={() => {
-                setBranchAddStatus("");
-              }}
-            ></input>
-          </div>
-          <div
-            className="bg-indigo-500 p-3 rounded mt-6 mx-auto text-xl font-sans text-white hover:bg-indigo-600 text-center mx-auto cursor-pointer"
-            onClick={(event) => {
-              if (branchName) {
-                console.log(branchName);
-                addBranchClickHandler();
-              } else {
-                setBranchAddStatus("BRANCH_ADD_FAILED");
-              }
-            }}
-          >
-            Add Branch
-          </div>
-          {branchAddStatus === "BRANCH_CREATION_SUCCESS" ? (
-            <div className="w-1/2 bg-green-200 p-1 rounded my-6 mx-auto text-md font-sans text-center mx-auto cursor-pointer">
-              New branch has been added to your repo successfully
-            </div>
-          ) : null}
-          {branchAddStatus === "BRANCH_ADD_FAILED" ? (
-            <div className="w-1/2 bg-red-200 p-1 rounded my-6 mx-auto text-md font-sans text-center mx-auto cursor-pointer">
-              New branch addition failed!
-            </div>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       {backdropToggle ? (
@@ -715,6 +502,9 @@ export default function RepositoryDetails(props) {
           <>{action === "fetch" ? memoizedFetchRemoteComponent : null}</>
           <>{action === "pull" ? memoizedPullRemoteComponent : null}</>
           <>
+            {action === "addRemoteRepo" ? memoizedAddRemoteRepoComponent : null}
+          </>
+          <>
             {action === "addBranch" ? (
               <AddBranchComponent repoId={repoIdState}></AddBranchComponent>
             ) : null}
@@ -731,7 +521,7 @@ export default function RepositoryDetails(props) {
         </div>
       ) : null}
       <div className="w-full fixed bg-gray-600 opacity-50"></div>
-      <div className="rp_repo-view w-full h-full xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none overflow-auto p-6 mx-auto rounded-lg justify-evenly">
+      <div className="rp_repo-view w-full h-full p-6 mx-auto rounded-lg justify-evenly">
         {gitRepoStatus && !repoFetchFailed ? (
           <>
             <div className="flex px-3 py-2">
