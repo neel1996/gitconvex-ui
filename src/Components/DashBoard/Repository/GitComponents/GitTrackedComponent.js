@@ -130,8 +130,10 @@ export default function GitTrackedComponent(props) {
             styleSelector += "text-red-900 bg-red-200";
             deletedArtifacts.push(
               <div className="flex mx-auto justify-between" key={name}>
-                <div className={`${styleSelector} w-11/12`}> {name} </div>
-                <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6">
+                <div className={`${styleSelector} w-11/12 break-all`}>
+                  {name}
+                </div>
+                <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 my-auto">
                   Deleted
                 </div>
               </div>
@@ -153,28 +155,23 @@ export default function GitTrackedComponent(props) {
 
   function untrackedPane() {
     let untrackedDir = [];
-    let untrackedFile = [];
-
+    let untrackedEntry = "";
     gitUntrackedFilesState.forEach((entry) => {
       let splitEntry = entry.split(",");
 
       if (splitEntry) {
-        untrackedDir.push(
-          <div className="font-sans font-semibold">
-            {splitEntry[0] !== "NO_DIR" ? splitEntry[0] : "./"}
-          </div>
-        );
-        untrackedFile.push(<div className="font-sans"> {splitEntry[1]} </div>);
+        untrackedDir.push(splitEntry[0] !== "NO_DIR" ? splitEntry[0] : "./");
+        untrackedEntry = untrackedDir.join("") + splitEntry[1];
       }
     });
 
     return untrackedDir.map((entry, index) => {
       return (
         <div className="flex" key={`${entry}-${index}`}>
-          <div className="bg-indigo-100 text-indigo-800 flex p-2 block w-11/12">
-            {untrackedDir[index]} {untrackedFile[index]}
+          <div className="bg-indigo-100 text-indigo-800 flex p-2 block w-11/12 break-all">
+            {untrackedEntry}
           </div>
-          <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 text-sm">
+          <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 text-sm my-auto">
             New / Untracked
           </div>
         </div>

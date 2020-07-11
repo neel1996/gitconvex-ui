@@ -10,8 +10,7 @@ import {
   ROUTE_REPO_DETAILS,
 } from "../../../../util/env_config";
 import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
-import FetchRemoteComponent from "./RepoDetailBackdrop/FetchFromRemoteComponent";
-import PullRemoteComponent from "./RepoDetailBackdrop/PullFromRemoteComponent";
+import FetchPullActionComponent from "./RepoDetailBackdrop/FetchPullActionComponent";
 import RepositoryCommitLogComponent from "./RepositoryCommitLogComponent";
 import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
 
@@ -35,11 +34,21 @@ export default function RepositoryDetails(props) {
   }, [repoIdState]);
 
   const memoizedFetchRemoteComponent = useMemo(() => {
-    return <FetchRemoteComponent repoId={repoIdState}></FetchRemoteComponent>;
+    return (
+      <FetchPullActionComponent
+        repoId={repoIdState}
+        actionType="fetch"
+      ></FetchPullActionComponent>
+    );
   }, [repoIdState]);
 
   const memoizedPullRemoteComponent = useMemo(() => {
-    return <PullRemoteComponent repoId={repoIdState}></PullRemoteComponent>;
+    return (
+      <FetchPullActionComponent
+        repoId={repoIdState}
+        actionType="pull"
+      ></FetchPullActionComponent>
+    );
   }, [repoIdState]);
 
   const memoizedAddRemoteRepoComponent = useMemo(() => {
@@ -521,7 +530,7 @@ export default function RepositoryDetails(props) {
         </div>
       ) : null}
       <div className="w-full fixed bg-gray-600 opacity-50"></div>
-      <div className="rp_repo-view w-full h-full p-6 mx-auto rounded-lg justify-evenly">
+      <div className="xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none rp_repo-view w-full h-full p-6 mx-auto rounded-lg justify-evenly">
         {gitRepoStatus && !repoFetchFailed ? (
           <>
             <div className="flex px-3 py-2">

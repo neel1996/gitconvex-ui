@@ -23,6 +23,7 @@ export default function GitOperationComponent(props) {
   const [viewReload, setViewReload] = useState(0);
   const [currentStageItem, setCurrensStageitem] = useState("");
   const [stageItems, setStagedItems] = useState([]);
+  const [unstageFailed, setUnstageFailed] = useState(false);
 
   useEffect(() => {
     const payload = JSON.stringify(
@@ -197,6 +198,12 @@ export default function GitOperationComponent(props) {
             Modified
           </div>
         );
+      } else if (status === "D") {
+        return (
+          <div className="p-1 mx-auto text-center w-2/3 text-red-700 border bg-red-200 border-red-500 rounded-md shadow-sm">
+            Removed
+          </div>
+        );
       } else {
         return (
           <div className="p-1 mx-auto text-center w-2/3 text-indigo-700 border border-indigo-500 rounded-md shadow-sm">
@@ -212,6 +219,7 @@ export default function GitOperationComponent(props) {
           className="p-1 mx-auto cursor-pointer bg-green-300 text-white w-2/3 rounded-md shadow-sm hover:shadow-md hover:bg-green-600"
           onClick={(event) => {
             stageGitComponent(stageItem, event);
+            setUnstageFailed(false);
           }}
         >
           Add
@@ -278,10 +286,15 @@ export default function GitOperationComponent(props) {
               });
 
               setStagedItems([...localStagedItems]);
+            } else {
+              setUnstageFailed(true);
             }
           }
         })
-        .catch((err) => {});
+        .catch((err) => {
+          console.log(err);
+          setUnstageFailed(true);
+        });
     }
 
     function removeAllStagedItems(event) {
@@ -326,11 +339,22 @@ export default function GitOperationComponent(props) {
               className="p-2 rounded text-white bg-red-700 text-xl rounded shadow cursor-pointer hover:bg-red-800"
               onClick={(event) => {
                 removeAllStagedItems(event);
+                setUnstageFailed(false);
               }}
             >
               Remove All Items
             </div>
           </div>
+          {unstageFailed ? (
+            <div className="my-4 mx-auto text-center shadow-md rounded p-4 border border-red-200 text-red-400 font-sans font-semibold">
+              Remove item failed. Note that deleted files cannot be removed as a
+              single entity. Use
+              <i className="border-b border-gray-600 border-dashed mx-2">
+                Remove All Items
+              </i>
+              to perform a complete git reset
+            </div>
+          ) : null}
           <div className="flex mx-auto p-2 text-center font-sans text-lg text-white bg-indigo-400 rounded">
             <div className="w-3/4">Staged File</div>
             <div className="w-1/2">Action</div>
@@ -354,6 +378,7 @@ export default function GitOperationComponent(props) {
                         className="mx-auto w-1/2 text-white cursor-pointer break-all text-center p-2 rounded bg-red-500 shadow hover:bg-red-600 hover:shadow-md"
                         onClick={(event) => {
                           removeStagedItem(item, event);
+                          setUnstageFailed(false);
                         }}
                       >
                         Remove
