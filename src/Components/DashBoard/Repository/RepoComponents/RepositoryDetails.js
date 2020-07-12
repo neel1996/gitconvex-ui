@@ -221,7 +221,7 @@ export default function RepositoryDetails(props) {
             </>
           ) : null}
 
-          <div className="block rounded-md w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
+          <div className="block rounded-md xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
             <div className="block mx-auto my-6">
               <div className="flex justify-evenly items-center">
                 <div className="text-lg text-gray-600 w-1/4">Remote Host</div>
@@ -291,7 +291,7 @@ export default function RepositoryDetails(props) {
             </div>
           </div>
 
-          <div className="block rounded-md w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
+          <div className="block rounded-md xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
             <div className="block mx-auto my-2">
               <div className="flex justify-around my-3">
                 <div className="text-lg text-gray-500 w-1/4">Total Commits</div>
