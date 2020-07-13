@@ -14,6 +14,7 @@ import StageComponent from "./StageComponent";
 export default function GitOperationComponent(props) {
   library.add(fab);
   const { repoId } = props;
+  const { stateChange } = props;
 
   const [gitTrackedFiles, setGitTrackedFiles] = useState([]);
   const [gitUntrackedFiles, setGitUntrackedFiles] = useState([]);
@@ -163,7 +164,7 @@ export default function GitOperationComponent(props) {
 
   function stageGitComponent(stageItem, event) {
     let localViewReload = viewReload + 1;
-    
+
     event.target.innerHTML = "Staging...";
     event.target.style.backgroundColor = "gray";
     event.target.disabled = true;
@@ -265,6 +266,7 @@ export default function GitOperationComponent(props) {
   function getStagedFilesComponent() {
     function removeStagedItem(item, event) {
       let localViewReload = viewReload + 1;
+      stateChange();
 
       event.target.innerHTML = "removing...";
       event.target.style.backgroundColor = "gray";
@@ -309,6 +311,8 @@ export default function GitOperationComponent(props) {
 
     function removeAllStagedItems(event) {
       let localViewReload = viewReload + 1;
+      setStagedItems();
+      stateChange();
 
       event.target.innerHTML = "Removing...";
       event.target.style.backgroundColor = "gray";

@@ -24,7 +24,7 @@ export default function GitDiffViewComponent() {
   const [activeFileName, setActiveFileName] = useState("");
   const [isApiCalled, setIsApiCalled] = useState(false);
   const [isLangSelected, setIsLangSelected] = useState(false);
-  const [wranStatus, setWarnStatus] = useState("");
+  const [warnStatus, setWarnStatus] = useState("");
   const [lang, setLang] = useState("");
 
   const langEnum = {
@@ -146,6 +146,7 @@ export default function GitDiffViewComponent() {
   function fileDiffStatComponent(repoId, fileName) {
     const apiEndPoint = globalAPIEndpoint;
     setIsLangSelected(false);
+    setWarnStatus("");
 
     const payload = JSON.stringify(
       JSON.stringify({ repoId: repoId, fileName: fileName })
@@ -329,15 +330,15 @@ export default function GitDiffViewComponent() {
               ""
             )}
 
-            {wranStatus ? (
+            {warnStatus ? (
               <div className="text-center mx-auto my-4 p-4 rounded bg-yellow-300 border-yellow-800 font-sans font-medium my-auto">
-                {wranStatus}
+                {warnStatus}
               </div>
             ) : null}
 
             {diffStatState &&
             diffStatState !== "Click on a file item to see the difference" &&
-            !wranStatus ? (
+            !warnStatus ? (
               <div className="p-2 break-all w-3/4 mx-auto">
                 {diffStatState ? statFormat() : ""}
                 {fileLineDiffState &&

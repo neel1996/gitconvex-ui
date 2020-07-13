@@ -23,8 +23,13 @@ export default function GitTrackedComponent(props) {
   const [topMenuItemState, setTopMenuItemState] = useState("File View");
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
   const [noChangeMarker, setNoChangeMarker] = useState(false);
+  const [requestStateChange, setRequestChange] = useState(false);
 
   const { dispatch } = useContext(ContextProvider);
+
+  const operationStateChangeHandler = () => {
+    setRequestChange(true);
+  };
 
   const memoizedGitDiffView = useMemo(() => {
     return <GitDiffViewComponent repoId={props.repoId}></GitDiffViewComponent>;
@@ -32,12 +37,16 @@ export default function GitTrackedComponent(props) {
 
   const memoizedGitOperationView = useMemo(() => {
     return (
-      <GitOperationComponent repoId={props.repoId}></GitOperationComponent>
+      <GitOperationComponent
+        repoId={props.repoId}
+        stateChange={operationStateChangeHandler}
+      ></GitOperationComponent>
     );
   }, [props]);
 
   useEffect(() => {
     let apiEndPoint = globalAPIEndpoint;
+    setRequestChange(false);
 
     const payload = JSON.stringify(
       JSON.stringify({
@@ -98,9 +107,10 @@ export default function GitTrackedComponent(props) {
         }
       })
       .catch((err) => {
+        console.log(err);
         setNoChangeMarker(true);
       });
-  }, [props, dispatch]);
+  }, [props, dispatch, topMenuItemState, requestStateChange]);
 
   function diffPane() {
     var deletedArtifacts = [];
