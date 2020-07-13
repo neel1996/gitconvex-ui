@@ -187,8 +187,6 @@ export default function GitDiffViewComponent() {
             setFileLineDiffState(fileDiff);
 
             var selectedLang = languageDetector(fileName);
-            const packageName =
-              "prismjs/components/prism-" + selectedLang + ".js";
 
             await import("prismjs/components/prism-" + selectedLang + ".js")
               .then(() => {})
