@@ -163,7 +163,10 @@ export default function GitOperationComponent(props) {
 
   function stageGitComponent(stageItem, event) {
     let localViewReload = viewReload + 1;
-    setViewReload(localViewReload);
+    
+    event.target.innerHTML = "Staging...";
+    event.target.style.backgroundColor = "gray";
+    event.target.disabled = true;
 
     axios({
       url: globalAPIEndpoint,
@@ -177,6 +180,8 @@ export default function GitOperationComponent(props) {
       },
     })
       .then((res) => {
+        setViewReload(localViewReload);
+
         if (res.data.data && !res.data.error) {
           if (res.data.data.stageItem === "ADD_ITEM_SUCCES") {
             setCurrensStageitem(stageItem);
@@ -185,6 +190,7 @@ export default function GitOperationComponent(props) {
       })
       .catch((err) => {
         console.log(err);
+        setViewReload(localViewReload);
       });
   }
 
@@ -221,6 +227,7 @@ export default function GitOperationComponent(props) {
             stageGitComponent(stageItem, event);
             setUnstageFailed(false);
           }}
+          key={`add-btn-${stageItem}`}
         >
           Add
         </div>
@@ -258,7 +265,10 @@ export default function GitOperationComponent(props) {
   function getStagedFilesComponent() {
     function removeStagedItem(item, event) {
       let localViewReload = viewReload + 1;
-      setViewReload(localViewReload);
+
+      event.target.innerHTML = "removing...";
+      event.target.style.backgroundColor = "gray";
+      event.target.disabled = true;
 
       axios({
         url: globalAPIEndpoint,
@@ -272,8 +282,7 @@ export default function GitOperationComponent(props) {
         },
       })
         .then((res) => {
-          let localReload = viewReload + 1;
-          setViewReload(localReload);
+          setViewReload(localViewReload);
           if (res.data.data && !res.data.error) {
             if (res.data.data.removeStagedItem === "STAGE_REMOVE_SUCCESS") {
               let localStagedItems = stageItems;
@@ -293,13 +302,17 @@ export default function GitOperationComponent(props) {
         })
         .catch((err) => {
           console.log(err);
+          setViewReload(localViewReload);
           setUnstageFailed(true);
         });
     }
 
     function removeAllStagedItems(event) {
       let localViewReload = viewReload + 1;
-      setViewReload(localViewReload);
+
+      event.target.innerHTML = "Removing...";
+      event.target.style.backgroundColor = "gray";
+      event.target.disabled = true;
 
       axios({
         url: globalAPIEndpoint,
@@ -313,7 +326,7 @@ export default function GitOperationComponent(props) {
         },
       })
         .then((res) => {
-          setViewReload(localViewReload);
+          setViewReload(localViewReload + 1);
           if (res.data.data && !res.data.error) {
             if (
               res.data.data.removeAllStagedItem === "STAGE_ALL_REMOVE_SUCCESS"
@@ -324,7 +337,7 @@ export default function GitOperationComponent(props) {
         })
         .catch((err) => {
           console.log(err);
-          setViewReload(localViewReload);
+          setViewReload(localViewReload + 1);
         });
     }
 
@@ -380,6 +393,7 @@ export default function GitOperationComponent(props) {
                           removeStagedItem(item, event);
                           setUnstageFailed(false);
                         }}
+                        key={`remove-btn-${item}`}
                       >
                         Remove
                       </div>

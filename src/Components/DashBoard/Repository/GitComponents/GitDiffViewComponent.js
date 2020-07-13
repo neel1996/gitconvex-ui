@@ -24,6 +24,7 @@ export default function GitDiffViewComponent() {
   const [activeFileName, setActiveFileName] = useState("");
   const [isApiCalled, setIsApiCalled] = useState(false);
   const [isLangSelected, setIsLangSelected] = useState(false);
+  const [wranStatus, setWarnStatus] = useState("");
   const [lang, setLang] = useState("");
 
   const langEnum = {
@@ -84,11 +85,13 @@ export default function GitDiffViewComponent() {
       })
         .then((res) => {
           if (res) {
-            var apiData = res.data.data.gitConvexApi.gitChanges;
-            const { gitChangedFiles } = apiData;
-            setChangedFiles([...gitChangedFiles]);
-            setIsApiCalled(true);
-            dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
+            if (res.data.data && !res.data.error) {
+              var apiData = res.data.data.gitConvexApi.gitChanges;
+              const { gitChangedFiles } = apiData;
+              setChangedFiles([...gitChangedFiles]);
+              setIsApiCalled(true);
+              dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
+            }
           }
         })
         .catch((err) => {
@@ -169,29 +172,43 @@ export default function GitDiffViewComponent() {
       },
     })
       .then(async (res) => {
-        const {
-          diffStat,
-          fileDiff,
-        } = res.data.data.gitConvexApi.gitFileLineChanges;
+        if (res.data.data && !res.data.error) {
+          const {
+            diffStat,
+            fileDiff,
+          } = res.data.data.gitConvexApi.gitFileLineChanges;
 
-        setDiffStatState(diffStat[1]);
-        setFileLineDiffState(fileDiff);
+          if (diffStat[0] === "NO_STAT" || fileDiff[0] === "NO_DIFF") {
+            setWarnStatus(
+              "No difference could be found. Please check if the file is present in the repo!"
+            );
+          } else {
+            setDiffStatState(diffStat[1]);
+            setFileLineDiffState(fileDiff);
 
-        var selectedLang = languageDetector(fileName);
-        const packageName = "prismjs/components/prism-" + selectedLang + ".js";
+            var selectedLang = languageDetector(fileName);
+            const packageName =
+              "prismjs/components/prism-" + selectedLang + ".js";
 
-        await import("prismjs/components/prism-" + selectedLang + ".js")
-          .then(() => {
-            console.log("Package lang loaded : ", packageName);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+            await import("prismjs/components/prism-" + selectedLang + ".js")
+              .then(() => {})
+              .catch((err) => {
+                console.log(err);
+              });
 
-        setLang(selectedLang);
+            setLang(selectedLang);
+          }
+        } else {
+          setWarnStatus(
+            "Error while fetching the file difference. Please try reloading the view!"
+          );
+        }
       })
       .catch((err) => {
         console.log(err);
+        setWarnStatus(
+          "Error while fetching the file difference. Please try reloading the view!"
+        );
       });
   }
 
@@ -314,8 +331,15 @@ export default function GitDiffViewComponent() {
               ""
             )}
 
+            {wranStatus ? (
+              <div className="text-center mx-auto my-4 p-4 rounded bg-yellow-300 border-yellow-800 font-sans font-medium my-auto">
+                {wranStatus}
+              </div>
+            ) : null}
+
             {diffStatState &&
-            diffStatState !== "Click on a file item to see the difference" ? (
+            diffStatState !== "Click on a file item to see the difference" &&
+            !wranStatus ? (
               <div className="p-2 break-all w-3/4 mx-auto">
                 {diffStatState ? statFormat() : ""}
                 {fileLineDiffState &&
