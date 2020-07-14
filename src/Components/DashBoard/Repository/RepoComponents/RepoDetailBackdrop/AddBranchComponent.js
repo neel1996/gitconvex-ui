@@ -48,9 +48,20 @@ export default function AddBranchComponent(props) {
           <input
             type="text"
             ref={branchNameRef}
+            id="branchName"
             placeholder="Branch Name"
             className="p-3 rounded bg-white text-xl text-gray-700 font-sans font-mono w-full border border-gray-200 shadow"
             onChange={(event) => {
+              const branchNameVal = event.target.value;
+              if (
+                event.target.id === "branchName" &&
+                branchNameVal.match(/[^a-zA-Z0-9_]/gi)
+              ) {
+                event.target.value = branchNameVal.replace(
+                  /[^a-zA-Z0-9_]/gi,
+                  "-"
+                );
+              }
               setBranchName(event.target.value);
             }}
             onClick={() => {

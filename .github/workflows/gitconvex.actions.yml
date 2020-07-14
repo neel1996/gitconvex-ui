@@ -1,9 +1,7 @@
-name: Gitconvex UI pipeline
+name: Gitconvex React UI pipeline
 
 on:
   push:
-    branches: [master]
-  pull_request:
     branches: [master]
 
 jobs:
@@ -21,6 +19,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - run: npm install tailwindcss npm-run-all chokidar-cli
       - run: npm i -g create-react-app
       - run: npm test && npm run build
       - name: Copy react build content to DO Droplet
