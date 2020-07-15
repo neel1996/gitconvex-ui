@@ -10,9 +10,11 @@ import {
   ROUTE_REPO_DETAILS,
 } from "../../../../util/env_config";
 import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
-import FetchPullActionComponent from "./RepoDetailBackdrop/FetchPullActionComponent";
-import RepositoryCommitLogComponent from "./RepositoryCommitLogComponent";
 import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
+import FetchPullActionComponent from "./RepoDetailBackdrop/FetchPullActionComponent";
+import SwitchBranchComponent from "./RepoDetailBackdrop/SwitchBranchComponent";
+import RepositoryCommitLogComponent from "./RepositoryCommitLogComponent";
+import BranchListComponent from "./RepoDetailBackdrop/BranchListComponent";
 
 export default function RepositoryDetails(props) {
   library.add(fab, fas);
@@ -23,7 +25,13 @@ export default function RepositoryDetails(props) {
   const [isMultiRemote, setIsMultiRemote] = useState(false);
   const [multiRemoteCount, setMultiRemoteCount] = useState(0);
   const [backdropToggle, setBackdropToggle] = useState(false);
+  const [selectedBranch, setSelectedBranch] = useState("");
+  const [currentBranch, setCurrentBranch] = useState("");
   const [action, setAction] = useState("");
+
+  const closeBackdrop = (toggle) => {
+    setBackdropToggle(!toggle);
+  };
 
   const memoizedCommitLogComponent = useMemo(() => {
     return (
@@ -50,6 +58,25 @@ export default function RepositoryDetails(props) {
       ></FetchPullActionComponent>
     );
   }, [repoIdState]);
+
+  const memoizedSwitchBranchComponent = useMemo(() => {
+    return (
+      <SwitchBranchComponent
+        repoId={repoIdState}
+        branchName={selectedBranch}
+        closeBackdrop={closeBackdrop}
+      ></SwitchBranchComponent>
+    );
+  }, [repoIdState, selectedBranch]);
+
+  const memoizedBranchListComponent = useMemo(() => {
+    return (
+      <BranchListComponent
+        repoId={repoIdState}
+        currentBranch={currentBranch}
+      ></BranchListComponent>
+    );
+  }, [repoIdState, currentBranch]);
 
   const memoizedAddRemoteRepoComponent = useMemo(() => {
     return (
@@ -102,6 +129,9 @@ export default function RepositoryDetails(props) {
           if (res.data && res.data.data && !res.data.error) {
             let gitRemoteLocal =
               res.data.data.gitConvexApi.gitRepoStatus.gitRemoteData;
+            setCurrentBranch(
+              res.data.data.gitConvexApi.gitRepoStatus.gitCurrentBranch
+            );
             if (gitRemoteLocal.includes("||")) {
               setIsMultiRemote(true);
               res.data.data.gitConvexApi.gitRepoStatus.gitRemoteData = gitRemoteLocal.split(
@@ -135,6 +165,12 @@ export default function RepositoryDetails(props) {
     gitTrackedFiles,
     gitFileBasedCommit,
   } = gitRepoStatus;
+
+  const switchBranchHandler = (branchName) => {
+    setBackdropToggle(true);
+    setAction("switchbranch");
+    setSelectedBranch(branchName);
+  };
 
   const gitRepoHeaderContent = () => {
     return (
@@ -316,23 +352,46 @@ export default function RepositoryDetails(props) {
                   <div className="w-3/4 my-auto">
                     {gitBranchList &&
                       gitCurrentBranch &&
-                      gitBranchList.map((entry) => {
-                        return entry === gitCurrentBranch ? (
-                          <div
-                            className="text-lg font-semibold text-indigo-500"
-                            key={`${entry}-${uuid()}`}
-                          >
-                            {entry}
-                          </div>
-                        ) : (
-                          <div
-                            className="my-1 font-sans font-semibold"
-                            key={`entry-key-${uuid()}`}
-                          >
-                            {entry}
-                          </div>
-                        );
-                      })}
+                      gitBranchList
+                        .slice(0, 3)
+                        .map((entry) => {
+                          if (entry) {
+                            return entry === gitCurrentBranch ? (
+                              <div
+                                className="text-lg font-semibold text-indigo-500 my-1 border-b border-dotted cursor-pointer hover:border-dashed hover:text-indigo-600"
+                                key={`${entry}-${uuid()}`}
+                              >
+                                {entry}
+                              </div>
+                            ) : (
+                              <div
+                                className="text-md my-1 font-sans font-semibold my-2 border-b border-dotted cursor-pointer hover:border-dashed hover:text-indigo-400"
+                                key={`entry-key-${uuid()}`}
+                                onClick={() => {
+                                  switchBranchHandler(entry);
+                                }}
+                              >
+                                {entry}
+                              </div>
+                            );
+                          }
+                          return null;
+                        })
+                        .filter((item) => {
+                          if (item) {
+                            return item;
+                          }
+                          return false;
+                        })}
+                    <div
+                      className="border-b border-dashed font-sans text-blue-500 cursor-pointer hover:text-blue-800 my-2 text-center my-auto"
+                      onClick={() => {
+                        setBackdropToggle(true);
+                        setAction("listBranch");
+                      }}
+                    >
+                      List all branches
+                    </div>
                   </div>
                   <div
                     id="addBranch"
@@ -494,6 +553,25 @@ export default function RepositoryDetails(props) {
     }
   };
 
+  const actionComponentPicker = () => {
+    switch (action) {
+      case "fetch":
+        return memoizedFetchRemoteComponent;
+      case "pull":
+        return memoizedPullRemoteComponent;
+      case "addRemoteRepo":
+        return memoizedAddRemoteRepoComponent;
+      case "addBranch":
+        return <AddBranchComponent repoId={repoIdState}></AddBranchComponent>;
+      case "switchbranch":
+        return memoizedSwitchBranchComponent;
+      case "listBranch":
+        return memoizedBranchListComponent;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
       {backdropToggle ? (
@@ -508,16 +586,7 @@ export default function RepositoryDetails(props) {
             }
           }}
         >
-          <>{action === "fetch" ? memoizedFetchRemoteComponent : null}</>
-          <>{action === "pull" ? memoizedPullRemoteComponent : null}</>
-          <>
-            {action === "addRemoteRepo" ? memoizedAddRemoteRepoComponent : null}
-          </>
-          <>
-            {action === "addBranch" ? (
-              <AddBranchComponent repoId={repoIdState}></AddBranchComponent>
-            ) : null}
-          </>
+          <>{action ? actionComponentPicker() : null}</>
           <div
             className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
