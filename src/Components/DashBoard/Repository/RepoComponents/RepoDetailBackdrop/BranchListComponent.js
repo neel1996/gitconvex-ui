@@ -165,10 +165,26 @@ export default function BranchListComponent({ repoId, currentBranch }) {
       <div className="font-sans mx-4 p-2 text-4xl font-semibold border-b-2 border-dashed text-gray-800">
         Available Branches
       </div>
+      <div className="flex my-auto p-3 mx-auto border-b-2 border-dashed text-red-600 border-red-800 items-center align-middle">
+        <div className="mx-2">
+          <FontAwesomeIcon
+            icon={["fas", "exclamation-circle"]}
+          ></FontAwesomeIcon>
+        </div>
+        <div className="font-sans font-semibold">
+          Note that this section also lets you delete the branches, so be
+          cautious!
+        </div>
+      </div>
       <div className="font-sans mx-4 p-2 font-light italic font-semibold border-b-2 border-dashed text-gray-500">
         Click on a branch to checkout to that branch
       </div>
       <div className="my-4 mx-10">
+        {branchList.length === 0 ? (
+          <div className="p-2 rounded border-gray-500 shadow text-center my-4 mx-auto font-sans font-semibold text-xl">
+            Collecting branch list...
+          </div>
+        ) : null}
         {!listError &&
           branchList &&
           branchList.map((branch) => {
