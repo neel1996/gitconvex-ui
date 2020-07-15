@@ -14,6 +14,8 @@ The depedency packages used by this project can be found [here](https://github.c
 ```
 ## Project directory tree
 
+├── LICENSE
+├── README.md
 ├── package.json
 ├── public
 │   ├── favicon.ico
@@ -33,6 +35,8 @@ The depedency packages used by this project can be found [here](https://github.c
     │   │   ├── DashboardPaneComponents
     │   │   │   ├── LeftPane.js
     │   │   │   └── RightPane.js
+    │   │   ├── Help
+    │   │   │   └── Help.js
     │   │   ├── Repository
     │   │   │   ├── GitComponents
     │   │   │   │   ├── GitDiffViewComponent.js
@@ -46,6 +50,12 @@ The depedency packages used by this project can be found [here](https://github.c
     │   │   │       ├── AddRepoForm.js
     │   │   │       ├── RepoCard.js
     │   │   │       ├── RepoComponent.js
+    │   │   │       ├── RepoDetailBackdrop
+    │   │   │       │   ├── AddBranchComponent.js
+    │   │   │       │   ├── AddRemoteRepoComponent.js
+    │   │   │       │   ├── BranchListComponent.js
+    │   │   │       │   ├── FetchPullActionComponent.js
+    │   │   │       │   └── SwitchBranchComponent.js
     │   │   │       ├── RepositoryAction.js
     │   │   │       ├── RepositoryCommitLogComponent.js
     │   │   │       └── RepositoryDetails.js
@@ -71,6 +81,7 @@ The depedency packages used by this project can be found [here](https://github.c
     └── util
         ├── apiURLSupplier.js
         └── env_config.js
+
 
 ```
 ## Contribute!
