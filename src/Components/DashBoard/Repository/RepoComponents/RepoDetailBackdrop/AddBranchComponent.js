@@ -55,10 +55,10 @@ export default function AddBranchComponent(props) {
               const branchNameVal = event.target.value;
               if (
                 event.target.id === "branchName" &&
-                branchNameVal.match(/[^a-zA-Z0-9_]/gi)
+                branchNameVal.match(/[^a-zA-Z0-9_.:^\\/]/gi)
               ) {
                 event.target.value = branchNameVal.replace(
-                  /[^a-zA-Z0-9_]/gi,
+                  /[^a-zA-Z0-9_.:^\\/]/gi,
                   "-"
                 );
               }
