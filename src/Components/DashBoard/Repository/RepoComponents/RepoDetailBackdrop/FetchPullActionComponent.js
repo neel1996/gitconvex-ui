@@ -4,10 +4,14 @@ import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
 } from "../../../../../util/env_config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 
 import { v4 as uuid } from "uuid";
 
 export default function FetchFromRemoteComponent(props) {
+  library.add(fas);
   const { repoId, actionType } = props;
 
   const [remoteData, setRemoteData] = useState();
@@ -94,7 +98,7 @@ export default function FetchFromRemoteComponent(props) {
     }
   }
 
-  function actionHandler(remote, branch) {
+  function actionHandler(remote = "", branch = "") {
     setLoading(true);
 
     const getAxiosRequestBody = (remote, branch) => {
@@ -178,6 +182,21 @@ export default function FetchFromRemoteComponent(props) {
   return (
     <>
       <div className="w-3/4 mx-auto my-auto p-6 rounded shadow bg-white block">
+        {actionType === "fetch" ? (
+          <div
+            className="flex justify-center items-center w-11/12 xl:w-1/2 lg:w-3/4 md:w-3/4 sm:w-3/4 mx-auto my-4 p-1 text-center border-b-2 border-dashed border-gray-400 text-lg font-sans font-medium cursor-pointer text-indigo-400 hover:text-indigo-600 rounded-lg hover:border-gray-600"
+            onClick={() => {
+              actionHandler();
+            }}
+          >
+            <div className="text-2xl text-indigo-800 mx-4">
+              <FontAwesomeIcon
+                icon={["fas", "exclamation-circle"]}
+              ></FontAwesomeIcon>
+            </div>
+            <div>Click here to Fetch globally without branch selection</div>
+          </div>
+        ) : null}
         <div className="m-3 text-2xl font-sans text-ghray-800">
           Available remote repos
         </div>
@@ -250,7 +269,7 @@ export default function FetchFromRemoteComponent(props) {
 
         {!loading && result && result.length > 0 ? (
           <>
-            <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700">
+            <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700 truncate">
               {result.map((result) => {
                 return (
                   <div
