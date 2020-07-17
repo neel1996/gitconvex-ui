@@ -165,21 +165,34 @@ export default function GitTrackedComponent(props) {
 
   function untrackedPane() {
     let untrackedDir = [];
-    let untrackedEntry = "";
-    gitUntrackedFilesState.forEach((entry) => {
-      let splitEntry = entry.split(",");
+    let untrackedFiles = [];
 
-      if (splitEntry) {
-        untrackedDir.push(splitEntry[0] !== "NO_DIR" ? splitEntry[0] : "./");
-        untrackedEntry = untrackedDir.join("") + splitEntry[1];
-      }
-    });
+    untrackedFiles = gitUntrackedFilesState
+      .map((entry) => {
+        let splitEntry = entry.split(",");
+        let untrackedEntry = "";
 
-    return untrackedDir.map((entry, index) => {
+        if (splitEntry) {
+          untrackedDir = splitEntry[0] === "NO_DIR" ? "" : splitEntry[0];
+          untrackedEntry = untrackedDir + splitEntry[1];
+          console.log(untrackedEntry);
+          return untrackedEntry;
+        } else {
+          return "";
+        }
+      })
+      .filter((item) => {
+        if (item) {
+          return true;
+        }
+        return false;
+      });
+
+    return untrackedFiles.map((entry, index) => {
       return (
         <div className="flex" key={`${entry}-${index}`}>
           <div className="bg-indigo-100 text-indigo-800 flex p-2 block w-11/12 break-all">
-            {untrackedEntry}
+            {entry}
           </div>
           <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 text-sm my-auto">
             New / Untracked

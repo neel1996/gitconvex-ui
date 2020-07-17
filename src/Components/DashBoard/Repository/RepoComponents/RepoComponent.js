@@ -88,26 +88,32 @@ export default function RepoComponent(props) {
             )}
           </>
         </div>
-        <>
+        <div className="fixed bottom-0 right-0 mb-10 mr-16 cursor-pointer block justify-center">
           <div
             id="addRepoButton"
-            className="fixed bottom-0 right-0 mb-10 mr-16 cursor-pointer border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
+            className="border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
             onClick={() => {
               setRepoFormEnable(true);
             }}
             onMouseEnter={(event) => {
               event.stopPropagation();
               event.preventDefault();
-              let popUp = `<div class="p-2 rounded bg-white text-gray-700 w-48 text-center font-sans font-medium border border-gray-300 text-sm fixed" style="margin-top:-60px;">Click to add a new repo</div>`;
-              event.target.innerHTML += popUp;
+              document.getElementById("pop-up").classList.remove("hidden");
             }}
             onMouseLeave={(event) => {
-              event.target.innerHTML = "+";
+              document.getElementById("pop-up").classList.add("hidden");
             }}
           >
-            +
+            <span>+</span>
+            <div
+              id="pop-up"
+              className="fixed p-2 hidden rounded bg-white text-gray-700 w-48 text-center font-sans font-medium border border-gray-300 text-sm mx-auto w-1/8"
+              style={{ marginTop: "-65px", width: "130px" }}
+            >
+              Click to add a new repo
+            </div>
           </div>
-        </>
+        </div>
       </>
     );
   };
