@@ -37,6 +37,7 @@ export default function StageComponent(props) {
         }
       })
       .catch((err) => {
+        console.log(err);
         setLodaing(false);
         setErrorInd(true);
       });
