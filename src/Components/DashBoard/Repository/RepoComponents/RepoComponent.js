@@ -1,6 +1,10 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { PRESENT_REPO, DELETE_PRESENT_REPO } from "../../../../actionStore";
+import {
+  PRESENT_REPO,
+  DELETE_PRESENT_REPO,
+  ADD_FORM_CLOSE,
+} from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
@@ -17,6 +21,7 @@ export default function RepoComponent(props) {
 
   useEffect(() => {
     const fetchRepoURL = globalAPIEndpoint;
+    dispatch({ type: ADD_FORM_CLOSE, payload: false });
 
     const token = axios.CancelToken;
     const source = token.source();
@@ -108,7 +113,7 @@ export default function RepoComponent(props) {
             <div
               id="pop-up"
               className="fixed p-2 hidden rounded bg-white text-gray-700 w-48 text-center font-sans font-medium border border-gray-300 text-sm mx-auto w-1/8"
-              style={{ marginTop: "-65px", width: "130px" }}
+              style={{ marginTop: "-75px", width: "130px" }}
             >
               Click to add a new repo
             </div>

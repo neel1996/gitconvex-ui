@@ -7,6 +7,7 @@ import {
   GIT_ACTION_TRACKED_FILES,
   GIT_ACTION_UNTRACKED_FILES,
   DELETE_PRESENT_REPO,
+  ADD_FORM_CLOSE,
 } from "./actionStore";
 
 export default function reducer(state, action) {
@@ -39,6 +40,11 @@ export default function reducer(state, action) {
       return {
         ...state,
         presentRepo: [...state.presentRepo, action.payload],
+      };
+    case ADD_FORM_CLOSE:
+      return {
+        ...state,
+        shouldAddFormClose: action.payload,
       };
     case DELETE_PRESENT_REPO:
       return {
