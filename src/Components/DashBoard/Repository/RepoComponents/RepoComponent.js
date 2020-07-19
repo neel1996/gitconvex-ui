@@ -21,7 +21,7 @@ export default function RepoComponent(props) {
 
   useEffect(() => {
     const fetchRepoURL = globalAPIEndpoint;
-    dispatch({ type: ADD_FORM_CLOSE, payload: false });
+    // dispatch({ type: ADD_FORM_CLOSE, payload: false });
 
     const token = axios.CancelToken;
     const source = token.source();
@@ -99,6 +99,7 @@ export default function RepoComponent(props) {
             className="border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
             onClick={() => {
               setRepoFormEnable(true);
+              dispatch({ type: ADD_FORM_CLOSE, payload: false });
             }}
             onMouseEnter={(event) => {
               event.stopPropagation();

@@ -1,10 +1,8 @@
-import axios from "axios";
-import React from "react";
-import ReactDOM from "react-dom";
 import { render } from "@testing-library/react";
+import React from "react";
 import RightPane from "../Components/DashBoard/DashboardPaneComponents/RightPane";
 
-test("Dashboard HC Module test", () => {
+test("Dashboard HC Module test", async () => {
   const hcParams = {
     platform: "Linux",
     gitVersion: "2.26",
@@ -16,7 +14,6 @@ test("Dashboard HC Module test", () => {
   const platform = renderedRightPane.container.querySelector(
     "#hc-param__Platform"
   );
-
   const gitVersion = renderedRightPane.container.querySelector(
     "#hc-param__Git"
   );
