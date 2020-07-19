@@ -229,7 +229,7 @@ export default function RepositoryDetails(props) {
           {showCommitLogs ? (
             <>
               <div
-                className="fixed w-screen left-0 top-0 right-0 bottom-0 overflow-auto p-6"
+                className="fixed w-full h-full left-0 top-0 right-0 bottom-0 overflow-auto p-6"
                 id="commit-log__backdrop"
                 style={{ background: "rgba(0,0,0,0.5)", zIndex: 99 }}
                 onClick={(event) => {
@@ -246,7 +246,10 @@ export default function RepositoryDetails(props) {
                 >
                   X
                 </div>
-                <div id="commit-log__cards" className="w-full block mx-auto">
+                <div
+                  id="commit-log__cards"
+                  className="w-full h-full block mx-auto my-auto"
+                >
                   {memoizedCommitLogComponent}
                 </div>
               </div>

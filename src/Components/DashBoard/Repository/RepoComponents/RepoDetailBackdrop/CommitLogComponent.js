@@ -4,12 +4,14 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import axios from "axios";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_COMMIT_LOGS,
 } from "../../../../../util/env_config";
 import moment from "moment";
+import CommitLogFileCard from "./CommitLogFileCard";
 
 export default function RepositoryCommitLogComponent(props) {
   library.add(fab, fas, far);
@@ -59,13 +61,65 @@ export default function RepositoryCommitLogComponent(props) {
       });
   }, [props]);
 
+  function fetchCommitFiles(commitHash, arrowTarget) {
+    const parentDivId = `commitLogCard-${commitHash}`;
+    const targetDivId = `commitFile-${commitHash}`;
+
+    const targetDiv = document.createElement("div");
+    targetDiv.id = targetDivId;
+
+    const parentDiv = document.getElementById(parentDivId);
+    parentDiv.append(targetDiv);
+
+    const unmountHandler = () => {
+      ReactDOM.unmountComponentAtNode(
+        document.getElementById("closeBtn-" + commitHash)
+      );
+      ReactDOM.unmountComponentAtNode(document.getElementById(targetDivId));
+      arrowTarget.classList.remove("hidden");
+    };
+
+    ReactDOM.render(
+      <CommitLogFileCard
+        repoId={props.repoId}
+        commitHash={commitHash}
+        unmountHandler={unmountHandler}
+      ></CommitLogFileCard>,
+      document.getElementById(targetDivId)
+    );
+
+    const closeArrow = (
+      <div
+        className="text-center mx-auto text-3xl font-sans font-light text-gray-600 items-center align-middle cursor-pointer"
+        onClick={(event) => {
+          unmountHandler();
+        }}
+      >
+        <FontAwesomeIcon icon={["fas", "angle-up"]}></FontAwesomeIcon>
+      </div>
+    );
+
+    const closeBtn = document.createElement("div");
+    const closeBtnId = "closeBtn-" + commitHash;
+    closeBtn.id = closeBtnId;
+    parentDiv.append(closeBtn);
+
+    ReactDOM.render(closeArrow, document.getElementById(closeBtnId));
+  }
+
+  function fallBackComponent(message) {
+    return (
+      <div className="p-6 rounded-md shadow-sm block justify-center mx-auto my-auto w-3/4 h-full text-center text-2xl text-indigo-500">
+        <div className="flex w-full h-full mx-auto my-auto">
+          <div className="my-auto mx-auto bg-white w-full p-6 rounded-lg shadow">{message}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {isCommitEmpty ? (
-        <div className="p-6 rounded-md shadow-sm block justify-center mx-auto my-4 bg-white w-3/4 text-center text-2xl text-indigo-500">
-          No Commit Logs found
-        </div>
-      ) : null}
+      {isCommitEmpty ? fallBackComponent("No Commit Logs found") : null}
       {commitLogs &&
         commitLogs.map((commit) => {
           const {
@@ -81,6 +135,7 @@ export default function RepositoryCommitLogComponent(props) {
           );
           return (
             <div
+              id={`commitLogCard-${hash}`}
               className="p-6 pb-6 rounded-lg shadow-sm block justify-center mx-auto my-4 bg-white xl:w-3/4 lg:w-5/6 md:w-11/12 sm:w-11/12 w-full border-b-8 border-indigo-400"
               key={hash}
             >
@@ -130,7 +185,15 @@ export default function RepositoryCommitLogComponent(props) {
                     {commitRelativeTime}
                   </div>
                 </div>
-                <div className="w-1/3 flex justify-around my-auto text-3xl font-sans font-light text-gray-600 items-center align-middle cursor-pointer pt-10">
+                <div
+                  className="w-1/3 flex justify-around my-auto text-3xl font-sans font-light text-gray-600 items-center align-middle cursor-pointer pt-10"
+                  onClick={(event) => {
+                    if (commitFilesCount) {
+                      event.currentTarget.classList.add("hidden");
+                      fetchCommitFiles(hash, event.currentTarget);
+                    }
+                  }}
+                >
                   {commitFilesCount ? (
                     <FontAwesomeIcon
                       icon={["fas", "angle-down"]}
@@ -160,11 +223,9 @@ export default function RepositoryCommitLogComponent(props) {
             </div>
           );
         })}
-      {commitLogs.length === 0 ? (
-        <div className="p-6 bg-orange-300 border-orange-800 rounded-md shadow-sm block justify-center mx-auto my-4 bg-white w-3/4 text-center text-2xl">
-          Loading commits...
-        </div>
-      ) : null}
+      {!isCommitEmpty && commitLogs.length === 0
+        ? fallBackComponent("Loading commits...")
+        : null}
     </>
   );
 }
