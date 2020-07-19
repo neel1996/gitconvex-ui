@@ -13,7 +13,7 @@ import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
 import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
 import FetchPullActionComponent from "./RepoDetailBackdrop/FetchPullActionComponent";
 import SwitchBranchComponent from "./RepoDetailBackdrop/SwitchBranchComponent";
-import RepositoryCommitLogComponent from "./RepositoryCommitLogComponent";
+import CommitLogComponent from "./RepoDetailBackdrop/CommitLogComponent";
 import BranchListComponent from "./RepoDetailBackdrop/BranchListComponent";
 
 export default function RepositoryDetails(props) {
@@ -34,11 +34,7 @@ export default function RepositoryDetails(props) {
   };
 
   const memoizedCommitLogComponent = useMemo(() => {
-    return (
-      <RepositoryCommitLogComponent
-        repoId={repoIdState}
-      ></RepositoryCommitLogComponent>
-    );
+    return <CommitLogComponent repoId={repoIdState}></CommitLogComponent>;
   }, [repoIdState]);
 
   const memoizedFetchRemoteComponent = useMemo(() => {
@@ -233,7 +229,7 @@ export default function RepositoryDetails(props) {
           {showCommitLogs ? (
             <>
               <div
-                className="fixed w-screen left-0 top-0 right-0 bottom-0 overflow-auto p-6"
+                className="fixed w-full h-full left-0 top-0 right-0 bottom-0 overflow-auto p-6"
                 id="commit-log__backdrop"
                 style={{ background: "rgba(0,0,0,0.5)", zIndex: 99 }}
                 onClick={(event) => {
@@ -250,7 +246,10 @@ export default function RepositoryDetails(props) {
                 >
                   X
                 </div>
-                <div id="commit-log__cards" className="w-3/4 block mx-auto">
+                <div
+                  id="commit-log__cards"
+                  className="w-full h-full block mx-auto my-auto"
+                >
                   {memoizedCommitLogComponent}
                 </div>
               </div>

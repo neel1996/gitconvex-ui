@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useRef, useState, useContext } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { globalAPIEndpoint, ROUTE_ADD_REPO } from "../../../../util/env_config";
 import { DELETE_PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
@@ -14,6 +14,12 @@ export default function AddRepoForm(props) {
   const repoNameRef = useRef();
   const repoPathRef = useRef();
   const initCheckRef = useRef();
+
+  useEffect(() => {
+    if (state.shouldAddFormClose) {
+      props.formEnable(false);
+    }
+  }, [state, props]);
 
   function storeRepoAPI(repoName, repoPath) {
     if (repoName && repoPath) {

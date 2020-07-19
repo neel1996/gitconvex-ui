@@ -3,10 +3,13 @@ import {
   HelpOutline,
   SettingsOutlined,
 } from "@material-ui/icons";
-import React from "react";
+import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
+import { ADD_FORM_CLOSE } from "../../../actionStore";
+import { ContextProvider } from "../../../context";
 
 export default function LeftPane(props) {
+  const { dispatch } = useContext(ContextProvider);
   const menuItemParams = [
     {
       link: "/dashboard/repository",
@@ -40,6 +43,7 @@ export default function LeftPane(props) {
       <div
         className="flex justify-center items-center bg-blue-100 cursor-pointer"
         onClick={(event) => {
+          dispatch({ type: ADD_FORM_CLOSE, payload: true });
           props.parentProps.history.push("/dashboard");
         }}
       >
