@@ -179,7 +179,12 @@ export default function GitDiffViewComponent() {
             fileDiff,
           } = res.data.data.gitConvexApi.gitFileLineChanges;
 
-          if (diffStat[0] === "NO_STAT" || fileDiff[0] === "NO_DIFF") {
+          if (
+            diffStat[0] === "NO_STAT" ||
+            fileDiff[0] === "NO_DIFF" ||
+            !diffStat ||
+            !fileDiff
+          ) {
             setWarnStatus(
               "No difference could be found. Please check if the file is present in the repo!"
             );
