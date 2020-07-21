@@ -111,7 +111,9 @@ export default function RepositoryCommitLogComponent(props) {
     return (
       <div className="p-6 rounded-md shadow-sm block justify-center mx-auto my-auto w-3/4 h-full text-center text-2xl text-indigo-500">
         <div className="flex w-full h-full mx-auto my-auto">
-          <div className="my-auto mx-auto bg-white w-full p-6 rounded-lg shadow">{message}</div>
+          <div className="my-auto mx-auto bg-white w-full p-6 rounded-lg shadow">
+            {message}
+          </div>
         </div>
       </div>
     );
@@ -136,7 +138,7 @@ export default function RepositoryCommitLogComponent(props) {
           return (
             <div
               id={`commitLogCard-${hash}`}
-              className="p-6 pb-6 rounded-lg shadow-sm block justify-center mx-auto my-4 bg-white xl:w-3/4 lg:w-5/6 md:w-11/12 sm:w-11/12 w-full border-b-8 border-indigo-400"
+              className="p-6 pb-6 rounded-lg shadow-sm block justify-center mx-auto my-4 bg-white w-full border-b-8 border-indigo-400"
               key={hash}
             >
               <div className="flex justify-between text-indigo-500">

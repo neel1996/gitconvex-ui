@@ -87,8 +87,23 @@ export default function GitDiffViewComponent() {
           if (res) {
             if (res.data.data && !res.data.error) {
               var apiData = res.data.data.gitConvexApi.gitChanges;
-              const { gitChangedFiles } = apiData;
-              setChangedFiles([...gitChangedFiles]);
+              let { gitChangedFiles } = apiData;
+
+              gitChangedFiles = gitChangedFiles.filter((fileEntry) => {
+                if (fileEntry.split(",")[0] === "D") {
+                  return false;
+                }
+                return true;
+              });
+
+              if (gitChangedFiles.length >= 1) {
+                setChangedFiles([...gitChangedFiles]);
+              } else {
+                setWarnStatus(
+                  "No modified or new files found in the repo. All the files are either removed or not present in the repo!"
+                );
+              }
+
               setIsApiCalled(true);
               dispatch({ type: GIT_TRACKED_FILES, payload: gitChangedFiles });
             }
@@ -179,12 +194,7 @@ export default function GitDiffViewComponent() {
             fileDiff,
           } = res.data.data.gitConvexApi.gitFileLineChanges;
 
-          if (
-            diffStat[0] === "NO_STAT" ||
-            fileDiff[0] === "NO_DIFF" ||
-            !diffStat ||
-            !fileDiff
-          ) {
+          if (diffStat[0] === "NO_STAT" || fileDiff[0] === "NO_DIFF") {
             setWarnStatus(
               "No difference could be found. Please check if the file is present in the repo!"
             );
@@ -263,6 +273,9 @@ export default function GitDiffViewComponent() {
         .split("|__HASH_SEPARATOR__|");
 
       splitLines = partFile.map((line) => {
+        if (line.match(/\\ No newline at end of file/gi)) {
+          return "";
+        }
         if (line[0] === "+") {
           return (
             <div className="bg-green-200 w-screen" key={`${line}-${uuidv4()}`}>

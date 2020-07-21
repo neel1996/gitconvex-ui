@@ -248,7 +248,7 @@ export default function RepositoryDetails(props) {
                 </div>
                 <div
                   id="commit-log__cards"
-                  className="w-full h-full block mx-auto my-auto"
+                  className="w-full xl:w-3/4 lg:w-5/6 md:w-11/12 sm:w-11/12 h-full block mx-auto my-auto"
                 >
                   {memoizedCommitLogComponent}
                 </div>
