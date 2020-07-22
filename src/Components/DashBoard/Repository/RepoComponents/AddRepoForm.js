@@ -1,23 +1,25 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { animated, useSpring } from "react-spring";
 import { DELETE_PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
-import { globalAPIEndpoint, ROUTE_ADD_REPO } from "../../../../util/env_config";
-import { animated, useSpring } from "react-spring";
+import { globalAPIEndpoint } from "../../../../util/env_config";
 
 export default function AddRepoForm(props) {
+  library.add(fas);
   const { state, dispatch } = useContext(ContextProvider);
   const [repoNameState, setRepoName] = useState("");
   const [repoPathState, setRepoPath] = useState("");
+  const [cloneUrlState, setCloneUrlState] = useState("");
   const [repoAddFailed, setRepoAddFailed] = useState(false);
   const [repoAddSuccess, setRepoAddSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [cloneSwitch, setCloneSwitch] = useState(false);
   const [initSwitch, setInitSwitch] = useState(false);
-
-  const repoNameRef = useRef();
-  const repoPathRef = useRef();
-  const initCheckRef = useRef();
 
   const switchAnimationEnter = useSpring({
     config: { duration: 1500, tension: 500 },
@@ -30,7 +32,7 @@ export default function AddRepoForm(props) {
   });
 
   const switchAnimationExit = useSpring({
-    config: { duration: 1500, tension: 500 },
+    config: { duration: 500, tension: 500 },
     from: {
       transform: "translate(2em, 0em)",
     },
@@ -49,44 +51,50 @@ export default function AddRepoForm(props) {
     if (repoName && repoPath) {
       let initCheck = false;
       let cloneCheck = false;
+      let cloneUrl = cloneUrlState;
+
+      if (cloneSwitch && !cloneUrlState) {
+        setRepoAddFailed(true);
+        return false;
+      }
 
       if (initSwitch) {
         initCheck = true;
-      } else if (cloneSwitch) {
+      } else if (cloneSwitch && cloneUrl) {
         cloneCheck = true;
       }
 
-      let payload = JSON.stringify(
-        JSON.stringify({ repoName, repoPath, initCheck, cloneCheck })
-      );
+      setLoading(true);
 
       axios({
         url: globalAPIEndpoint,
         method: "POST",
         data: {
           query: `
-              query GitConvexApi{
-                gitConvexApi(route: "${ROUTE_ADD_REPO}", payload: ${payload}){
-                  addRepo{
-                    message
-                  }
+              mutation GitConvexMutation{
+                addRepo(repoName: "${repoName}", repoPath: "${repoPath}", initSwitch: ${initCheck}, cloneSwitch: ${cloneCheck}, cloneUrl: "${cloneUrl}"){
+                  message
+                  repoId
                 }
               }
             `,
         },
       })
         .then((res) => {
-          if (res.data && res.data.data && !res.data.error) {
-            const { message } = res.data.data.gitConvexApi.addRepo;
+          setLoading(false);
+
+          if (res.data.data && !res.data.error) {
+            const { message } = res.data.data.addRepo;
 
             if (message && !message.match(/FAIL/g)) {
               setRepoAddSuccess(true);
               setRepoAddFailed(false);
               setCloneSwitch("");
               setInitSwitch("");
-              repoNameRef.current.value = "";
-              repoPathRef.current.value = "";
-              initCheckRef.current.value = "";
+
+              setRepoName("");
+              setRepoPath("");
+              setCloneUrlState("");
 
               dispatch({
                 action: DELETE_PRESENT_REPO,
@@ -104,6 +112,8 @@ export default function AddRepoForm(props) {
           }
         })
         .catch((err) => {
+          setLoading(false);
+
           console.log(err);
           setRepoAddFailed(true);
           setRepoAddSuccess(false);
@@ -150,14 +160,14 @@ export default function AddRepoForm(props) {
               setCloneSwitch(true);
               setInitSwitch(false);
             } else {
-              setCloneSwitch(!cloneSwitch);
+              setCloneSwitch(false);
             }
           } else {
             if (!initSwitch) {
-              setInitSwitch(!initSwitch);
+              setInitSwitch(true);
               setCloneSwitch(false);
             } else {
-              setInitSwitch(!initSwitch);
+              setInitSwitch(false);
             }
           }
         }}
@@ -179,8 +189,8 @@ export default function AddRepoForm(props) {
     );
   }
 
-  return (
-    <div className="block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 sm:w-11/12 w-11/12 mx-auto">
+  function addRepoFormContainer() {
+    return (
       <div className="repo-form block">
         {repoAddStatusBanner()}
         <div className="my-3 text-center block text-3xl font-sans text-gray-800">
@@ -195,7 +205,7 @@ export default function AddRepoForm(props) {
             onChange={(event) => {
               setRepoName(event.target.value);
             }}
-            ref={repoNameRef}
+            value={repoNameState}
             onClick={() => {
               resetAlertBanner();
             }}
@@ -205,17 +215,31 @@ export default function AddRepoForm(props) {
           <input
             id="repoPathText"
             type="text"
-            placeholder="Enter repository path"
+            placeholder={
+              cloneSwitch
+                ? "Enter base directory path"
+                : "Enter repository path"
+            }
             className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
             onChange={(event) => {
               setRepoPath(event.target.value);
             }}
-            ref={repoPathRef}
+            value={repoPathState}
             onClick={() => {
               resetAlertBanner();
             }}
           ></input>
         </div>
+        {cloneSwitch && repoPathState && repoNameState ? (
+          <div className="my-4 mx-auto text-center font-sans font-light text-gray-600 text-sm items-center">
+            The repo will be cloned to
+            <span className="mx-3 text-center font-sans font-semibold border-b-2 border-dashed">
+              {repoPathState}
+              <>{repoPathState.includes("\\") ? "\\" : "/"}</>
+              {repoNameState}
+            </span>
+          </div>
+        ) : null}
         <div className="flex mx-auto my-10 items-center justify-center">
           <div className="flex justify-around items-center">
             <div>{switchComponent("clone")}</div>
@@ -229,6 +253,26 @@ export default function AddRepoForm(props) {
             </div>
           </div>
         </div>
+        {cloneSwitch ? (
+          <div className="flex mx-auto w-11/12 justify-between shadow-md border items-center rounded-md text-indigo-800">
+            <div className="w-1/8 text-center border p-3 px-6">
+              <FontAwesomeIcon icon={["fas", "link"]}></FontAwesomeIcon>
+            </div>
+            <div className="w-5/6">
+              <input
+                value={cloneUrlState}
+                className="border-0 outline-none w-full p-2"
+                placeholder="Enter the remote repo URL"
+                onClick={() => {
+                  setRepoAddFailed(false);
+                }}
+                onChange={(event) => {
+                  setCloneUrlState(event.target.value);
+                }}
+              ></input>
+            </div>
+          </div>
+        ) : null}
         <div className="flex w-11/12 justify-start mx-auto my-5 cursor-pointer">
           <div
             className="my-2 w-1/2 block mx-3 p-3 bg-red-400 rounded-md shadow-md hover:bg-red-500"
@@ -250,6 +294,23 @@ export default function AddRepoForm(props) {
           </div>
         </div>
       </div>
+    );
+  }
+
+  return (
+    <div className="block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 sm:w-11/12 w-11/12 mx-auto">
+      {loading ? (
+        <div
+          className="flex relative w-full block rounded h-full"
+          style={{ background: "rgba(0,0,0,0.3)" }}
+        >
+          <div className="w-11/12 my-auto mx-auto p-6 shadow items-center text-xl bg-white rounded text-indigo-600 mt-10 mb-10 ml-10 mr-10">
+            Repo setup in progress...
+          </div>
+        </div>
+      ) : (
+        addRepoFormContainer()
+      )}
     </div>
   );
 }
