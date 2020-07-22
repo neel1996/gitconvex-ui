@@ -52,17 +52,20 @@ export default function StageComponent(props) {
               <div className="p-5 font-sans text-2xl font-sans font-bold">
                 All these changes will be staged:
               </div>
-              {stageComponents &&
-                stageComponents.map((item) => {
-                  return (
-                    <div
-                      className="p-1 font-sans text-lg mx-4 border-b w-11/12 break-words"
-                      key={item}
-                    >
-                      {item}
-                    </div>
-                  );
-                })}
+              <div className="overflow-y-auto" style={{ height: "600px" }}>
+                {stageComponents &&
+                  stageComponents.map((item) => {
+                    return (
+                      <div
+                        className="p-1 font-sans text-lg mx-4 border-b w-11/12 break-words"
+                        key={item}
+                      >
+                        {item}
+                      </div>
+                    );
+                  })}
+              </div>
+
               {errorInd ? (
                 <div className="my-2 mx-auto text-center p-2 rounded shadow bg-red-200 border-red-400 text-red-800">
                   Staging Failed!
