@@ -52,6 +52,7 @@ export default function AddRepoForm(props) {
       let initCheck = false;
       let cloneCheck = false;
       let cloneUrl = cloneUrlState;
+      repoPath = repoPath.replace(/\\/gi, "\\\\");
 
       if (cloneSwitch && !cloneUrlState) {
         setRepoAddFailed(true);

@@ -96,7 +96,7 @@ export default function RepoComponent(props) {
         <div className="fixed bottom-0 right-0 mb-10 mr-16 cursor-pointer block justify-center">
           <div
             id="addRepoButton"
-            className="border-2 border-indigo-100 shadow-lg bg-indigo-500 hover:bg-indigo-400 rounded-full h-16 w-16 pb-1 flex items-center justify-center text-3xl text-white font-sans font-black"
+            className="border-8 border-indigo-100 shadow-lg bg-indigo-300 hover:bg-indigo-400 rounded-full h-20 w-20 flex align-middle justify-center text-4xl text-white font-sans font-black"
             onClick={() => {
               setRepoFormEnable(true);
               dispatch({ type: ADD_FORM_CLOSE, payload: false });
@@ -113,7 +113,7 @@ export default function RepoComponent(props) {
             <span>+</span>
             <div
               id="pop-up"
-              className="fixed p-2 hidden rounded bg-white text-gray-700 w-48 text-center font-sans font-medium border border-gray-300 text-sm mx-auto w-1/8"
+              className="fixed p-2 hidden rounded bg-white text-gray-700 w-48 text-center font-sans font-medium border border-gray-500 shadow-lg text-sm mx-auto w-1/8"
               style={{ marginTop: "-75px", width: "130px" }}
             >
               Click to add a new repo
