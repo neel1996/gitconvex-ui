@@ -52,7 +52,7 @@ export default function StageComponent(props) {
               <div className="p-5 font-sans text-2xl font-sans font-bold">
                 All these changes will be staged:
               </div>
-              <div className="overflow-y-auto" style={{ height: "600px" }}>
+              <div className="overflow-y-auto" style={{ height: "400px" }}>
                 {stageComponents &&
                   stageComponents.map((item) => {
                     return (
