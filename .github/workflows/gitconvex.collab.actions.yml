@@ -1,4 +1,4 @@
-name: Gitconvex React UI pipeline
+name: Gitconvex React UI pipeline for collaborators
 
 on:
   pull_request:
