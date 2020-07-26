@@ -11,8 +11,17 @@ The depedency packages used by this project can be found [here](https://github.c
 - **Syntax Highlighting** - [prismjs](https://github.com/PrismJS/prism) is used for syntax highlighting within the *Git Difference* section
 - **Icon set** - [FontAweomse for react](https://github.com/FortAwesome/Font-Awesome)
 
-```
+## Contribute!
+
+If you are interested in contributing to the project, fork the repo, submit a PR. Currently its just a insgle dev working on the project. Hopefully will get couple more on board to maintain the repo
+
+### Guidelines 
+
+Fork the repo and raise a new Pull Request to merge your branch with the 'development' branch of this repo. Once the review is complete, the PR will be approved and merged with `master`
+
 ## Project directory tree
+
+```
 
 ├── LICENSE
 ├── README.md
@@ -54,10 +63,11 @@ The depedency packages used by this project can be found [here](https://github.c
     │   │   │       │   ├── AddBranchComponent.js
     │   │   │       │   ├── AddRemoteRepoComponent.js
     │   │   │       │   ├── BranchListComponent.js
+    │   │   │       │   ├── CommitLogComponent.js
+    │   │   │       │   ├── CommitLogFileCard.js
     │   │   │       │   ├── FetchPullActionComponent.js
     │   │   │       │   └── SwitchBranchComponent.js
     │   │   │       ├── RepositoryAction.js
-    │   │   │       ├── RepositoryCommitLogComponent.js
     │   │   │       └── RepositoryDetails.js
     │   │   └── Settings
     │   │       └── Settings.js
@@ -82,8 +92,5 @@ The depedency packages used by this project can be found [here](https://github.c
         ├── apiURLSupplier.js
         └── env_config.js
 
-
 ```
-## Contribute!
 
-If you are interested in contributing to the project, fork the repo, submit a PR. Currently its just a insgle dev working on the project. Hopefully will get couple more on board to maintain the repo
