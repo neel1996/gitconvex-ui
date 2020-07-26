@@ -13,11 +13,11 @@ The depedency packages used by this project can be found [here](https://github.c
 
 ## Contribute!
 
-If you are interested in contributing to the project, fork the repo, submit a PR. Currently its just a insgle dev working on the project. Hopefully will get couple more on board to maintain the repo
+If you are interested in contributing to the project, fork the repo, submit a PR. Currently its just a single dev working on the project. Hopefully will get couple more on board to maintain the repo
 
 ### Guidelines 
 
-Fork the repo and raise a new Pull Request to merge your branch with the 'development' branch of this repo. Once the review is complete, the PR will be approved and merged with `master`
+Fork the repo and raise a new Pull Request to merge your branch with the `development` branch of this repo. Once the review is complete, the PR will be approved and merged with `master`
 
 ## Project directory tree
 
