@@ -4,6 +4,7 @@
 .yarn/
 .yarn/*
 node_modules/
+src/index.css
 build
 .DS_Store
 npm-debug.log*
