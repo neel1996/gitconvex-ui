@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
-import { globalAPIEndpoint } from "../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
 
 export default function AddBranchComponent(props) {
   const { repoId } = props;

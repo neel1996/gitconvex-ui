@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
-} from "../../../../../util/env_config.js";
+} from "../../../../../../util/env_config";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

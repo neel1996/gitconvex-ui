@@ -7,7 +7,7 @@ import LeftPane from "./DashboardPaneComponents/LeftPane";
 import RightPane from "./DashboardPaneComponents/RightPane";
 import Help from "./Help/Help";
 import RepositoryAction from "./Repository/RepoComponents/RepositoryAction";
-import RepositoryDetails from "./Repository/RepoComponents/RepositoryDetails";
+import RepositoryDetails from "./Repository/RepoComponents/RepoDetails/RepositoryDetails";
 import Settings from "./Settings/Settings";
 
 export default function Dashboard(props) {

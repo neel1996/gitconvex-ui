@@ -9,7 +9,7 @@ import axios from "axios";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_COMMIT_LOGS,
-} from "../../../../../util/env_config";
+} from "../../../../../../util/env_config";
 import moment from "moment";
 import CommitLogFileCard from "./CommitLogFileCard";
 

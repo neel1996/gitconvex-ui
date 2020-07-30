@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { globalAPIEndpoint } from "../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
 import axios from "axios";
 
 export default function SwitchBranchComponent({
