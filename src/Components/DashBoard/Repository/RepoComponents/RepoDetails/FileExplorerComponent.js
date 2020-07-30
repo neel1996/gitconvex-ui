@@ -276,7 +276,7 @@ export default function FileExplorerComponent(props) {
       {directoryNavigator ? (
         <div className="mx-6 p-3 font-sans flex gap-4 items-center justify-start">
           <div
-            className="w-1/6 text-gray-700 bg-gray-200 border border-dashed cursor-pointer justify-center p-3 text-center rounded shadow-md flex gap-4 my-auto items-center mx-4 text-xl"
+            className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-105"
             onClick={() => {
               fetchFolderContent("", 0, false, true);
             }}
@@ -285,6 +285,7 @@ export default function FileExplorerComponent(props) {
               <FontAwesomeIcon icon={["fas", "home"]}></FontAwesomeIcon>
             </div>
             <div>Home</div>
+            <div className="text-2xl font-sans text-blue-400">./</div>
           </div>
           <div
             className="flex gap-4 items-center w-3/4 break-words overflow-x-auto"

@@ -1,38 +1,45 @@
-import {
-  FolderOutlined,
-  HelpOutline,
-  SettingsOutlined,
-} from "@material-ui/icons";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { far } from "@fortawesome/free-regular-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { ADD_FORM_CLOSE } from "../../../actionStore";
 import { ContextProvider } from "../../../context";
 
+
+
 export default function LeftPane(props) {
+  library.add(far, fas);
   const { dispatch } = useContext(ContextProvider);
   const menuItemParams = [
     {
       link: "/dashboard/repository",
       icon: (
-        <FolderOutlined
-          style={{ color: "grey", fontSize: "36px" }}
-        ></FolderOutlined>
+        <FontAwesomeIcon
+          icon={["far", "folder"]}
+          className="text-3xl text-gray-600"
+        ></FontAwesomeIcon>
       ),
       label: "Repositories",
     },
     {
       link: "/dashboard/settings",
       icon: (
-        <SettingsOutlined
-          style={{ color: "grey", fontSize: "36px" }}
-        ></SettingsOutlined>
+        <FontAwesomeIcon
+          icon={["fas", "cog"]}
+          className="text-3xl text-gray-600"
+        ></FontAwesomeIcon>
       ),
       label: "Settings",
     },
     {
       link: "/dashboard/help",
       icon: (
-        <HelpOutline style={{ color: "grey", fontSize: "36px" }}></HelpOutline>
+        <FontAwesomeIcon
+          icon={["far", "question-circle"]}
+          className="text-3xl text-gray-600"
+        ></FontAwesomeIcon>
       ),
       label: "Help",
     },
@@ -63,9 +70,9 @@ export default function LeftPane(props) {
               className="flex border-b border-black-100 p-3 hover:bg-gray-100 mx-2"
               key={entry.label}
             >
-              <div className="flex align-middle items-center my-auto">
+              <div className="flex gap-10 align-middle items-center my-auto">
                 <div className="text-sm">{entry.icon}</div>
-                <div className="ml-2 xl:text-2xl lg:text-2xl md:text-xl text-gray-700">
+                <div className="xl:text-2xl lg:text-2xl md:text-xl text-gray-700">
                   {entry.label}
                 </div>
               </div>
