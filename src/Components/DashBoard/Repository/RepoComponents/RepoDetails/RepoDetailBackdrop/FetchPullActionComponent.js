@@ -3,7 +3,7 @@ import axios from "axios";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
-} from "../../../../../util/env_config";
+} from "../../../../../../util/env_config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";

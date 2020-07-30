@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   ROUTE_COMMIT_FILES,
   globalAPIEndpoint,
-} from "../../../../../util/env_config";
+} from "../../../../../../util/env_config";
 import axios from "axios";
 export default function CommitLogFileCard({
   repoId,
