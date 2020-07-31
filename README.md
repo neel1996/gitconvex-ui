@@ -1,11 +1,11 @@
 # gitconvex react project
-This is the front end react source for the [gitconvex](https://github.com/neel1996/gitconvex-package) project.
+This is the front end react source for the [gitconvex](https://github.com/neel1996/gitconvex) project.
 
 ![gitconvex-react](https://user-images.githubusercontent.com/47709856/87220396-e72df380-c380-11ea-9b2b-e156402842bb.png)
 
 ## Dependencies
 
-The depedency packages used by this project can be found [here](https://github.com/neel1996/gitconvex/network/dependencies)
+The depedency packages used by this project can be found [here](https://github.com/neel1996/gitconvex-ui/network/dependencies)
 
 - **Styling** - For styling, the project used [tailwind]() css framework 
 - **Syntax Highlighting** - [prismjs](https://github.com/PrismJS/prism) is used for syntax highlighting within the *Git Difference* section
@@ -26,7 +26,7 @@ After cloning the repo, follow the steps mentioned below to setup the react app,
 - **Installing dependencies**
 
 ```
-$ cd gitconvex
+$ cd gitconvex-ui
 $ npm install
 ```
 
@@ -36,7 +36,7 @@ The project uses `tailwindcss` for styling all the elements, so it is mandatory 
 
 ```
 
-$ cd gitconvex
+$ cd gitconvex-ui
 $ npm install --global tailwindcss 
 
 $ npm run build:tailwind
@@ -90,14 +90,22 @@ After completing the setup process, use `npm start` to start the react app
     │   │   │       ├── AddRepoForm.js
     │   │   │       ├── RepoCard.js
     │   │   │       ├── RepoComponent.js
-    │   │   │       ├── RepoDetailBackdrop
-    │   │   │       │   ├── AddBranchComponent.js
-    │   │   │       │   ├── AddRemoteRepoComponent.js
-    │   │   │       │   ├── BranchListComponent.js
-    │   │   │       │   ├── CommitLogComponent.js
-    │   │   │       │   ├── CommitLogFileCard.js
-    │   │   │       │   ├── FetchPullActionComponent.js
-    │   │   │       │   └── SwitchBranchComponent.js
+    │   │   │       ├── RepoDetails
+    │   │   │       │   ├── FileExplorerComponent.js
+    │   │   │       │   ├── RepoDetailBackdrop
+    │   │   │       │   │   ├── AddBranchComponent.js
+    │   │   │       │   │   ├── AddRemoteRepoComponent.js
+    │   │   │       │   │   ├── BranchListComponent.js
+    │   │   │       │   │   ├── CommitLogComponent.js
+    │   │   │       │   │   ├── CommitLogFileCard.js
+    │   │   │       │   │   ├── FetchPullActionComponent.js
+    │   │   │       │   │   └── SwitchBranchComponent.js
+    │   │   │       │   ├── RepoInfoComponent.js
+    │   │   │       │   ├── RepoLeftPaneComponent.js
+    │   │   │       │   ├── RepoRightPaneComponent.js
+    │   │   │       │   ├── RepositoryDetails.js
+    │   │   │       │   ├── TopPaneGridComponent.js
+    │   │   │       │   └── backdropActionType.js
     │   │   │       ├── RepositoryAction.js
     │   │   │       └── RepositoryDetails.js
     │   │   └── Settings
@@ -108,14 +116,12 @@ After completing the setup process, use `npm start` to start the react app
     ├── assets
     │   └── gitconvex.png
     ├── context.js
-    ├── index.css
     ├── index.js
     ├── logo.svg
     ├── prism.css
     ├── reducer.js
     ├── serviceWorker.js
     ├── setupTests.js
-    ├── tailwind-config.css
     ├── tests
     │   ├── App.test.js
     │   └── Dashboard.test.js
