@@ -276,7 +276,7 @@ export default function FileExplorerComponent(props) {
       {directoryNavigator ? (
         <div className="mx-6 p-3 font-sans flex gap-4 items-center justify-start">
           <div
-            className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl hover:text-black hover:shadow-md"
+            className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl hover:text-black hover:shadow-md transition duration-500 ease-in-out shadow-none"
             onClick={() => {
               fetchFolderContent("", 0, false, true);
             }}

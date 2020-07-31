@@ -19,6 +19,37 @@ If you are interested in contributing to the project, fork the repo, submit a PR
 
 Fork the repo and raise a new Pull Request to merge your branch with the `development` branch of this repo. Once the review is complete, the PR will be approved and merged with `master`
 
+### Setup
+
+After cloning the repo, follow the steps mentioned below to setup the react app,
+
+- **Installing dependencies**
+
+```
+$ cd gitconvex
+$ npm install
+```
+
+- **Building the css file**
+
+The project uses `tailwindcss` for styling all the elements, so it is mandatory to build the CSS file which is not included in the git tree. Follow the steps to build the css file
+
+```
+
+$ cd gitconvex
+$ npm install --global tailwindcss 
+
+$ npm run build:tailwind
+
+## This will generate a default tailwind css bundle
+
+```
+
+- **Starting the app**
+
+After completing the setup process, use `npm start` to start the react app
+
+
 ## Project directory tree
 
 ```
