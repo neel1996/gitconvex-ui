@@ -110,7 +110,7 @@ export default function RepoComponent(props) {
               document.getElementById("pop-up").classList.add("hidden");
             }}
           >
-            <span>+</span>
+            <span className="text-center my-auto flex">+</span>
             <div
               id="pop-up"
               className="fixed p-2 hidden rounded bg-white text-gray-700 w-48 text-center font-sans font-medium border border-gray-500 shadow-lg text-sm mx-auto w-1/8"

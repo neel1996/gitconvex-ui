@@ -288,7 +288,7 @@ export default function FileExplorerComponent(props) {
             <div className="text-2xl font-sans text-blue-400">./</div>
           </div>
           <div
-            className="flex gap-4 items-center w-3/4 break-words overflow-x-auto"
+            className="flex p-4 gap-4 items-center w-3/4 break-words overflow-x-auto"
             id="repoFolderNavigator"
           >
             {directoryNavigator.map((item, index) => {
