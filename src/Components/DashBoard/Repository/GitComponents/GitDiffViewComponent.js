@@ -342,6 +342,8 @@ export default function GitDiffViewComponent() {
                 </pre>
               </div>
             );
+          } else {
+            return "";
           }
         }
       });
