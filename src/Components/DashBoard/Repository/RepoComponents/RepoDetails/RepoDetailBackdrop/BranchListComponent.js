@@ -163,7 +163,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
   }
 
   return (
-    <div className="bg-gray-200 p-6 w-11/12 xl:w-3/4 mx-auto my-auto items-center align-middle lg:w-3/4 md:w-11/12 sm:w-11/12 rounded shadow">
+    <div className="bg-gray-200 p-6 w-11/12 xl:w-3/4 mx-auto my-auto items-center align-middle lg:w-3/4 md:w-11/12 sm:w-11/12 rounded-md shadow">
       <div className="font-sans mx-4 p-2 text-4xl font-semibold border-b-2 border-dashed text-gray-800">
         Available Branches
       </div>
@@ -183,7 +183,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
       </div>
       <div
         className="pr-6 mx-auto w-full my-4 mx-10 overflow-auto overflow-x-hidden"
-        style={{ height: "600px" }}
+        style={{ height: "400px" }}
       >
         {branchList.length === 0 ? (
           <div className="p-2 rounded border-gray-500 shadow text-center my-4 mx-auto font-sans font-semibold text-xl">
@@ -202,8 +202,6 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                 activeBranchFlag = true;
                 branchName = branchName.replace("*", "");
               }
-
-              console.log(icon, branchType, branchName);
 
               if (activeBranchFlag) {
                 activeSwitchStyle =

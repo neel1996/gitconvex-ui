@@ -261,6 +261,7 @@ export default function GitDiffViewComponent() {
 
   function fileLineDiffComponent() {
     let splitLines = [];
+    let lineCounter = 0;
     if (
       fileLineDiffState &&
       fileLineDiffState.join("").split(/@@.*@@/gi) &&
@@ -276,10 +277,16 @@ export default function GitDiffViewComponent() {
         if (line.match(/\\ No newline at end of file/gi)) {
           return "";
         }
-        if (line[0] === "+") {
+        if (line[0] && line[0] === "+") {
           return (
-            <div className="bg-green-200 w-screen" key={`${line}-${uuidv4()}`}>
-              <pre>
+            <div
+              className="flex items-center gap-4 bg-green-200 w-screen"
+              key={`${line}-${uuidv4()}`}
+            >
+              <div className="w-1/8 text-green-500 border-b-2 font-mono">
+                {++lineCounter}
+              </div>
+              <pre className="w-5/6">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
@@ -292,10 +299,14 @@ export default function GitDiffViewComponent() {
               </pre>
             </div>
           );
-        } else if (line[0] === "-") {
+        } else if (line[0] && line[0] === "-") {
           return (
-            <div className="bg-red-200 w-screen" key={`${line}-${uuidv4()}`}>
-              <pre>
+            <div
+              className="flex gap-4 items-center bg-red-200 w-screen"
+              key={`${line}-${uuidv4()}`}
+            >
+              <div className="w-1/8 text-red-500 border-b-2 font-mono">-</div>
+              <pre className="w-5/6">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
@@ -309,17 +320,31 @@ export default function GitDiffViewComponent() {
             </div>
           );
         } else {
-          return (
-            <div className="bg-white-200 w-screen" key={`${line}-${uuidv4()}`}>
-              <pre>
-                <code
-                  dangerouslySetInnerHTML={{
-                    __html: Prism.highlight(line, Prism.languages[lang], lang),
-                  }}
-                ></code>
-              </pre>
-            </div>
-          );
+          if (line[0]) {
+            return (
+              <div
+                className="flex items-center gap-4 bg-white-200 w-screen"
+                key={`${line}-${uuidv4()}`}
+              >
+                <div className="w-1/8 text-gray-300 font-mono">
+                  {++lineCounter}
+                </div>
+                <pre className="w-5/6">
+                  <code
+                    dangerouslySetInnerHTML={{
+                      __html: Prism.highlight(
+                        line,
+                        Prism.languages[lang],
+                        lang
+                      ),
+                    }}
+                  ></code>
+                </pre>
+              </div>
+            );
+          } else {
+            return "";
+          }
         }
       });
     }
@@ -341,7 +366,7 @@ export default function GitDiffViewComponent() {
             </div>
 
             {!activeFileName ? (
-              <div className="p-3 shadow-md rounded-sm text-center mx-auto my-auto mt-3 block text-md font-sans">
+              <div className="p-6 rounded-md bg-gray-300 shadow-md rounded-sm text-center mx-auto my-auto mt-3 block text-xl items-center text-gray-500 border-2 border-dashed font-sans">
                 Click on a file to see difference information
               </div>
             ) : (
