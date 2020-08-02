@@ -116,6 +116,41 @@ export default function GitDiffViewComponent() {
   }, [state.globalRepoId, dispatch]);
 
   function getDiffFiles() {
+    const directorySplit = (fileEntry) => {
+      if (fileEntry.includes("/")) {
+        let splitEntry = fileEntry.split("/");
+        let dirSplit = splitEntry
+          .map((entry, index) => {
+            if (index === splitEntry.length - 1) {
+              return null;
+            } else {
+              return entry;
+            }
+          })
+          .join("/");
+        let fileName = splitEntry[splitEntry.length - 1];
+
+        return (
+          <div
+            className="my-4 border border-dashed border-gray-800 cursor-pointer block items-center"
+            title={fileEntry}
+          >
+            <div className="bg-gray-100 p-1 rounded">
+              <div className="font-sans font-semibold text-gray-700 border-b">
+                Directory:
+              </div>
+              <div className="font-sans font-light text-gray-900 truncate">
+                {dirSplit}
+              </div>
+            </div>
+            <div className="text-md font my-2 mx-2">{fileName}</div>
+          </div>
+        );
+      } else {
+        return <span className="text-xl mx-2 border-b">{fileEntry}</span>;
+      }
+    };
+
     return (
       <>
         {changedFiles.length >= 1 &&
@@ -134,7 +169,7 @@ export default function GitDiffViewComponent() {
                   }}
                   key={fileEntry}
                 >
-                  {fileEntry}
+                  {directorySplit(fileEntry)}
                 </div>
               );
             } else {
@@ -283,7 +318,7 @@ export default function GitDiffViewComponent() {
               className="flex items-center gap-4 bg-green-200 w-screen"
               key={`${line}-${uuidv4()}`}
             >
-              <div className="w-1/8 text-green-500 border-b-2 font-mono">
+              <div className="w-1/8 text-green-500 border-b-2 font-mono mx-1">
                 {++lineCounter}
               </div>
               <pre className="w-5/6">
@@ -305,7 +340,9 @@ export default function GitDiffViewComponent() {
               className="flex gap-4 items-center bg-red-200 w-screen"
               key={`${line}-${uuidv4()}`}
             >
-              <div className="w-1/8 text-red-500 border-b-2 font-mono">-</div>
+              <div className="w-1/8 text-red-500 border-b-2 font-mono mx-1">
+                --
+              </div>
               <pre className="w-5/6">
                 <code
                   dangerouslySetInnerHTML={{
@@ -326,7 +363,7 @@ export default function GitDiffViewComponent() {
                 className="flex items-center gap-4 bg-white-200 w-screen"
                 key={`${line}-${uuidv4()}`}
               >
-                <div className="w-1/8 text-gray-300 font-mono">
+                <div className="w-1/8 text-gray-300 font-mono mx-1">
                   {++lineCounter}
                 </div>
                 <pre className="w-5/6">
@@ -361,7 +398,7 @@ export default function GitDiffViewComponent() {
       {changedFiles && changedFiles.length > 0 ? (
         <>
           <div className="flex mx-auto w-full justify-center">
-            <div className="break-words p-2 py-2 bg-indigo-200 text-indigo-800 w-1/4 overflow-hidden">
+            <div className="break-words p-2 py-2 bg-white border-2 border-dashed border-gray-400 text-indigo-800 w-1/4 rounded-md shadow-md overflow-hidden">
               {getDiffFiles()}
             </div>
 
@@ -387,7 +424,10 @@ export default function GitDiffViewComponent() {
                 {fileLineDiffState &&
                 fileLineDiffState !==
                   "Click on a file item to see the difference" ? (
-                  <div className="p-2 py-6 mt-6 text-left break-words overflow-scroll">
+                  <div
+                    className="p-2 py-6 mt-6 text-left break-words overflow-scroll w-full"
+                    style={{ height: "800px" }}
+                  >
                     {fileLineDiffComponent()}
                   </div>
                 ) : (
