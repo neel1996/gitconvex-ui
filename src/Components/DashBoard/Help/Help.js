@@ -78,7 +78,7 @@ export default function Help() {
 
         <div className="xl:flex lg:block md:block justify-center items-center align-middle">
           <a
-            href="https://github.com/neel1996/gitconvex"
+            href="https://github.com/neel1996/gitconvex-ui"
             target="_blank"
             rel="noopener noreferrer"
             className="mx-auto h-full flex w-3/4 xl:w-1/3 lg:w-1/3 md:w-1/2 sm:w-3/4 cursor-pointer hover:shadow-lg align-middle my-4 items-center bg-white shadow-md rounded border border-gray-500"

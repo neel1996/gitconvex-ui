@@ -184,7 +184,7 @@ export default function FetchFromRemoteComponent(props) {
       <div className="w-3/4 mx-auto my-auto p-6 rounded shadow bg-white block">
         {actionType === "fetch" ? (
           <div
-            className="flex justify-center items-center w-11/12 xl:w-1/2 lg:w-3/4 md:w-3/4 sm:w-3/4 mx-auto my-4 p-1 text-center border-b-2 border-dashed border-gray-400 text-lg font-sans font-medium cursor-pointer text-indigo-400 hover:text-indigo-600 rounded-lg hover:border-gray-600"
+            className="flex justify-center items-center w-11/12 xl:w-3/5 lg:w-3/4 md:w-3/4 sm:w-11/12 mx-auto my-4 p-1 text-center border-b-2 border-dashed border-gray-400 text-lg font-sans font-medium cursor-pointer text-indigo-400 hover:text-indigo-600 rounded-lg hover:border-gray-600"
             onClick={() => {
               actionHandler();
             }}
@@ -194,7 +194,7 @@ export default function FetchFromRemoteComponent(props) {
                 icon={["fas", "exclamation-circle"]}
               ></FontAwesomeIcon>
             </div>
-            <div>Click here to Fetch globally without branch selection</div>
+            <div>Click to Fetch without branch selection</div>
           </div>
         ) : null}
         <div className="m-3 text-2xl font-sans text-ghray-800">
