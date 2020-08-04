@@ -34,18 +34,22 @@ export default function InfiniteLoader({ loadAnimation }) {
   });
   return (
     <div className="flex gap-4 mx-auto text-center">
-      <animated.div
-        className="bg-pink-200 w-8 h-8 rounded-full p-2"
-        style={infiniteLoader}
-      ></animated.div>
-      <animated.div
-        className="bg-green-200 w-8 h-8 rounded-full p-2"
-        style={infiniteLoader}
-      ></animated.div>
-      <animated.div
-        className="bg-blue-200 w-8 h-8 rounded-full p-2"
-        style={infiniteLoader}
-      ></animated.div>
+      {loadAnimation ? (
+        <>
+          <animated.div
+            className="bg-pink-200 w-8 h-8 rounded-full p-2"
+            style={infiniteLoader}
+          ></animated.div>
+          <animated.div
+            className="bg-green-200 w-8 h-8 rounded-full p-2"
+            style={infiniteLoader}
+          ></animated.div>
+          <animated.div
+            className="bg-blue-200 w-8 h-8 rounded-full p-2"
+            style={infiniteLoader}
+          ></animated.div>
+        </>
+      ) : null}
     </div>
   );
 }
