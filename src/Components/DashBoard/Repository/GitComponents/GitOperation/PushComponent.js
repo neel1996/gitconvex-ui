@@ -5,6 +5,7 @@ import {
   ROUTE_REPO_DETAILS,
   ROUTE_GIT_UNPUSHED_COMMITS,
 } from "../../../../../util/env_config";
+import InfiniteLoader from "../../../../Animations/InfiniteLoader";
 
 export default function PushComponent(props) {
   const { repoId } = props;
@@ -289,8 +290,11 @@ export default function PushComponent(props) {
             )}
             <>
               {loading ? (
-                <div className="my-4 text-center border border-orange-800 text-orange-900 bg-orange-300 rounded shadow text-white text-xl font-sans p-2 mx-auto cursor-pointer">
-                  Pushing to remote...
+                <div className="my-4 text-center border-2 border-dashed border-green-600 rounded shadow text-green-700 bg-green-100 rounded shadow text-white text-xl font-light font-sans p-2 mx-auto cursor-pointer">
+                  <div>Pushing to remote...</div>
+                  <div className="flex mx-auto my-6 text-center justify-center">
+                    <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
+                  </div>
                 </div>
               ) : null}
             </>
