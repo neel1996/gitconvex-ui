@@ -7,6 +7,7 @@ import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
+import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_COMMIT_LOGS,
@@ -196,8 +197,15 @@ export default function RepositoryCommitLogComponent(props) {
     return (
       <div className="p-6 rounded-md shadow-sm block justify-center mx-auto my-auto w-3/4 h-full text-center text-2xl text-indigo-500">
         <div className="flex w-full h-full mx-auto my-auto">
-          <div className="my-auto mx-auto bg-white w-full p-6 rounded-lg shadow">
-            {message}
+          <div className="block my-auto mx-auto bg-white w-full p-6 rounded-lg shadow">
+            <div className="text-2xl text-center font-sans font-semibold text-indigo-800 border-b-2 border-dashed border-indigo-500 p-1">
+              {message}
+            </div>
+            <div className="flex mx-auto my-6 text-center justify-center">
+              <InfiniteLoader
+                loadAnimation={commitLogs.length === 0}
+              ></InfiniteLoader>
+            </div>
           </div>
         </div>
       </div>
@@ -326,8 +334,11 @@ export default function RepositoryCommitLogComponent(props) {
         </div>
       ) : null}
       {isLoading && totalCommitCount ? (
-        <div className="my-4 rounded p-3 bg-gray-400 text-gray-800 text-center mx-auto">
+        <div className="my-4 rounded p-3 bg-gray-100 text-lf font-semibold text-gray-800 text-center mx-auto">
           Loading {totalCommitCount - skipLimit} more commits...
+          <div className="flex mx-auto my-6 text-center justify-center">
+            <InfiniteLoader loadAnimation={isLoading}></InfiniteLoader>
+          </div>
         </div>
       ) : null}
       {!isCommitEmpty && commitLogs.length === 0
