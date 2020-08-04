@@ -311,7 +311,7 @@ export default function AddRepoForm(props) {
             Repo setup in progress...
           </div>
           <div className="flex mx-auto my-6 text-center justify-center">
-            <InfiniteLoader loadAnimation={!loading}></InfiniteLoader>
+            <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
           </div>
         </>
       ) : (
