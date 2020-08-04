@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
+import InfiniteLoader from "../../../../Animations/InfiniteLoader";
 import {
   GIT_FOLDER_CONTENT,
   globalAPIEndpoint,
@@ -264,9 +265,18 @@ export default function FileExplorerComponent(props) {
       );
     } else {
       return (
-        <div className="bg-gray-400 rounded-lg text-black text-2xl text-center">
-          Loading tracked files...
-        </div>
+        <>
+          <div className="flex justify-center mx-auto my-2 w-3/4">
+            <div className="w-full mx-auto text-2xl text-center font-sans font-semibold text-gray-800 border-b-2 border-dashed border-gray-500 p-1">
+              Loading tracked files...
+            </div>
+          </div>
+          <div className="flex mx-auto my-6 text-center justify-center">
+            <InfiniteLoader
+              loadAnimation={!gitRepoFiles.length}
+            ></InfiniteLoader>
+          </div>
+        </>
       );
     }
   };

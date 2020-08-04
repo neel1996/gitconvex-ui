@@ -7,6 +7,7 @@ import { animated, useSpring } from "react-spring";
 import { DELETE_PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import { globalAPIEndpoint } from "../../../../util/env_config";
+import InfiniteLoader from "../../../Animations/InfiniteLoader";
 
 export default function AddRepoForm(props) {
   library.add(fas);
@@ -132,13 +133,13 @@ export default function AddRepoForm(props) {
   function repoAddStatusBanner() {
     if (repoAddSuccess) {
       return (
-        <div className="my-6 mx-auto block p-3 w-1/2 rounded-lg shadow-sm border border-green-500 bg-green-200 text-xl text-green-800 text-center">
+        <div className="my-6 mx-auto block p-2 w-3/4 rounded-lg shadow-sm border-4 border-dotted border-green-300 bg-green-100 text-lg font-sans font-light text-green-700 text-center">
           New repo added
         </div>
       );
     } else if (repoAddFailed) {
       return (
-        <div className="my-6 mx-auto block p-3 w-1/2 rounded-lg shadow-sm border border-red-500 bg-red-200 text-xl text-red-800 text-center">
+        <div className="my-6 mx-auto block p-2 w-3/4 rounded-lg shadow-sm border-4 border-dotted border-red-300 bg-red-100 text-lg font-sans font-light text-red-700 text-center">
           Process failed! Please try again
         </div>
       );
@@ -299,16 +300,20 @@ export default function AddRepoForm(props) {
   }
 
   return (
-    <div className="block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 sm:w-11/12 w-11/12 mx-auto">
+    <div
+      className={`block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 sm:w-11/12 w-11/12 mx-auto ${
+        loading ? "border-dashed border-2" : ""
+      }`}
+    >
       {loading ? (
-        <div
-          className="flex relative w-full block rounded h-full"
-          style={{ background: "rgba(0,0,0,0.3)" }}
-        >
-          <div className="w-11/12 my-auto mx-auto p-6 shadow items-center text-xl bg-white rounded text-indigo-600 mt-10 mb-10 ml-10 mr-10">
+        <>
+          <div className="text-center font-sand font-semibold text-xl text-gray-600">
             Repo setup in progress...
           </div>
-        </div>
+          <div className="flex mx-auto my-6 text-center justify-center">
+            <InfiniteLoader loadAnimation={!loading}></InfiniteLoader>
+          </div>
+        </>
       ) : (
         addRepoFormContainer()
       )}

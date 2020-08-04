@@ -5,6 +5,7 @@ import {
   ROUTE_REPO_DETAILS,
   ROUTE_GIT_UNPUSHED_COMMITS,
 } from "../../../../../util/env_config";
+import InfiniteLoader from "../../../../Animations/InfiniteLoader";
 
 export default function PushComponent(props) {
   const { repoId } = props;
@@ -255,8 +256,8 @@ export default function PushComponent(props) {
 
             {pushFailed ? (
               <>
-                <div className="my-2 mx-auto text-center p-2 rounded shadow bg-red-200 border-red-400 text-red-800">
-                  Push Failed!
+                <div className="my-2 mx-auto my-2 p-3 bg-red-200 text-red-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-red-300">
+                  Failed to push changes!
                 </div>
               </>
             ) : null}
@@ -289,8 +290,11 @@ export default function PushComponent(props) {
             )}
             <>
               {loading ? (
-                <div className="my-4 text-center border border-orange-800 text-orange-900 bg-orange-300 rounded shadow text-white text-xl font-sans p-2 mx-auto cursor-pointer">
-                  Pushing to remote...
+                <div className="my-4 text-center border-2 border-dashed border-green-600 rounded shadow text-green-700 bg-green-100 rounded shadow text-white text-xl font-light font-sans p-2 mx-auto cursor-pointer">
+                  <div>Pushing to remote...</div>
+                  <div className="flex mx-auto my-6 text-center justify-center">
+                    <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
+                  </div>
                 </div>
               ) : null}
             </>
@@ -298,8 +302,8 @@ export default function PushComponent(props) {
         </>
       ) : (
         <div className="w-1/2 mx-auto my-auto p-6 rounded shadow bg-white block">
-          <div className="mx-auto my-2 p-3 bg-green-300 text-green-800 rounded shadow">
-            All commits are pushed to remote
+          <div className="mx-auto my-2 p-3 bg-green-200 text-green-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-green-300">
+            Changes have been pushed to remote
           </div>
         </div>
       )}

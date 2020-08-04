@@ -4,6 +4,7 @@ import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
 } from "../../../../../../util/env_config";
+import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -260,10 +261,15 @@ export default function FetchFromRemoteComponent(props) {
         ) : null}
         <div>
           {loading ? (
-            <div className="my-4 text-center border border-orange-800 text-orange-900 bg-orange-300 rounded shadow text-white text-xl font-sans p-2 mx-auto cursor-pointer">
-              {actionType === "pull" ? "Pulling changes" : "Fetching"} from
-              remote...
-            </div>
+            <>
+              <div className="my-4 text-center border-2 border-dashed border-gray-600 rounded shadow text-gray-700 bg-gray-100 rounded shadow text-white text-xl font-light font-sans p-2 mx-auto cursor-pointer">
+                {actionType === "pull" ? "Pulling changes" : "Fetching"} from
+                remote...
+              </div>
+              <div className="flex mx-auto my-6 text-center justify-center">
+                <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
+              </div>
+            </>
           ) : null}
         </div>
 
