@@ -92,7 +92,7 @@ export default function StageComponent(props) {
             </div>
           )}
           {allStaged ? (
-            <div className="mx-auto my-2 p-3 bg-green-300 text-green-800 rounded- shadow">
+            <div className="mx-auto my-2 p-3 bg-green-200 text-green-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-green-300">
               All changes Staged!
             </div>
           ) : null}

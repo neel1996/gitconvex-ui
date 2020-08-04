@@ -256,8 +256,8 @@ export default function PushComponent(props) {
 
             {pushFailed ? (
               <>
-                <div className="my-2 mx-auto text-center p-2 rounded shadow bg-red-200 border-red-400 text-red-800">
-                  Push Failed!
+                <div className="my-2 mx-auto my-2 p-3 bg-red-200 text-red-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-red-300">
+                  Failed to push changes!
                 </div>
               </>
             ) : null}
@@ -302,8 +302,8 @@ export default function PushComponent(props) {
         </>
       ) : (
         <div className="w-1/2 mx-auto my-auto p-6 rounded shadow bg-white block">
-          <div className="mx-auto my-2 p-3 bg-green-300 text-green-800 rounded shadow">
-            All commits are pushed to remote
+          <div className="mx-auto my-2 p-3 bg-green-200 text-green-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-green-300">
+            Changes have been pushed to remote
           </div>
         </div>
       )}
