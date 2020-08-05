@@ -20,7 +20,6 @@ export default function GitTrackedComponent(props) {
   library.add(fab);
   const [gitDiffFilesState, setGitDiffFilesState] = useState([]);
   const [gitUntrackedFilesState, setGitUntrackedFilesState] = useState([]);
-  const [gitStagedFilesState, setgitStagedFilesState] = useState([]);
   const [topMenuItemState, setTopMenuItemState] = useState("File View");
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
   const [noChangeMarker, setNoChangeMarker] = useState(false);
@@ -111,8 +110,6 @@ export default function GitTrackedComponent(props) {
           } else {
             if (gitStagedFiles.length === 0) {
               setNoChangeMarker(true);
-            } else {
-              setgitStagedFilesState([...gitStagedFiles]);
             }
           }
         }
