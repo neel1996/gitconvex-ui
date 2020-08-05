@@ -25,6 +25,7 @@ export default function RepositoryCommitLogComponent(props) {
   const [excessCommit, setExcessCommit] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     const payload = JSON.stringify(
       JSON.stringify({ repoId: props.repoId, skipLimit: 0 })
     );
@@ -54,6 +55,8 @@ export default function RepositoryCommitLogComponent(props) {
       },
     })
       .then((res) => {
+        setIsLoading(false);
+
         if (res.data.data) {
           const {
             commits,
@@ -75,6 +78,8 @@ export default function RepositoryCommitLogComponent(props) {
         }
       })
       .catch((err) => {
+        setIsLoading(false);
+
         if (err) {
           setIsCommitEmpty(true);
           console.log(err);
@@ -201,11 +206,11 @@ export default function RepositoryCommitLogComponent(props) {
             <div className="text-2xl text-center font-sans font-semibold text-indigo-800 border-b-2 border-dashed border-indigo-500 p-1">
               {message}
             </div>
-            <div className="flex mx-auto my-6 text-center justify-center">
-              <InfiniteLoader
-                loadAnimation={commitLogs.length === 0}
-              ></InfiniteLoader>
-            </div>
+            {isLoading ? (
+              <div className="flex mx-auto my-6 text-center justify-center">
+                <InfiniteLoader loadAnimation={isLoading}></InfiniteLoader>
+              </div>
+            ) : null}
           </div>
         </div>
       </div>
