@@ -259,8 +259,11 @@ export default function FileExplorerComponent(props) {
       );
     } else if (gitRepoFiles && gitRepoFiles[0] === "NO_TRACKED_FILES") {
       return (
-        <div className="bg-gray-400 rounded-lg text-black text-2xl text-center">
-          No Tracked Files in the repo!
+        <div className="flex gap-4 w-3/4 mx-auto items-center justify-center rounded-lg text-gray-600 text-2xl text-center border-b-4 border-dashed border-gray-400 p-1">
+          <div>
+            <FontAwesomeIcon icon={["fas", "unlink"]}></FontAwesomeIcon>
+          </div>
+          <div>No Tracked Files in the repo!</div>
         </div>
       );
     } else {
@@ -283,7 +286,9 @@ export default function FileExplorerComponent(props) {
 
   return (
     <div>
-      {directoryNavigator ? (
+      {directoryNavigator &&
+      gitRepoFiles &&
+      gitRepoFiles[0] !== "NO_TRACKED_FILES" ? (
         <div className="mx-6 p-3 font-sans flex gap-4 items-center justify-start">
           <div
             className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl hover:text-black hover:border-black hover:scale-110 transition duration-500 ease-in-out"
@@ -328,7 +333,7 @@ export default function FileExplorerComponent(props) {
           </div>
         </div>
       ) : null}
-      <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-gray-100 p-2 shadow-md overflow-auto">
+      <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-white p-2 shadow-md overflow-auto border">
         {gitTrackedFileComponent()}
       </div>
     </div>

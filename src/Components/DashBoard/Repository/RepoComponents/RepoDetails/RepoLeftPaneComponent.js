@@ -73,7 +73,11 @@ export default function RepoLeftPaneComponent(props) {
                   {gitRemoteHost ? (
                     <div className="mx-2">{getRemoteLogo()}</div>
                   ) : null}
-                  <div className="text-xl text-gray-800 border-b border-dashed border-gray-400 w-3/4 text-center">
+                  <div
+                    className={`${
+                      gitRemoteHost !== "No Remote Host Set" ? "text-xl" : ""
+                    } text-gray-800 border-b border-dashed border-gray-400 w-3/4 text-center`}
+                  >
                     {gitRemoteHost}
                   </div>
                 </div>

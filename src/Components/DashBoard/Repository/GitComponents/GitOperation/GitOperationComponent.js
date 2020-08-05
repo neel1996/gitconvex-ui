@@ -27,6 +27,8 @@ export default function GitOperationComponent(props) {
   const [unstageFailed, setUnstageFailed] = useState(false);
 
   useEffect(() => {
+    setStagedItems([]);
+    setCurrensStageitem("");
     const payload = JSON.stringify(
       JSON.stringify({
         repoId: props.repoId,
@@ -51,6 +53,7 @@ export default function GitOperationComponent(props) {
                 gitChanges{
                   gitUntrackedFiles
                   gitChangedFiles
+                  gitStagedFiles
                 }
               }
             }

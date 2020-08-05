@@ -442,8 +442,8 @@ export default function GitDiffViewComponent() {
       ) : (
         <>
           {isApiCalled ? (
-            <div className="my-3 mx-auto text-center p-3 rounded-md shadow-md bg-pink-200 text-gray-700">
-              <span>No Changed files are being tracked currently!</span>
+            <div className="shadow-md mx-auto w-3/4 my-4 p-2 border-b-4 border-dashed border-pink-300 rounded-md mx-auto text-center font-sans font-semibold text-xl">
+              No File changes in the repo
             </div>
           ) : null}
         </>

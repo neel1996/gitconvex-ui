@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
+import InfiniteLoader from "../../../Animations/InfiniteLoader";
 import {
   PRESENT_REPO,
   DELETE_PRESENT_REPO,
@@ -16,13 +17,13 @@ import RepoCard from "./RepoCard";
 export default function RepoComponent(props) {
   const [repo, setRepo] = useState([]);
   const [repoFormEnable, setRepoFormEnable] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const { dispatch } = useContext(ContextProvider);
 
   useEffect(() => {
+    setLoading(true);
     const fetchRepoURL = globalAPIEndpoint;
-    // dispatch({ type: ADD_FORM_CLOSE, payload: false });
-
     const token = axios.CancelToken;
     const source = token.source();
 
@@ -43,30 +44,36 @@ export default function RepoComponent(props) {
           }
         `,
       },
-    }).then((res) => {
-      const apiResponse = res.data.data.gitConvexApi.fetchRepo;
+    })
+      .then((res) => {
+        const apiResponse = res.data.data.gitConvexApi.fetchRepo;
+        setLoading(false);
 
-      if (apiResponse) {
-        const { repoId, repoName } = apiResponse;
-        let repoContent = [];
+        if (apiResponse) {
+          const { repoId, repoName } = apiResponse;
+          let repoContent = [];
 
-        repoId.forEach((entry, index) => {
-          repoContent.push({ id: entry, repoName: repoName[index] });
-        });
+          repoId.forEach((entry, index) => {
+            repoContent.push({ id: entry, repoName: repoName[index] });
+          });
 
-        setRepo(repoContent);
+          setRepo(repoContent);
 
-        dispatch({
-          type: DELETE_PRESENT_REPO,
-          payload: [],
-        });
+          dispatch({
+            type: DELETE_PRESENT_REPO,
+            payload: [],
+          });
 
-        dispatch({
-          action: PRESENT_REPO,
-          payload: [...repoContent],
-        });
-      }
-    });
+          dispatch({
+            action: PRESENT_REPO,
+            payload: [...repoContent],
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setLoading(false);
+      });
 
     return () => {
       source.cancel();
@@ -87,8 +94,17 @@ export default function RepoComponent(props) {
                 })}
               </>
             ) : (
-              <div className="mx-auto w-3/4 rounded-md text-center shadow bg-gray-200 text-gray-500 font-sans p-10 my-10 text-xl">
-                No repos present. Press + to add a new repo
+              <div className="mx-auto w-3/4 rounded-md text-center shadow bg-gray-100 text-gray-800 font-sans p-10 my-10 text-xl">
+                {loading ? (
+                  <div className="block mx-auto my-6 text-center justify-center">
+                    <div className="flex mx-auto my-6 text-center justify-center">
+                      <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
+                    </div>
+                    <div>Loading available repos...</div>
+                  </div>
+                ) : (
+                  <div>No repos present. Press + to add a new repo</div>
+                )}
               </div>
             )}
           </>

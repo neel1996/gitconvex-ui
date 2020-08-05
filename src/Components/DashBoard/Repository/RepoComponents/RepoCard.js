@@ -49,7 +49,8 @@ export default function RepoCard(props) {
       .then((res) => {
         setRepoFooterData(res.data.data.gitConvexApi.gitRepoStatus);
       })
-      .catch((err) => {});
+      .catch((err) => {
+      });
 
     return () => {
       source.cancel();

@@ -20,6 +20,7 @@ export default function GitTrackedComponent(props) {
   library.add(fab);
   const [gitDiffFilesState, setGitDiffFilesState] = useState([]);
   const [gitUntrackedFilesState, setGitUntrackedFilesState] = useState([]);
+  const [gitStagedFilesState, setgitStagedFilesState] = useState([]);
   const [topMenuItemState, setTopMenuItemState] = useState("File View");
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
   const [noChangeMarker, setNoChangeMarker] = useState(false);
@@ -47,6 +48,7 @@ export default function GitTrackedComponent(props) {
   useEffect(() => {
     let apiEndPoint = globalAPIEndpoint;
     setRequestChange(false);
+    setNoChangeMarker(false);
 
     const payload = JSON.stringify(
       JSON.stringify({
@@ -68,6 +70,7 @@ export default function GitTrackedComponent(props) {
                 gitChanges{
                   gitUntrackedFiles
                   gitChangedFiles
+                  gitStagedFiles
                 }
               }
             }
@@ -77,7 +80,11 @@ export default function GitTrackedComponent(props) {
       .then((res) => {
         if (res) {
           var apiData = res.data.data.gitConvexApi.gitChanges;
-          const { gitChangedFiles, gitUntrackedFiles } = apiData;
+          const {
+            gitChangedFiles,
+            gitUntrackedFiles,
+            gitStagedFiles,
+          } = apiData;
 
           if (
             (gitChangedFiles || gitUntrackedFiles) &&
@@ -102,7 +109,11 @@ export default function GitTrackedComponent(props) {
               payload: [...gitUntrackedFiles],
             });
           } else {
-            setNoChangeMarker(true);
+            if (gitStagedFiles.length === 0) {
+              setNoChangeMarker(true);
+            } else {
+              setgitStagedFilesState([...gitStagedFiles]);
+            }
           }
         }
       })
@@ -159,6 +170,12 @@ export default function GitTrackedComponent(props) {
         <>
           {modifiedArtifacts} {deletedArtifacts}
         </>
+      );
+    } else {
+      return (
+        <div className="mx-auto w-3/4 my-4 p-2 border-b-4 border-dashed border-pink-300 rounded-md mx-auto text-center font-sans font-semibold text-xl">
+          No File changes in the repo
+        </div>
       );
     }
   }
@@ -222,6 +239,7 @@ export default function GitTrackedComponent(props) {
               {gitUntrackedFilesState ? untrackedPane() : null}
             </div>
           );
+        } else {
         }
         break;
       case GIT_DIFFERENCE:
