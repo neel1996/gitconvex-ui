@@ -5,6 +5,7 @@ import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
 } from "../../../../util/env_config";
+import InfiniteLoader from "../../../Animations/InfiniteLoader";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
@@ -15,8 +16,10 @@ export default function RepoCard(props) {
   const { repoData } = props;
 
   const [repoFooterData, setRepoFooterData] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     let repoId = props.repoData.id;
     const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
 
@@ -47,9 +50,11 @@ export default function RepoCard(props) {
       },
     })
       .then((res) => {
+        setLoading(false);
         setRepoFooterData(res.data.data.gitConvexApi.gitRepoStatus);
       })
       .catch((err) => {
+        setLoading(false);
       });
 
     return () => {
@@ -83,33 +88,57 @@ export default function RepoCard(props) {
         {repoData.repoName}
       </div>
       <div className="w-full flex justify-center mx-auto my-2 text-center rounded-md shadow-sm align-middle">
-        <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-l-md my-2 items-center">
-          <FontAwesomeIcon
-            className="my-auto"
-            icon={["fas", "grip-lines"]}
-          ></FontAwesomeIcon>
-          <div className="mx-2 text-sm text-center font-sans text-center">
-            {repoFooterData.gitTotalCommits} Commits
+        {loading || !repoFooterData ? (
+          <div className="block mx-auto w-full bg-white rounded">
+            <div className="flex mx-auto my-6 text-center justify-center">
+              <InfiniteLoader
+                loadAnimation={loading || !repoFooterData}
+              ></InfiniteLoader>
+            </div>
           </div>
-        </div>
-        <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 my-2 items-center">
-          <FontAwesomeIcon
-            className="my-auto"
-            icon={["fas", "file-alt"]}
-          ></FontAwesomeIcon>
-          <div className="mx-2 text-sm text-center font-sans text-center">
-            {repoFooterData.gitTotalTrackedFiles} Tracked Files
-          </div>
-        </div>
-        <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-r-md my-2 items-center">
-          <FontAwesomeIcon
-            className="my-auto"
-            icon={["fas", "code-branch"]}
-          ></FontAwesomeIcon>
-          <div className="mx-2  text-sm text-center font-sans text-center font-semibold">
-            {repoFooterData.gitCurrentBranch}
-          </div>
-        </div>
+        ) : (
+          <>
+            <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-l-md my-2 items-center">
+              <FontAwesomeIcon
+                className="my-auto"
+                icon={["fas", "grip-lines"]}
+              ></FontAwesomeIcon>
+              <div className="mx-2 text-sm text-center font-sans text-center">
+                {repoFooterData ? (
+                  <>{repoFooterData.gitTotalCommits} Commits</>
+                ) : (
+                  "..."
+                )}
+              </div>
+            </div>
+            <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 my-2 items-center">
+              <FontAwesomeIcon
+                className="my-auto"
+                icon={["fas", "file-alt"]}
+              ></FontAwesomeIcon>
+              <div className="mx-2 text-sm text-center font-sans text-center">
+                {repoFooterData ? (
+                  <>{repoFooterData.gitTotalTrackedFiles} Tracked Files</>
+                ) : (
+                  "..."
+                )}
+              </div>
+            </div>
+            <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-r-md my-2 items-center">
+              <FontAwesomeIcon
+                className="my-auto"
+                icon={["fas", "code-branch"]}
+              ></FontAwesomeIcon>
+              <div className="mx-2  text-sm text-center font-sans text-center font-semibold my-auto items-center">
+                {repoFooterData ? (
+                  <>{repoFooterData.gitCurrentBranch}</>
+                ) : (
+                  "..."
+                )}
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </NavLink>
   );
