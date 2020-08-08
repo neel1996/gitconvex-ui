@@ -22,15 +22,6 @@ jobs:
       - run: npm i -g create-react-app tailwindcss@1.6.0
       - run: npm run build:tailwind
       - run: npm test && npm run build
-      - name: Copy react build content to DO Droplet
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.DROPLET_HOST }}
-          username: ${{ secrets.DROPLET_USERNAME }}
-          key: ${{ secrets.DROPLET_PRIVATE_KEY }}
-          port: ${{ secrets.DROPLET_PORT }}
-          source: "./build"
-          target: "/opt/workroom/gitconvex-package/"
       - name: Droplet commands
         uses: appleboy/ssh-action@master
         with:
@@ -39,4 +30,4 @@ jobs:
           key: ${{ secrets.DROPLET_PRIVATE_KEY }}
           port: ${{ secrets.DROPLET_PORT }}
           script: |
-            sh /opt/workroom/github-deploy.sh gitconvex
+            sh /opt/workroom/github-deploy.sh gitconvex-ui
