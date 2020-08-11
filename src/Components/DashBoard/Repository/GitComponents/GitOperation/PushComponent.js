@@ -269,8 +269,8 @@ export default function PushComponent(props) {
               <div
                 className="my-4 text-center bg-indigo-400 rounded shadow text-white text-xl font-sans p-2 mx-auto hover:bg-indigo-600 cursor-pointer"
                 onClick={() => {
-                  const remoteHost = remoteRef.current.value;
-                  const branchName = branchRef.current.value;
+                  const remoteHost = remoteRef.current.value.trim();
+                  const branchName = branchRef.current.value.trim();
 
                   if (remoteHost && branchName) {
                     pushHandler(remoteHost, branchName);
