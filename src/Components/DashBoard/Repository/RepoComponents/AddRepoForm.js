@@ -17,6 +17,7 @@ export default function AddRepoForm(props) {
   const [cloneUrlState, setCloneUrlState] = useState("");
   const [repoAddFailed, setRepoAddFailed] = useState(false);
   const [repoAddSuccess, setRepoAddSuccess] = useState(false);
+  const [inputInvalid, setInputInvalid] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [cloneSwitch, setCloneSwitch] = useState(false);
@@ -50,6 +51,12 @@ export default function AddRepoForm(props) {
 
   function storeRepoAPI(repoName, repoPath) {
     if (repoName && repoPath) {
+      if (repoName.match(/[^a-zA-Z0-9-_.]/gi)) {
+        setInputInvalid(true);
+        setRepoAddFailed(true);
+        return;
+      }
+
       let initCheck = false;
       let cloneCheck = false;
       let cloneUrl = cloneUrlState;
@@ -58,6 +65,12 @@ export default function AddRepoForm(props) {
       if (cloneSwitch && !cloneUrlState) {
         setRepoAddFailed(true);
         return false;
+      }
+
+      if (cloneUrl.match(/[^a-zA-Z0-9-_.~@#$%:/]/gi)) {
+        setInputInvalid(true);
+        setRepoAddFailed(true);
+        return;
       }
 
       if (initSwitch) {
@@ -84,6 +97,7 @@ export default function AddRepoForm(props) {
       })
         .then((res) => {
           setLoading(false);
+          setInputInvalid(false);
 
           if (res.data.data && !res.data.error) {
             const { message } = res.data.data.addRepo;
@@ -121,6 +135,7 @@ export default function AddRepoForm(props) {
           setRepoAddSuccess(false);
         });
     } else {
+      setInputInvalid(false);
       setRepoAddFailed(true);
     }
   }
@@ -141,6 +156,9 @@ export default function AddRepoForm(props) {
       return (
         <div className="my-6 mx-auto block p-2 w-3/4 rounded-lg shadow-sm border-4 border-dotted border-red-300 bg-red-100 text-lg font-sans font-light text-red-700 text-center">
           Process failed! Please try again
+          {inputInvalid ? (
+            <div className="font-semibold">Invalid input paremeters!</div>
+          ) : null}
         </div>
       );
     } else {
