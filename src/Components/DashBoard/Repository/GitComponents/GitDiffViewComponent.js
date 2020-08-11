@@ -398,7 +398,10 @@ export default function GitDiffViewComponent() {
       {changedFiles && changedFiles.length > 0 ? (
         <>
           <div className="flex mx-auto w-full justify-center">
-            <div className="break-words p-2 py-2 bg-white border-2 border-dashed border-gray-400 text-indigo-800 w-1/4 rounded-md shadow-md overflow-hidden">
+            <div
+              className="break-words p-2 py-2 bg-white border-2 border-dashed border-gray-400 text-indigo-800 w-1/4 rounded-md shadow-md overflow-auto"
+              style={{ height: "880px" }}
+            >
               {getDiffFiles()}
             </div>
 
