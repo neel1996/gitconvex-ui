@@ -1,6 +1,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -32,6 +33,7 @@ export default function RepositoryDetails(props) {
   const [gitRepoFiles, setGitRepoFiles] = useState([]);
   const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [action, setAction] = useState("");
+  const [searchOptionState, setSearchOptionState] = useState("default-search");
 
   const closeBackdrop = (toggle) => {
     setBackdropToggle(!toggle);
@@ -47,8 +49,44 @@ export default function RepositoryDetails(props) {
   };
 
   const memoizedCommitLogComponent = useMemo(() => {
-    return <CommitLogComponent repoId={repoIdState}></CommitLogComponent>;
-  }, [repoIdState]);
+    const searchOptions = ["Commit Hash", "Commit Message", "User"];
+    return (
+      <>
+        <div className="my-4 w-full rounded-lg bg-white shadow-inner flex gap-4 justify-between items-center">
+          <select
+            defaultValue="default-search"
+            id="searchOption"
+            className="w-1/4 flex p-4 items-center bg-indigo-500 text-white cursor-pointer rounded-l-md text-lg font-sans font-semibold outline-none"
+            onChange={(event) => {
+              setSearchOptionState(event.currentTarget.value);
+            }}
+          >
+            <option value={searchOptionState} hidden disabled>
+              Search for...
+            </option>
+            {searchOptions.map((item) => {
+              return <option key={item}>{item}</option>;
+            })}
+          </select>
+
+          <div className="w-3/4 rounded-r-md">
+            <input
+              type="text"
+              className="w-5/6 outline-none text-lg font-light font-sans"
+              placeholder="What are you looking for?"
+            />
+          </div>
+          <div className="w-20 bg-gray-200 p-3 mx-auto my-auto text-center rounded-r-lg hover:bg-gray-400 cursor-pointer">
+            <FontAwesomeIcon
+              icon={["fas", "search"]}
+              className="text-3xl text-gray-600"
+            ></FontAwesomeIcon>
+          </div>
+        </div>
+        <CommitLogComponent repoId={repoIdState}></CommitLogComponent>
+      </>
+    );
+  }, [repoIdState, searchOptionState]);
 
   const memoizedFetchRemoteComponent = useMemo(() => {
     return (
