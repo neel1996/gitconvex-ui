@@ -5,9 +5,10 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import ReactDOM from "react-dom";
 import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
+import debounce from "lodash.debounce";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_COMMIT_LOGS,
@@ -23,6 +24,17 @@ export default function RepositoryCommitLogComponent(props) {
   const [totalCommitCount, setTotalCommitCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [excessCommit, setExcessCommit] = useState(false);
+  const [searchOptionState, setSearchOptionState] = useState("default-search");
+  const [searchKey, setSearchKey] = useState("");
+  const [viewReload, setViewReload] = useState(0);
+
+  const searchRef = useRef();
+
+  const debouncedSearch = useRef(
+    debounce(commitSearchHandler, 1500, { maxWait: 2000 })
+  ).current;
+
+  const searchOptions = ["Commit Hash", "Commit Message", "User"];
 
   useEffect(() => {
     setIsLoading(true);
@@ -85,7 +97,7 @@ export default function RepositoryCommitLogComponent(props) {
           console.log(err);
         }
       });
-  }, [props]);
+  }, [props, viewReload]);
 
   function fetchCommitLogs() {
     setIsLoading(true);
@@ -198,6 +210,73 @@ export default function RepositoryCommitLogComponent(props) {
     ReactDOM.render(closeArrow, document.getElementById(closeBtnId));
   }
 
+  function commitSearchHandler() {
+    setIsLoading(true);
+    setTotalCommitCount(0);
+    setCommitLogs([]);
+    const searchQuery = searchRef.current.value;
+    let searchOption = "";
+
+    switch (searchOptionState) {
+      case "Commit Hash":
+        searchOption = "hash";
+        break;
+      case "Commit Message":
+        searchOption = "message";
+        break;
+      case "User":
+        searchOption = "user";
+        break;
+      default:
+        searchOption = "message";
+        break;
+    }
+
+    if (searchQuery) {
+      axios({
+        url: globalAPIEndpoint,
+        method: "POST",
+        data: {
+          query: `
+            mutation{
+              searchCommitLogs(repoId:"${props.repoId}",searchType:"${searchOption}",searchKey:"${searchQuery}"){
+                hash
+                author
+                commitTime
+                commitMessage
+                commitRelativeTime
+                commitFilesCount
+              }
+            }
+          `,
+        },
+      })
+        .then((res) => {
+          if (res.data.data) {
+            const { searchCommitLogs } = res.data.data;
+            if (searchCommitLogs) {
+              setCommitLogs([...searchCommitLogs]);
+              setTotalCommitCount(searchCommitLogs.length);
+              setIsLoading(false);
+            } else {
+              setIsCommitEmpty(true);
+              setCommitLogs([]);
+              setTotalCommitCount(0);
+              setIsLoading(false);
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          setIsLoading(false);
+          setCommitLogs([]);
+        });
+    } else {
+      setViewReload(viewReload + 1);
+      setIsLoading(false);
+    }
+  }
+
   function fallBackComponent(message) {
     return (
       <div className="p-6 rounded-md shadow-sm block justify-center mx-auto my-auto w-3/4 h-full text-center text-2xl text-indigo-500">
@@ -217,9 +296,63 @@ export default function RepositoryCommitLogComponent(props) {
     );
   }
 
+  function searchbarComponent() {
+    return (
+      <div className="my-4 w-full rounded-lg bg-white shadow-inner flex gap-4 justify-between items-center">
+        <select
+          defaultValue="default-search"
+          id="searchOption"
+          className="w-1/4 flex p-4 items-center bg-indigo-500 text-white cursor-pointer rounded-l-md text-lg font-sans font-semibold outline-none"
+          onChange={(event) => {
+            setSearchOptionState(event.currentTarget.value);
+          }}
+        >
+          <option value={searchOptionState} hidden disabled>
+            Search for...
+          </option>
+          {searchOptions.map((item) => {
+            return (
+              <option key={item} value={item}>
+                {item}
+              </option>
+            );
+          })}
+        </select>
+
+        <div className="w-3/4 rounded-r-md">
+          <input
+            ref={searchRef}
+            type="text"
+            className="w-5/6 outline-none text-lg font-light font-sans"
+            placeholder="What are you looking for?"
+            value={searchKey}
+            onChange={(event) => {
+              setSearchKey(event.target.value);
+              debouncedSearch();
+            }}
+          />
+        </div>
+        <div
+          className="w-20 bg-gray-200 p-3 mx-auto my-auto text-center rounded-r-lg hover:bg-gray-400 cursor-pointer"
+          onClick={() => {
+            commitSearchHandler();
+          }}
+        >
+          <FontAwesomeIcon
+            icon={["fas", "search"]}
+            className="text-3xl text-gray-600"
+          ></FontAwesomeIcon>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      {isCommitEmpty ? fallBackComponent("No Commit Logs found") : null}
+      {searchbarComponent()}
+      {(isCommitEmpty || !commitLogs || !totalCommitCount) && !isLoading
+        ? fallBackComponent("No Commit Logs found")
+        : null}
       {commitLogs &&
         commitLogs.map((commit) => {
           const {
@@ -346,7 +479,7 @@ export default function RepositoryCommitLogComponent(props) {
           </div>
         </div>
       ) : null}
-      {!isCommitEmpty && commitLogs.length === 0
+      {!isCommitEmpty && commitLogs.length === 0 && isLoading
         ? fallBackComponent("Loading commits...")
         : null}
     </>

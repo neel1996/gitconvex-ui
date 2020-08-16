@@ -47,7 +47,11 @@ export default function RepositoryDetails(props) {
   };
 
   const memoizedCommitLogComponent = useMemo(() => {
-    return <CommitLogComponent repoId={repoIdState}></CommitLogComponent>;
+    return (
+      <>
+        <CommitLogComponent repoId={repoIdState}></CommitLogComponent>
+      </>
+    );
   }, [repoIdState]);
 
   const memoizedFetchRemoteComponent = useMemo(() => {
