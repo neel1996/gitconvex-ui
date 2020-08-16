@@ -30,4 +30,4 @@ jobs:
           key: ${{ secrets.DROPLET_PRIVATE_KEY }}
           port: ${{ secrets.DROPLET_PORT }}
           script: |
-            sh /opt/workroom/github-deploy.sh gitconvex-ui
+            /opt/workroom/github-deploy.sh gitconvex-ui
