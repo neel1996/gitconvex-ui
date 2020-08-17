@@ -73,6 +73,9 @@ export default function RepositoryAction() {
         })
           .then((res) => {
             setSelectedRepoDetails(res.data.data.gitConvexApi.gitRepoStatus);
+            setActiveBranch(
+              res.data.data.gitConvexApi.gitRepoStatus.gitCurrentBranch
+            );
           })
           .catch((err) => {
             if (err) {
@@ -172,7 +175,7 @@ export default function RepositoryAction() {
           </div>
           <select
             className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500"
-            defaultValue="checked"
+            defaultValue={"checked"}
             onChange={(event) => {
               setSelectedFlag(true);
               availableRepos.length &&
@@ -204,10 +207,11 @@ export default function RepositoryAction() {
             </div>
             <select
               className="bg-indigo-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-indigo-500"
-              defaultValue="checked"
+              value={activeBranch}
+              disabled={activeBranch ? false : true}
               onChange={(event) => {
                 event.persist();
-                setActiveBranch(event.currentTarget.value);
+                setActiveBranch("");
                 setTrackingBranch(event.target.value, event);
               }}
               onClick={() => {
@@ -239,7 +243,7 @@ export default function RepositoryAction() {
     if (selectedRepoDetails && selectedRepoDetails.gitBranchList) {
       const { gitBranchList } = selectedRepoDetails;
 
-      return gitBranchList.map((branch) => {
+      return gitBranchList.map((branch, index) => {
         if (branch !== "NO_BRANCH") {
           return (
             <option key={branch} value={branch}>
