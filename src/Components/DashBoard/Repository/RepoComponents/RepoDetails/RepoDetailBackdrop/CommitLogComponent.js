@@ -27,6 +27,7 @@ export default function RepositoryCommitLogComponent(props) {
   const [searchOptionState, setSearchOptionState] = useState("default-search");
   const [searchKey, setSearchKey] = useState("");
   const [viewReload, setViewReload] = useState(0);
+  const [searchWarning, setSearchWarning] = useState(false);
 
   const searchRef = useRef();
 
@@ -38,6 +39,7 @@ export default function RepositoryCommitLogComponent(props) {
 
   useEffect(() => {
     setIsLoading(true);
+    setSearchWarning(false);
     const payload = JSON.stringify(
       JSON.stringify({ repoId: props.repoId, skipLimit: 0 })
     );
@@ -101,6 +103,8 @@ export default function RepositoryCommitLogComponent(props) {
 
   function fetchCommitLogs() {
     setIsLoading(true);
+    setSearchWarning(false);
+
     let localLimit = 0;
     localLimit = skipLimit + 10;
 
@@ -254,7 +258,8 @@ export default function RepositoryCommitLogComponent(props) {
         .then((res) => {
           if (res.data.data) {
             const { searchCommitLogs } = res.data.data;
-            if (searchCommitLogs) {
+            if (searchCommitLogs && searchCommitLogs.length > 0) {
+              setExcessCommit(false);
               setCommitLogs([...searchCommitLogs]);
               setTotalCommitCount(searchCommitLogs.length);
               setIsLoading(false);
@@ -263,6 +268,7 @@ export default function RepositoryCommitLogComponent(props) {
               setCommitLogs([]);
               setTotalCommitCount(0);
               setIsLoading(false);
+              setSearchWarning(true);
             }
           }
         })
@@ -285,6 +291,13 @@ export default function RepositoryCommitLogComponent(props) {
             <div className="text-2xl text-center font-sans font-semibold text-indigo-800 border-b-2 border-dashed border-indigo-500 p-1">
               {message}
             </div>
+            {searchWarning ? (
+              <div className="my-4 mx-auto rounded shadow p-4 text-center font-sans text-orange-900 font-light bg-orange-100 border-b-4  border-dashed border-orange-300 text-md">
+                If you are looking for some newly added commits or if this is a
+                freshly added repo, then please wait for a few minutes and
+                search again
+              </div>
+            ) : null}
             {isLoading ? (
               <div className="flex mx-auto my-6 text-center justify-center">
                 <InfiniteLoader loadAnimation={isLoading}></InfiniteLoader>
