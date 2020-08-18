@@ -259,6 +259,7 @@ export default function RepositoryCommitLogComponent(props) {
           if (res.data.data) {
             const { searchCommitLogs } = res.data.data;
             if (searchCommitLogs && searchCommitLogs.length > 0) {
+              setIsCommitEmpty(false);
               setExcessCommit(false);
               setCommitLogs([...searchCommitLogs]);
               setTotalCommitCount(searchCommitLogs.length);
