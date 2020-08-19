@@ -24,12 +24,12 @@ export default function RepositoryCommitLogComponent(props) {
   const [totalCommitCount, setTotalCommitCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [excessCommit, setExcessCommit] = useState(false);
-  const [searchOptionState, setSearchOptionState] = useState("default-search");
   const [searchKey, setSearchKey] = useState("");
   const [viewReload, setViewReload] = useState(0);
   const [searchWarning, setSearchWarning] = useState(false);
 
   const searchRef = useRef();
+  const searchOptionRef = useRef();
 
   const debouncedSearch = useRef(
     debounce(commitSearchHandler, 1500, { maxWait: 2000 })
@@ -221,7 +221,7 @@ export default function RepositoryCommitLogComponent(props) {
     const searchQuery = searchRef.current.value;
     let searchOption = "";
 
-    switch (searchOptionState) {
+    switch (searchOptionRef.current.value) {
       case "Commit Hash":
         searchOption = "hash";
         break;
@@ -316,12 +316,10 @@ export default function RepositoryCommitLogComponent(props) {
         <select
           defaultValue="default-search"
           id="searchOption"
+          ref={searchOptionRef}
           className="w-1/4 flex p-4 items-center bg-indigo-500 text-white cursor-pointer rounded-l-md text-lg font-sans font-semibold outline-none"
-          onChange={(event) => {
-            setSearchOptionState(event.currentTarget.value);
-          }}
         >
-          <option value={searchOptionState} hidden disabled>
+          <option value="default-search" hidden disabled>
             Search for...
           </option>
           {searchOptions.map((item) => {
