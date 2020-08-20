@@ -24,6 +24,7 @@ export default function GitTrackedComponent(props) {
   const topMenuItems = ["File View", "Git Difference", "Git Operations"];
   const [noChangeMarker, setNoChangeMarker] = useState(false);
   const [requestStateChange, setRequestChange] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { dispatch } = useContext(ContextProvider);
 
@@ -47,6 +48,7 @@ export default function GitTrackedComponent(props) {
   useEffect(() => {
     let apiEndPoint = globalAPIEndpoint;
     setRequestChange(false);
+    setIsLoading(true);
     setNoChangeMarker(false);
 
     const payload = JSON.stringify(
@@ -92,6 +94,7 @@ export default function GitTrackedComponent(props) {
             setGitDiffFilesState([...gitChangedFiles]);
             setGitUntrackedFilesState([...gitUntrackedFiles]);
             setNoChangeMarker(false);
+            setIsLoading(false);
 
             dispatch({
               type: GIT_TRACKED_FILES,
@@ -110,6 +113,7 @@ export default function GitTrackedComponent(props) {
           } else {
             if (gitStagedFiles.length === 0) {
               setNoChangeMarker(true);
+              setIsLoading(false);
             }
           }
         }
@@ -171,7 +175,13 @@ export default function GitTrackedComponent(props) {
     } else {
       return (
         <div className="mx-auto w-3/4 my-4 p-2 border-b-4 border-dashed border-pink-300 rounded-md mx-auto text-center font-sans font-semibold text-xl">
-          No File changes in the repo
+          {isLoading ? (
+            <span className="text-gray-400">
+              Fetching results from the server...
+            </span>
+          ) : (
+            <span>No changes in the repo!</span>
+          )}
         </div>
       );
     }

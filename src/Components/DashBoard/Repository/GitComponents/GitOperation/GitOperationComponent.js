@@ -25,8 +25,10 @@ export default function GitOperationComponent(props) {
   const [currentStageItem, setCurrensStageitem] = useState("");
   const [stageItems, setStagedItems] = useState([]);
   const [unstageFailed, setUnstageFailed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    setIsLoading(true);
     setStagedItems([]);
     setCurrensStageitem("");
     const payload = JSON.stringify(
@@ -91,10 +93,11 @@ export default function GitOperationComponent(props) {
             });
 
           setList([...componentList]);
+          setIsLoading(false);
         }
       })
       .catch((err) => {
-        // console.log(err);
+        setIsLoading(false);
       });
 
     return () => {
@@ -446,8 +449,12 @@ export default function GitOperationComponent(props) {
 
   function noChangesComponent() {
     return (
-      <div className="p-2 mx-auto my-10 bg-orange-300 text-xl text-center rounded shadow">
-        No files to stage
+      <div className="p-4 mx-auto my-10 bg-white text-3xl text-red-500 font-sans font-light text-center rounded shadow-lg border-b-4 border-red-300 border-dashed">
+        {!isLoading ? (
+          <span>No files changes found in the repo.</span>
+        ) : (
+          <span className="text-gray-600">Fetching results...</span>
+        )}
       </div>
     );
   }

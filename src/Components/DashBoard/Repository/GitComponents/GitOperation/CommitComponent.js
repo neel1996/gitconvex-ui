@@ -17,6 +17,8 @@ export default function CommitComponent(props) {
   const commitRef = useRef();
 
   useEffect(() => {
+    setLoading(true);
+
     const payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
@@ -167,9 +169,9 @@ export default function CommitComponent(props) {
       {stagedFilesState && stagedFilesState.length > 0 ? (
         commitComponent()
       ) : (
-        <div className="bg-orange-200 rounded-md shadow-md p-4 text-2xl font-sans text-center font-bold text-orange-700">
+        <div className="bg-orange-200 border-b-4 border-orange-400 border-dashed rounded-lg shadow-md p-6 text-3xl font-sans text-center font-light text-orange-700">
           {loading ? (
-            <span>Loading Commits...</span>
+            <span>Loading staged files to commit...</span>
           ) : (
             <span>No Staged files to commit</span>
           )}
