@@ -57,7 +57,7 @@ export default function FetchFromRemoteComponent(props) {
         setRemoteData(repoDetails);
       })
       .catch((err) => {
-        // console.log(err);
+        setLoading(false);
       });
 
     return () => {
@@ -205,6 +205,7 @@ export default function FetchFromRemoteComponent(props) {
           <select
             className="border p-3 my-4 text-xl rounded shadow"
             defaultValue="checked"
+            disabled={remoteData ? false : true}
             onChange={() => {
               setIsRemoteSet(true);
             }}
@@ -214,7 +215,9 @@ export default function FetchFromRemoteComponent(props) {
             ref={remoteRef}
           >
             <option disabled hidden value="checked">
-              Select the remote repo
+              {remoteData
+                ? "Select the remote repo"
+                : "Loading available remotes..."}
             </option>
             {remoteData ? remoteHostGenerator() : null}
           </select>
