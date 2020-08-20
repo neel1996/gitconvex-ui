@@ -7,9 +7,9 @@ This is the front end react source for the [gitconvex](https://github.com/neel19
 
 The depedency packages used by this project can be found [here](https://github.com/neel1996/gitconvex-ui/network/dependencies)
 
-- **Styling** - For styling, the project used [tailwind]() css framework 
-- **Syntax Highlighting** - [prismjs](https://github.com/PrismJS/prism) is used for syntax highlighting within the *Git Difference* section
-- **Icon set** - [FontAweomse for react](https://github.com/FortAwesome/Font-Awesome)
+- **🎨 Styling** - For styling, the project used [tailwind]() css framework 
+- **📑 Syntax Highlighting** - [prismjs](https://github.com/PrismJS/prism) is used for syntax highlighting within the *Git Difference* section
+- **🎭 Icon set** - [FontAweomse for react](https://github.com/FortAwesome/Font-Awesome)
 
 ## Contribute!
 
@@ -70,6 +70,8 @@ After completing the setup process, use `npm start` to start the react app
     ├── App.css
     ├── App.js
     ├── Components
+    │   ├── Animations
+    │   │   └── InfiniteLoader.js
     │   ├── DashBoard
     │   │   ├── Dashboard.js
     │   │   ├── DashboardPaneComponents
@@ -116,6 +118,7 @@ After completing the setup process, use `npm start` to start the react app
     ├── assets
     │   └── gitconvex.png
     ├── context.js
+    ├── index.css
     ├── index.js
     ├── logo.svg
     ├── prism.css
