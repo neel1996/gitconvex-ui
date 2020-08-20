@@ -172,8 +172,10 @@ export default function CommitComponent(props) {
         <div className="bg-orange-200 border-b-4 border-orange-400 border-dashed rounded-lg shadow-md p-6 text-3xl font-sans text-center font-light text-orange-700">
           {loading ? (
             <span>Loading staged files to commit...</span>
-          ) : (
+          ) : !stagedFilesState ? (
             <span>No Staged files to commit</span>
+          ) : (
+            <span>Loading...</span>
           )}
         </div>
       )}

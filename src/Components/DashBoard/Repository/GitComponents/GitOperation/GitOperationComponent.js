@@ -432,7 +432,7 @@ export default function GitOperationComponent(props) {
         } else {
           return (
             <div className="w-1/2 mx-auto my-auto bg-gray-200 p-6 rounded-md">
-              <div className="p-5 bg-white text-black font-sans font-semibold rounded shadow border border-gray-100">
+              <div className="bg-white p-6 font-sans text-3xl font-light text-gray-500 border-b-4 border-dashed rounded-lg shadow-lg border-gray-500 text-center">
                 No Changes for staging...
               </div>
             </div>
@@ -472,6 +472,9 @@ export default function GitOperationComponent(props) {
               let closeViewCount = viewReload + 1;
               setViewReload(closeViewCount);
               setStagedItems([]);
+              setGitTrackedFiles([]);
+              setGitUntrackedFiles([]);
+              setList([]);
             }
           }}
         >

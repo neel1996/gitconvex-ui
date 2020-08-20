@@ -205,9 +205,12 @@ export default function PushComponent(props) {
                   setIsRemoteSet(true);
                 }}
                 ref={remoteRef}
+                disabled={remoteData ? false : true}
               >
                 <option disabled hidden value="checked">
-                  Select the remote repo
+                  {remoteData
+                    ? "Select the remote repo"
+                    : "Loading available remotes..."}
                 </option>
                 {remoteData ? remoteHostGenerator() : null}
               </select>

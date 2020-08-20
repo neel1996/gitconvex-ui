@@ -87,7 +87,7 @@ export default function StageComponent(props) {
               )}
             </>
           ) : (
-            <div className="p-5 bg-white text-black font-sans font-semibold rounded shadow border border-gray-100">
+            <div className="bg-white p-6 font-sans text-3xl font-light text-gray-500 border-b-4 border-dashed rounded-lg shadow-lg border-gray-500 text-center">
               No Changes for staging...
             </div>
           )}
