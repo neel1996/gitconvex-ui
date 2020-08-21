@@ -17,6 +17,7 @@ import SwitchBranchComponent from "./RepoDetailBackdrop/SwitchBranchComponent";
 import RepoInfoComponent from "./RepoInfoComponent";
 import RepoLeftPaneComponent from "./RepoLeftPaneComponent";
 import RepoRightPaneComponent from "./RepoRightPaneComponent";
+import LoadingHOC from "../../../../LoadingHOC";
 
 export default function RepositoryDetails(props) {
   library.add(fab, fas);
@@ -32,6 +33,7 @@ export default function RepositoryDetails(props) {
   const [gitRepoFiles, setGitRepoFiles] = useState([]);
   const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [action, setAction] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const closeBackdrop = (toggle) => {
     setBackdropToggle(!toggle);
@@ -98,6 +100,7 @@ export default function RepositoryDetails(props) {
   }, [repoIdState]);
 
   useEffect(() => {
+    setLoading(true);
     const endpointURL = globalAPIEndpoint;
 
     if (props.parentProps.location) {
@@ -139,6 +142,8 @@ export default function RepositoryDetails(props) {
         },
       })
         .then((res) => {
+          setLoading(false);
+
           if (res.data && res.data.data && !res.data.error) {
             const localRepoStatus = res.data.data.gitConvexApi.gitRepoStatus;
             let gitRemoteLocal = localRepoStatus.gitRemoteData;
@@ -158,6 +163,8 @@ export default function RepositoryDetails(props) {
           }
         })
         .catch((err) => {
+          setLoading(false);
+
           if (err) {
             console.log("API GitStatus error occurred : " + err);
             setRepoFetchFailed(true);
@@ -203,6 +210,12 @@ export default function RepositoryDetails(props) {
 
   return (
     <>
+      {loading ? (
+        <LoadingHOC
+          message="Fetching repo details..."
+          loading={loading}
+        ></LoadingHOC>
+      ) : null}
       {showCommitLogs ? (
         <>
           <div
@@ -256,10 +269,9 @@ export default function RepositoryDetails(props) {
           </div>
         </div>
       ) : null}
-      <div className="w-full fixed bg-gray-600 opacity-50"></div>
-      <div className="xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none rp_repo-view w-full h-full p-6 mx-auto rounded-lg justify-evenly">
-        {gitRepoStatus && !repoFetchFailed ? (
-          <>
+      <>
+        {!loading && gitRepoStatus && !repoFetchFailed ? (
+          <div className="xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none rp_repo-view w-full h-full p-6 mx-auto rounded-lg justify-evenly">
             <div className="flex px-3 py-2">
               {gitRepoStatus ? (
                 <RepoInfoComponent
@@ -295,25 +307,16 @@ export default function RepositoryDetails(props) {
               </div>
             </div>
 
-            {gitRepoStatus && repoIdState && gitRepoFiles ? (
+            {!loading && gitRepoStatus && repoIdState && gitRepoFiles ? (
               <FileExplorerComponent
                 repoIdState={repoIdState}
                 gitRepoFiles={gitRepoFiles}
                 gitFileBasedCommits={gitFileBasedCommits}
               ></FileExplorerComponent>
             ) : null}
-          </>
-        ) : (
-          <div className="text-center mx-auto rounded-lg p-3 shadow-md border border-indigo-200 text-indigo-800">
-            Fetching repo details...
-          </div>
-        )}
-        {repoFetchFailed ? (
-          <div className="p-2 text-center mx-auto rounded-lg bg-red-200 text-xl">
-            Repo details fetch failed!
           </div>
         ) : null}
-      </div>
+      </>
     </>
   );
 }
