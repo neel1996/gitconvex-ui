@@ -51,7 +51,7 @@ export default function AddRepoForm(props) {
 
   function storeRepoAPI(repoName, repoPath) {
     if (repoName && repoPath) {
-      if (repoName.match(/[^a-zA-Z0-9-_.]/gi)) {
+      if (repoName.match(/[^a-zA-Z0-9-_.\s]/gi)) {
         setInputInvalid(true);
         setRepoAddFailed(true);
         return;
