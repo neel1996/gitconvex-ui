@@ -85,13 +85,16 @@ export default function RepoComponent(props) {
 
     return (
       <>
-        <div className="w-full mx-auto justify-center flex flex-wrap pb-40">
+        <div className="w-full mx-auto justify-center flex gap-16 flex-wrap pb-40">
           <>
             {repoArray.length > 0 ? (
               <>
                 {repoArray.map((entry) => {
                   return <RepoCard key={entry.id} repoData={entry}></RepoCard>;
                 })}
+                {repoArray.length % 2 !== 0 ? (
+                  <div className="xl:w-1/3 lg:w-2/4 md:w-1/2 block p-6 my-6 text-center"></div>
+                ) : null}
               </>
             ) : (
               <div className="mx-auto w-3/4 rounded-md text-center shadow bg-gray-100 text-gray-800 font-sans p-10 my-10 text-xl">

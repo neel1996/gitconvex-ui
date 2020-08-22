@@ -27,9 +27,9 @@ export default function RightPane(props) {
             return (
               <div
                 key={entry.label}
-                className="my-2 flex mx-auto justify-around items-center align-middle"
+                className="my-2 flex mx-auto gap-10 justify-around items-center align-middle"
               >
-                <div className="w-1/2 rightpane-details__header border-b-2 border-dashed mx-2 font-sans xl:font-bold lg:font-semibold md:font-medium xl:text-2xl lg:text-xl md:text-md">
+                <div className="w-1/2 rightpane-details__header border-b-2 border-dashed text-center font-sans xl:font-bold lg:font-semibold md:font-medium xl:text-2xl lg:text-xl md:text-md">
                   {entry.label}
                 </div>
                 {entry.value !== "" ? (
