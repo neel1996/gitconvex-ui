@@ -169,12 +169,12 @@ export default function RepositoryAction() {
   function activeRepoPane() {
     return (
       <div className="flex justify-around mx-auto align-middle items-around my-4">
-        <div className="flex">
+        <div className="flex items-center">
           <div className="font-sans font-semibold text-gray-900 my-1">
             Choose saved repository
           </div>
           <select
-            className="bg-green-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-green-500"
+            className="p-2 bg-green-100 text-green-700 rounded-lg shadow mx-4 font-sans font-light text-xl outline-none border-dashed border-b-2 border-green-400"
             defaultValue={"checked"}
             onChange={(event) => {
               setSelectedFlag(true);
@@ -201,12 +201,12 @@ export default function RepositoryAction() {
           </select>
         </div>
         {selectedFlag ? (
-          <div className="flex">
+          <div className="flex items-center">
             <div className="font-sans font-semibold text-gray-900 my-1">
               Branch
             </div>
             <select
-              className="bg-indigo-200 text-gray-800 rounded-sm mx-2 outline-none shadow-xs border border-indigo-500"
+              className="p-2 bg-indigo-100 text-indigo-700 rounded-lg shadow mx-4 font-sans font-light text-xl outline-none border-dashed border-b-2 border-indigo-400"
               value={activeBranch}
               disabled={activeBranch ? false : true}
               onChange={(event) => {
