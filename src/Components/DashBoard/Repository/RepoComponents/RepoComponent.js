@@ -92,7 +92,7 @@ export default function RepoComponent(props) {
                 {repoArray.map((entry) => {
                   return <RepoCard key={entry.id} repoData={entry}></RepoCard>;
                 })}
-                {repoArray.length % 2 !== 0 ? (
+                {repoArray.length % 2 !== 0 && repoArray.length !== 1 ? (
                   <div className="xl:w-1/3 lg:w-2/4 md:w-1/2 block p-6 my-6 text-center"></div>
                 ) : null}
               </>
