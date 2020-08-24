@@ -22,7 +22,7 @@ export default function Help() {
         </span>
         <span className="font-mono text-xl mx-2 text-indigo-500 hover:text-indigo-600 hover:font-semibold cursor-pointer">
           <a
-            href="https://github.com/neel1996/gitconvex-package/blob/master/documentation"
+            href="https://github.com/neel1996/gitconvex/blob/master/DOCUMENTATION.md"
             target="_blank"
             rel="noopener noreferrer"
           >
