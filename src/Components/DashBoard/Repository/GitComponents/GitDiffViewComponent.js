@@ -1,16 +1,15 @@
 import axios from "axios";
 import * as Prism from "prismjs";
 import React, { useContext, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { GIT_TRACKED_FILES } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
+import "../../../../prism.css";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_FILE_DIFF,
   ROUTE_REPO_TRACKED_DIFF,
 } from "../../../../util/env_config";
-import "../../../../prism.css";
-
-import { v4 as uuidv4 } from "uuid";
 
 export default function GitDiffViewComponent() {
   const { state, dispatch } = useContext(ContextProvider);
@@ -23,40 +22,12 @@ export default function GitDiffViewComponent() {
   const [fileLineDiffState, setFileLineDiffState] = useState([]);
   const [activeFileName, setActiveFileName] = useState("");
   const [isApiCalled, setIsApiCalled] = useState(false);
-  const [isLangSelected, setIsLangSelected] = useState(false);
   const [warnStatus, setWarnStatus] = useState("");
   const [lang, setLang] = useState("");
-
-  const langEnum = {
-    js: "javascript",
-    java: "java",
-    py: "python",
-    c: "c",
-    cpp: "cpp",
-    go: "go",
-    rust: "rust",
-    ts: "typescript",
-    dart: "dart",
-    php: "php",
-    html: "markup",
-    json: "json",
-    xml: "markup",
-    yaml: "yaml",
-    yml: "yaml",
-    rb: "ruby",
-    jsx: "jsx",
-    kt: "kotlin",
-    ktm: "kotlin",
-    kts: "kotlin",
-    cs: "csharp",
-    vb: "visual-basic",
-    css: "css",
-  };
 
   useEffect(() => {
     let repoId = state.globalRepoId;
 
-    setIsLangSelected(false);
     setActiveFileName("");
     setFileLineDiffState("Click on a file item to see the difference");
     setDiffStatState("Click on a file item to see the difference");
@@ -180,22 +151,8 @@ export default function GitDiffViewComponent() {
     );
   }
 
-  const languageDetector = (fileName) => {
-    const fileType = fileName.split(".")[fileName.split(".").length - 1];
-
-    if (fileType) {
-      setIsLangSelected(true);
-      if (fileType in langEnum) {
-        return langEnum[fileType];
-      } else {
-        return "markup";
-      }
-    }
-  };
-
   function fileDiffStatComponent(repoId, fileName) {
     const apiEndPoint = globalAPIEndpoint;
-    setIsLangSelected(false);
     setWarnStatus("");
 
     const payload = JSON.stringify(
@@ -216,6 +173,7 @@ export default function GitDiffViewComponent() {
               gitFileLineChanges{
                 diffStat
                 fileDiff
+                language
               }
             }
           }
@@ -227,6 +185,7 @@ export default function GitDiffViewComponent() {
           const {
             diffStat,
             fileDiff,
+            language,
           } = res.data.data.gitConvexApi.gitFileLineChanges;
 
           if (diffStat[0] === "NO_STAT" || fileDiff[0] === "NO_DIFF") {
@@ -237,15 +196,23 @@ export default function GitDiffViewComponent() {
             setDiffStatState(diffStat[1]);
             setFileLineDiffState(fileDiff);
 
-            var selectedLang = languageDetector(fileName);
+            if (language) {
+              await import("prismjs/components/prism-" + language + ".js")
+                .then(() => {})
+                .catch((err) => {
+                  console.log(err);
+                });
 
-            await import("prismjs/components/prism-" + selectedLang + ".js")
-              .then(() => {})
-              .catch((err) => {
-                console.log(err);
-              });
+              setLang(language);
+            } else {
+              await import("prismjs/components/prism-markdown.js")
+                .then(() => {})
+                .catch((err) => {
+                  console.log(err);
+                });
 
-            setLang(selectedLang);
+              setLang("markdown");
+            }
           }
         } else {
           setWarnStatus(
@@ -300,7 +267,6 @@ export default function GitDiffViewComponent() {
     if (
       fileLineDiffState &&
       fileLineDiffState.join("").split(/@@.*@@/gi) &&
-      isLangSelected &&
       lang
     ) {
       let partFile = fileLineDiffState
@@ -321,7 +287,7 @@ export default function GitDiffViewComponent() {
               <div className="w-1/8 text-green-500 border-b-2 font-mono mx-1">
                 {++lineCounter}
               </div>
-              <pre className="w-5/6">
+              <pre className="w-5/6 mx-2">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
@@ -341,9 +307,9 @@ export default function GitDiffViewComponent() {
               key={`${line}-${uuidv4()}`}
             >
               <div className="w-1/8 text-red-500 border-b-2 font-mono mx-1">
-                --
+                -
               </div>
-              <pre className="w-5/6">
+              <pre className="w-5/6 mx-2">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
