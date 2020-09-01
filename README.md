@@ -1,7 +1,9 @@
 # gitconvex react project
 This is the front end react source for the [gitconvex](https://github.com/neel1996/gitconvex) project.
 
-![gitconvex-react](https://user-images.githubusercontent.com/47709856/87220396-e72df380-c380-11ea-9b2b-e156402842bb.png)
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/47709856/87220396-e72df380-c380-11ea-9b2b-e156402842bb.png" width="280">
+</p>
 
 ## Dependencies
 
