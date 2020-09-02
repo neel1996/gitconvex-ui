@@ -31,13 +31,7 @@ export default function FileExplorerComponent(props) {
       }
     });
 
-    localGitCommits = localGitCommits.filter((commit) => {
-      if (commit) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    localGitCommits = localGitCommits.filter((commit) => commit);
 
     setGitRepoFiles([...localTrackedFiles]);
     setGitFileBasedCommits([...localGitCommits]);
@@ -222,10 +216,15 @@ export default function FileExplorerComponent(props) {
                     className="font-sans text-xl text-gray-700"
                   ></FontAwesomeIcon>
                 </div>
-                <div className="w-2/4 text-gray-800 text-lg mx-3 font-sans">
+                <div
+                  className="w-2/4 text-gray-800 text-lg mx-3 font-sans hover:text-indigo-400 hover:font-semibold cursor-pointer"
+                  onClick={() => {
+                    props.toggleCodeFileView();
+                  }}
+                >
                   {splitEntry[0]}
                 </div>
-                <div className="w-2/4 p-2 bg-indigo-200 truncate ... text-indigo-900 rounded-lg text-left mx-auto w-3/5">
+                <div className="w-2/4 p-2 bg-indigo-200 truncate text-indigo-900 rounded-lg text-left mx-auto w-3/5">
                   {gitFileBasedCommits[index]
                     ? gitFileBasedCommits[index]
                         .split(" ")

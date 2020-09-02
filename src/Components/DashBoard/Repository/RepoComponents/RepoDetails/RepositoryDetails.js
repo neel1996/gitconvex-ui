@@ -14,6 +14,7 @@ import BranchListComponent from "./RepoDetailBackdrop/BranchListComponent";
 import CommitLogComponent from "./RepoDetailBackdrop/CommitLogComponent";
 import FetchPullActionComponent from "./RepoDetailBackdrop/FetchPullActionComponent";
 import SwitchBranchComponent from "./RepoDetailBackdrop/SwitchBranchComponent";
+import CodeFileViewComponent from "./RepoDetailBackdrop/CodeFileViewComponent";
 import RepoInfoComponent from "./RepoInfoComponent";
 import RepoLeftPaneComponent from "./RepoLeftPaneComponent";
 import RepoRightPaneComponent from "./RepoRightPaneComponent";
@@ -55,6 +56,15 @@ export default function RepositoryDetails(props) {
       </>
     );
   }, [repoIdState]);
+
+  const memoizedCodeFileViewComponent = useMemo(() => {
+    return (
+      <CodeFileViewComponent
+        repoId={repoIdState}
+        fileItem={"package.json"}
+      ></CodeFileViewComponent>
+    );
+  });
 
   const memoizedFetchRemoteComponent = useMemo(() => {
     return (
@@ -203,6 +213,8 @@ export default function RepositoryDetails(props) {
         return memoizedSwitchBranchComponent;
       case "listBranch":
         return memoizedBranchListComponent;
+      case "codeView":
+        return memoizedCodeFileViewComponent;
       default:
         return null;
     }
@@ -312,6 +324,10 @@ export default function RepositoryDetails(props) {
                 repoIdState={repoIdState}
                 gitRepoFiles={gitRepoFiles}
                 gitFileBasedCommits={gitFileBasedCommits}
+                toggleCodeFileView={() => {
+                  setBackdropToggle(true);
+                  setAction("codeView");
+                }}
               ></FileExplorerComponent>
             ) : null}
           </div>
