@@ -29,8 +29,10 @@ export default function RepositoryDetails(props) {
   const [isMultiRemote, setIsMultiRemote] = useState(false);
   const [multiRemoteCount, setMultiRemoteCount] = useState(0);
   const [backdropToggle, setBackdropToggle] = useState(false);
+  const [codeViewToggle, setCodeViewToggle] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [currentBranch, setCurrentBranch] = useState("");
+  const [codeViewItem, setCodeViewItem] = useState("");
   const [gitRepoFiles, setGitRepoFiles] = useState([]);
   const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [action, setAction] = useState("");
@@ -61,7 +63,7 @@ export default function RepositoryDetails(props) {
     return (
       <CodeFileViewComponent
         repoId={repoIdState}
-        fileItem={"package.json"}
+        fileItem={codeViewItem}
       ></CodeFileViewComponent>
     );
   });
@@ -110,6 +112,7 @@ export default function RepositoryDetails(props) {
   }, [repoIdState]);
 
   useEffect(() => {
+    setCodeViewToggle(false);
     setLoading(true);
     const endpointURL = globalAPIEndpoint;
 
@@ -257,7 +260,7 @@ export default function RepositoryDetails(props) {
           </div>
         </>
       ) : null}
-      {backdropToggle ? (
+      {backdropToggle || codeViewToggle ? (
         <div
           className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
           id="repo-backdrop"
@@ -274,6 +277,7 @@ export default function RepositoryDetails(props) {
             className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
               setBackdropToggle(false);
+              setCodeViewToggle(false);
               setAction("");
             }}
           >
@@ -324,10 +328,6 @@ export default function RepositoryDetails(props) {
                 repoIdState={repoIdState}
                 gitRepoFiles={gitRepoFiles}
                 gitFileBasedCommits={gitFileBasedCommits}
-                toggleCodeFileView={() => {
-                  setBackdropToggle(true);
-                  setAction("codeView");
-                }}
               ></FileExplorerComponent>
             ) : null}
           </div>

@@ -3,9 +3,10 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { v4 as uuid } from "uuid";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
+import CodeFileViewComponent from "./RepoDetailBackdrop/CodeFileViewComponent";
 import {
   GIT_FOLDER_CONTENT,
   globalAPIEndpoint,
@@ -15,10 +16,22 @@ export default function FileExplorerComponent(props) {
   library.add(fab, fas);
 
   const [gitRepoFiles, setGitRepoFiles] = useState([]);
+  const [codeViewToggle, setCodeViewToggle] = useState(false);
   const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [directoryNavigator, setDirectoryNavigator] = useState([]);
+  const [codeViewItem, setCodeViewItem] = useState("");
+  const [cwd, setCwd] = useState("");
 
   const { repoIdState } = props;
+
+  const memoizedCodeFileViewComponent = useMemo(() => {
+    return (
+      <CodeFileViewComponent
+        repoId={repoIdState}
+        fileItem={codeViewItem}
+      ></CodeFileViewComponent>
+    );
+  });
 
   function filterNullCommitEntries(gitTrackedFiles, gitFileBasedCommit) {
     let localGitCommits = gitFileBasedCommit;
@@ -76,6 +89,8 @@ export default function FileExplorerComponent(props) {
           directoryName = slicedDirectory.join("/") + "/" + directoryName;
         }
       }
+
+      setCwd(directoryName);
 
       const payload = JSON.stringify(
         JSON.stringify({ repoId: repoIdState, directoryName })
@@ -219,7 +234,8 @@ export default function FileExplorerComponent(props) {
                 <div
                   className="w-2/4 text-gray-800 text-lg mx-3 font-sans hover:text-indigo-400 hover:font-semibold cursor-pointer"
                   onClick={() => {
-                    props.toggleCodeFileView();
+                    setCodeViewItem(cwd + "/" + splitEntry[0]);
+                    setCodeViewToggle(true);
                   }}
                 >
                   {splitEntry[0]}
@@ -284,57 +300,87 @@ export default function FileExplorerComponent(props) {
   };
 
   return (
-    <div>
-      {directoryNavigator &&
-      gitRepoFiles &&
-      gitRepoFiles[0] !== "NO_TRACKED_FILES" ? (
-        <div className="mx-6 p-3 font-sans flex gap-4 items-center justify-start">
+    <>
+      {codeViewToggle ? (
+        <div
+          className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
+          id="code-view__backdrop"
+          style={{ background: "rgba(0,0,0,0.5)", zIndex: 99 }}
+          onClick={(event) => {
+            if (event.target.id === "code-view__backdrop") {
+              setCodeViewToggle(false);
+            }
+          }}
+        >
           <div
-            className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl hover:text-black hover:border-black hover:scale-110 transition duration-500 ease-in-out"
+            className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
-              fetchFolderContent("", 0, false, true);
+              setCodeViewToggle(false);
             }}
           >
-            <div>
-              <FontAwesomeIcon icon={["fas", "home"]}></FontAwesomeIcon>
-            </div>
-            <div>Home</div>
-            <div className="text-2xl font-sans text-blue-400">./</div>
+            X
           </div>
+
           <div
-            className="flex p-4 gap-4 items-center w-3/4 break-words overflow-x-auto"
-            id="repoFolderNavigator"
+            id="commit-log__cards"
+            className="w-full xl:w-3/4 lg:w-5/6 md:w-11/12 sm:w-11/12 h-full block mx-auto my-auto mt-10 mb-10"
           >
-            {directoryNavigator.map((item, index) => {
-              return (
-                <div
-                  className="flex gap-2 justify-start items-center"
-                  key={item + "-" + index}
-                >
-                  <div
-                    className={`${
-                      index !== directoryNavigator.length - 1
-                        ? "text-blue-600 font-semibold hover:underline hover:text-blue-700 cursor-pointer"
-                        : ""
-                    } text-xl`}
-                    onClick={() => {
-                      if (index !== directoryNavigator.length - 1) {
-                        fetchFolderContent(item, index, true);
-                      }
-                    }}
-                  >
-                    {item}
-                  </div>
-                  <div>/</div>
-                </div>
-              );
-            })}
+            {memoizedCodeFileViewComponent}
           </div>
         </div>
       ) : null}
-      <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-white p-2 shadow-md overflow-auto border">
-        {gitTrackedFileComponent()}
+      <div>
+        {directoryNavigator &&
+        gitRepoFiles &&
+        gitRepoFiles[0] !== "NO_TRACKED_FILES" ? (
+          <div className="mx-6 p-3 font-sans flex gap-4 items-center justify-start">
+            <div
+              className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl hover:text-black hover:border-black hover:scale-110 transition duration-500 ease-in-out"
+              onClick={() => {
+                fetchFolderContent("", 0, false, true);
+              }}
+            >
+              <div>
+                <FontAwesomeIcon icon={["fas", "home"]}></FontAwesomeIcon>
+              </div>
+              <div>Home</div>
+              <div className="text-2xl font-sans text-blue-400">./</div>
+            </div>
+            <div
+              className="flex p-4 gap-4 items-center w-3/4 break-words overflow-x-auto"
+              id="repoFolderNavigator"
+            >
+              {directoryNavigator.map((item, index) => {
+                return (
+                  <div
+                    className="flex gap-2 justify-start items-center"
+                    key={item + "-" + index}
+                  >
+                    <div
+                      className={`${
+                        index !== directoryNavigator.length - 1
+                          ? "text-blue-600 font-semibold hover:underline hover:text-blue-700 cursor-pointer"
+                          : ""
+                      } text-xl`}
+                      onClick={() => {
+                        if (index !== directoryNavigator.length - 1) {
+                          fetchFolderContent(item, index, true);
+                        }
+                      }}
+                    >
+                      {item}
+                    </div>
+                    <div>/</div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
+        <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-white p-2 shadow-md overflow-auto border">
+          {gitTrackedFileComponent()}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

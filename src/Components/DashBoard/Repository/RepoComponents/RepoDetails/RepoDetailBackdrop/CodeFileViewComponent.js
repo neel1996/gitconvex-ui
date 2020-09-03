@@ -66,8 +66,8 @@ export default function CodeFileViewComponent(props) {
   }, []);
 
   return (
-    <div className="p-6 rounded-md shadow-sm block justify-center mx-auto my-auto w-3/4 h-full text-center text-2xl text-indigo-500">
-      <div className="my-4 mx-auto w-11/12 rounded shadow border-gray-100">
+    <div className="p-6 rounded-md shadow-sm block justify-center mx-auto my-auto w-11/12 h-full text-center text-2xl text-indigo-500">
+      <div className="my-4 mx-auto w-11/12 rounded shadow border-gray-100 bg-white">
         <div>Language</div>
         <div>{language}</div>
       </div>
