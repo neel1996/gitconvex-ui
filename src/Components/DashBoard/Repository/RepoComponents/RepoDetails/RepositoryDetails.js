@@ -7,6 +7,7 @@ import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
 } from "../../../../../util/env_config";
+import LoadingHOC from "../../../../LoadingHOC";
 import FileExplorerComponent from "./FileExplorerComponent";
 import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
 import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
@@ -14,11 +15,9 @@ import BranchListComponent from "./RepoDetailBackdrop/BranchListComponent";
 import CommitLogComponent from "./RepoDetailBackdrop/CommitLogComponent";
 import FetchPullActionComponent from "./RepoDetailBackdrop/FetchPullActionComponent";
 import SwitchBranchComponent from "./RepoDetailBackdrop/SwitchBranchComponent";
-import CodeFileViewComponent from "./RepoDetailBackdrop/CodeFileViewComponent";
 import RepoInfoComponent from "./RepoInfoComponent";
 import RepoLeftPaneComponent from "./RepoLeftPaneComponent";
 import RepoRightPaneComponent from "./RepoRightPaneComponent";
-import LoadingHOC from "../../../../LoadingHOC";
 
 export default function RepositoryDetails(props) {
   library.add(fab, fas);
@@ -32,7 +31,6 @@ export default function RepositoryDetails(props) {
   const [codeViewToggle, setCodeViewToggle] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [currentBranch, setCurrentBranch] = useState("");
-  const [codeViewItem, setCodeViewItem] = useState("");
   const [gitRepoFiles, setGitRepoFiles] = useState([]);
   const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [action, setAction] = useState("");
@@ -58,15 +56,6 @@ export default function RepositoryDetails(props) {
       </>
     );
   }, [repoIdState]);
-
-  const memoizedCodeFileViewComponent = useMemo(() => {
-    return (
-      <CodeFileViewComponent
-        repoId={repoIdState}
-        fileItem={codeViewItem}
-      ></CodeFileViewComponent>
-    );
-  });
 
   const memoizedFetchRemoteComponent = useMemo(() => {
     return (
@@ -216,8 +205,6 @@ export default function RepositoryDetails(props) {
         return memoizedSwitchBranchComponent;
       case "listBranch":
         return memoizedBranchListComponent;
-      case "codeView":
-        return memoizedCodeFileViewComponent;
       default:
         return null;
     }

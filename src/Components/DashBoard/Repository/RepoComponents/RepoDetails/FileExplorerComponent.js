@@ -31,7 +31,7 @@ export default function FileExplorerComponent(props) {
         fileItem={codeViewItem}
       ></CodeFileViewComponent>
     );
-  });
+  }, [repoIdState, codeViewItem]);
 
   function filterNullCommitEntries(gitTrackedFiles, gitFileBasedCommit) {
     let localGitCommits = gitFileBasedCommit;
@@ -322,8 +322,8 @@ export default function FileExplorerComponent(props) {
           </div>
 
           <div
-            id="commit-log__cards"
-            className="w-full xl:w-3/4 lg:w-5/6 md:w-11/12 sm:w-11/12 h-full block mx-auto my-auto mt-10 mb-10"
+            id="code-view-area"
+            className="w-full h-full block mx-auto my-auto mt-4 mb-10"
           >
             {memoizedCodeFileViewComponent}
           </div>
