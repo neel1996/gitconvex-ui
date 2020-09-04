@@ -13,7 +13,8 @@ export default function CodeFileViewComponent(props) {
   const [numberOfLines, setNumberOfLines] = useState(0);
   const [latestCommit, setLatestCommit] = useState("");
   const [prismIndicator, setPrismIndicator] = useState("");
-  const [fileData, setFileData] = useState([]);
+  const [highlightedCode, setHighlightedCode] = useState([]);
+  const [fileDataState, setFileDataState] = useState([]);
 
   const repoId = props.repoId;
   const fileItem = props.fileItem;
@@ -58,12 +59,16 @@ export default function CodeFileViewComponent(props) {
           setLanguageState(language);
           setLatestCommit(fileCommit);
           setNumberOfLines(fileData.length);
-          setFileData(fileData);
+          setFileDataState(fileData);
 
           if (prism) {
             await import("prismjs/components/prism-" + prism + ".js")
               .then(() => {
                 setPrismIndicator(prism);
+                const codeHighlight = fileData.map((line) => {
+                  return Prism.highlight(line, Prism.languages[prism], prism);
+                });
+                setHighlightedCode([...codeHighlight]);
               })
               .catch((err) => {
                 console.log(err);
@@ -99,7 +104,7 @@ export default function CodeFileViewComponent(props) {
 
   return (
     <div className="p-6 rounded-md shadow-sm flex justify-center mx-auto my-auto mb-6 w-full h-full">
-      <div className="my-auto mx-auto mb-10 w-11/12 p-6 rounded shadow border-gray-100 bg-white">
+      <div className="mx-auto mb-10 w-11/12 h-full p-6 rounded shadow border-gray-100 bg-white">
         <div className="flex w-11/12 mx-auto justify-between gap-4">
           {languageState
             ? topPanePills("Language", languageState, "pink")
@@ -114,25 +119,16 @@ export default function CodeFileViewComponent(props) {
           </div>
         ) : null}
 
-        {fileData && prismIndicator ? (
-          <div className="my-6 mx-auto p-4 rounded shadow">
-            {fileData.map(async (line) => {
-              return (
-                <div key={uuidv4()}>
-                  <pre>
-                    <code
-                      dangerouslySetInnerHTML={{
-                        __html: Prism.highlight(
-                          line,
-                          Prism.languages["json"],
-                          "json"
-                        ),
-                      }}
-                    ></code>
-                  </pre>
-                </div>
-              );
-            })}
+        {fileDataState && prismIndicator ? (
+          <div
+            className="my-10 mx-auto p-4 rounded shadow overflow-auto"
+            style={{ height: "500px" }}
+          >
+            <pre>
+              <code
+                dangerouslySetInnerHTML={{ __html: highlightedCode.join("\n") }}
+              ></code>
+            </pre>
           </div>
         ) : null}
       </div>
