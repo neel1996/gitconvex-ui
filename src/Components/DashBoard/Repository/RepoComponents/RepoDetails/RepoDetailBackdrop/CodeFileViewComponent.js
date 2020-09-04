@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import "../../../../../../prism.css";
 import {
   CODE_FILE_VIEW,
-  globalAPIEndpoint
+  globalAPIEndpoint,
 } from "../../../../../../util/env_config";
 
 export default function CodeFileViewComponent(props) {
@@ -56,6 +56,11 @@ export default function CodeFileViewComponent(props) {
             fileData,
             prism,
           } = res.data.data.gitConvexApi.codeFileDetails;
+
+          if (fileData.length === 0) {
+            setIsInvalidFile(true);
+          }
+
           setLanguageState(language);
           setLatestCommit(fileCommit);
           setNumberOfLines(fileData.length);
@@ -102,34 +107,39 @@ export default function CodeFileViewComponent(props) {
     );
   }
 
+  function invalidFileAlert() {
+    return (
+      <div className="w-full mx-auto my-auto p-6 rounded bg-red-200 text-red-600 font-sans text-2xl font-light text-center border-b-8 border-red-400 border-dashed">
+        {languageState ? "File cannot be opened!" : "Loading..."}
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 rounded-md shadow-sm flex justify-center mx-auto my-auto mb-6 w-full h-full">
       {isInvalidFile ? (
-        <div className="w-full mx-auto my-auto p-6 rounded bg-red-200 text-red-600 font-sans text-2xl font-light text-center border-b-8 border-red-400 border-dashed">
-          File cannot be opened!
-        </div>
+        invalidFileAlert()
       ) : (
-        <div className="mx-auto mb-10 w-11/12 h-auto p-6 rounded shadow border-gray-100 bg-white">
-          <div className="flex w-11/12 mx-auto justify-between gap-4">
-            {languageState
-              ? topPanePills("Language", languageState, "pink")
-              : null}
-            {numberOfLines
-              ? topPanePills("Lines", numberOfLines, "orange")
-              : null}
-          </div>
-          {latestCommit ? (
-            <div className="block mx-auto my-6 w-11/12">
-              {topPanePills("Latest Commit", latestCommit, "indigo")}
+        <div className="mx-auto mb-4 w-11/12 h-auto p-6 rounded shadow border-gray-100">
+          <div className="bg-white p-4 rounded-lg shadow block">
+            <div className="flex w-11/12 mx-auto justify-between gap-4">
+              {languageState
+                ? topPanePills("Language", languageState, "pink")
+                : null}
+              {numberOfLines
+                ? topPanePills("Lines", numberOfLines, "orange")
+                : null}
             </div>
-          ) : null}
+            {latestCommit ? (
+              <div className="block mx-auto my-6 w-11/12">
+                {topPanePills("Latest Commit", latestCommit, "indigo")}
+              </div>
+            ) : null}
+          </div>
 
           {fileDataState && prismIndicator ? (
-            <div
-              className="my-10 mx-auto p-4 rounded shadow overflow-auto"
-              style={{ height: "500px" }}
-            >
-              <pre>
+            <div className="mt-10 mb-10 my-auto mx-auto bg-gray-100 mx-auto p-10 rounded shadow overflow-auto">
+              <pre className="px-10 py-10 border rounded overflow-x-auto shadow bg-gray-900 text-gray-300">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: highlightedCode.join("\n"),
