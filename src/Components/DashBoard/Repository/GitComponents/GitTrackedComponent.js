@@ -199,7 +199,6 @@ export default function GitTrackedComponent(props) {
         if (splitEntry) {
           untrackedDir = splitEntry[0] === "NO_DIR" ? "" : splitEntry[0];
           untrackedEntry = untrackedDir + splitEntry[1];
-          console.log(untrackedEntry);
           return untrackedEntry;
         } else {
           return "";

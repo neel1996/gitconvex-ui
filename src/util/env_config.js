@@ -12,7 +12,6 @@ export const CONFIG_HTTP_MODE = "http";
 //API LIST
 
 export const API_GLOBAL_GQL = "gitconvexapi";
-
 export const globalAPIEndpoint = `${CONFIG_HTTP_MODE}://${window.location.hostname}:${PORT_GLOBAL_API}/${API_GLOBAL_GQL}`;
 
 // ROUTED FOR GLOBAL API
@@ -31,3 +30,4 @@ export const ROUTE_SETTINGS_DBPATH = "SETTINGS_DBPATH";
 export const ROUTE_SETTINGS_REPODETAILS = "SETTINGS_REPODETAILS";
 export const ROUTE_SETTINGS_PORT = "SETTINGS_PORT";
 export const GIT_FOLDER_CONTENT = "GIT_FOLDER_CONTENT";
+export const CODE_FILE_VIEW = "CODE_FILE_VIEW";

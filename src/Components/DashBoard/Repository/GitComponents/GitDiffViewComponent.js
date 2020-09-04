@@ -201,17 +201,10 @@ export default function GitDiffViewComponent() {
                 .then(() => {})
                 .catch((err) => {
                   console.log(err);
+                  setLang("markdown");
                 });
 
               setLang(language);
-            } else {
-              await import("prismjs/components/prism-markdown.js")
-                .then(() => {})
-                .catch((err) => {
-                  console.log(err);
-                });
-
-              setLang("markdown");
             }
           }
         } else {
