@@ -1,11 +1,10 @@
 import axios from "axios";
 import * as Prism from "prismjs";
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
 import "../../../../../../prism.css";
 import {
   CODE_FILE_VIEW,
-  globalAPIEndpoint,
+  globalAPIEndpoint
 } from "../../../../../../util/env_config";
 
 export default function CodeFileViewComponent(props) {
@@ -79,7 +78,6 @@ export default function CodeFileViewComponent(props) {
         }
       })
       .catch((err) => {
-        console.log(err);
         setIsInvalidFile(true);
       });
   }, [repoId, fileItem]);
