@@ -92,12 +92,12 @@ export default function CodeFileViewComponent(props) {
     const textColor = `text-${accent}-500`;
 
     return (
-      <div className="flex justify-between gap-8 items-center align-middle">
-        <div className="font-light font-sans text-xl border-b-4 border-dashed text-gray-700">
+      <div className="flex justify-between w-1/2 gap-10 items-center align-middle">
+        <div className="text-center w-1/4 font-light font-sans text-xl border-b-4 border-dashed text-gray-700">
           {label}
         </div>
         <div
-          className={`"rounded p-2 text-center ${bg} ${textColor} ${
+          className={`"w-11/12 mx-auto rounded p-2 text-center ${bg} ${textColor} ${
             content.length > 10 ? "text-sm" : ""
           } font-semibold"`}
         >
@@ -109,8 +109,10 @@ export default function CodeFileViewComponent(props) {
 
   function invalidFileAlert() {
     return (
-      <div className="w-full mx-auto my-auto p-6 rounded bg-red-200 text-red-600 font-sans text-2xl font-light text-center border-b-8 border-red-400 border-dashed">
-        {languageState ? "File cannot be opened!" : "Loading..."}
+      <div className="w-3/4 mx-auto my-auto p-6 rounded bg-red-200 text-red-600 font-sans text-2xl font-light text-center border-b-8 border-red-400 border-dashed">
+        {languageState || isInvalidFile
+          ? "File cannot be opened!"
+          : "Loading..."}
       </div>
     );
   }
@@ -131,15 +133,22 @@ export default function CodeFileViewComponent(props) {
                 : null}
             </div>
             {latestCommit ? (
-              <div className="block mx-auto my-6 w-11/12">
-                {topPanePills("Latest Commit", latestCommit, "indigo")}
+              <div className="block mx-auto my-10 w-11/12">
+                <div className="flex gap-8 items-center align-middle">
+                  <div className="text-center w-1/6 font-light font-sans text-xl border-b-4 border-dashed text-gray-700">
+                    Latest Commit
+                  </div>
+                  <div className="w-full mx-auto rounded p-2 text-center bg-indigo-100 text-indigo-500 text-sm font-semibold">
+                    {latestCommit}
+                  </div>
+                </div>
               </div>
             ) : null}
           </div>
 
           {fileDataState && prismIndicator ? (
             <div className="mt-10 mb-10 my-auto mx-auto bg-gray-100 mx-auto p-10 rounded shadow overflow-auto">
-              <pre className="px-10 py-10 border rounded overflow-x-auto shadow bg-gray-900 text-gray-300">
+              <pre className="px-10 py-10 border rounded overflow-x-auto shadow bg-gray-900 text-gray-300 selection:bg-gray-500">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: highlightedCode.join("\n"),
