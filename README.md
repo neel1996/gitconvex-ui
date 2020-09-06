@@ -55,7 +55,6 @@ After completing the setup process, use `npm start` to start the react app
 ## Project directory tree
 
 ```
-
 ├── LICENSE
 ├── README.md
 ├── package.json
@@ -100,6 +99,7 @@ After completing the setup process, use `npm start` to start the react app
     │   │   │       │   │   ├── AddBranchComponent.js
     │   │   │       │   │   ├── AddRemoteRepoComponent.js
     │   │   │       │   │   ├── BranchListComponent.js
+    │   │   │       │   │   ├── CodeFileViewComponent.js
     │   │   │       │   │   ├── CommitLogComponent.js
     │   │   │       │   │   ├── CommitLogFileCard.js
     │   │   │       │   │   ├── FetchPullActionComponent.js
@@ -110,10 +110,10 @@ After completing the setup process, use `npm start` to start the react app
     │   │   │       │   ├── RepositoryDetails.js
     │   │   │       │   ├── TopPaneGridComponent.js
     │   │   │       │   └── backdropActionType.js
-    │   │   │       ├── RepositoryAction.js
-    │   │   │       └── RepositoryDetails.js
+    │   │   │       └── RepositoryAction.js
     │   │   └── Settings
     │   │       └── Settings.js
+    │   ├── LoadingHOC.js
     │   ├── SplashScreen.css
     │   └── SplashScreen.js
     ├── actionStore.js
