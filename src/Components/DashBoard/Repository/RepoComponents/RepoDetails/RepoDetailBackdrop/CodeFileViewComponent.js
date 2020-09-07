@@ -122,7 +122,7 @@ export default function CodeFileViewComponent(props) {
       {isInvalidFile ? (
         invalidFileAlert()
       ) : (
-        <div className="mx-auto mb-4 w-11/12 h-auto p-6 rounded shadow border-gray-100">
+        <div className="mx-auto mb-4 w-11/12 h-auto p-6">
           <div className="bg-white p-4 rounded-lg shadow block">
             <div className="flex w-11/12 mx-auto justify-between gap-4">
               {languageState
