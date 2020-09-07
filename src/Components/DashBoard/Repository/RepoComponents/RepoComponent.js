@@ -1,16 +1,13 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import InfiniteLoader from "../../../Animations/InfiniteLoader";
-import {
-  PRESENT_REPO,
-  DELETE_PRESENT_REPO,
-  ADD_FORM_CLOSE,
-} from "../../../../actionStore";
+import { ADD_FORM_CLOSE, DELETE_PRESENT_REPO, PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
-  ROUTE_FETCH_REPO,
+  ROUTE_FETCH_REPO
 } from "../../../../util/env_config";
+import InfiniteLoader from "../../../Animations/InfiniteLoader";
+import "../../../styles/RepoComponent.css";
 import AddRepoFormComponent from "./AddRepoForm";
 import RepoCard from "./RepoCard";
 
@@ -85,7 +82,7 @@ export default function RepoComponent(props) {
 
     return (
       <>
-        <div className="w-full mx-auto justify-center flex gap-16 flex-wrap pb-40">
+        <div className="repo-component--wrapper">
           <>
             {repoArray.length > 0 ? (
               <>
@@ -97,10 +94,10 @@ export default function RepoComponent(props) {
                 ) : null}
               </>
             ) : (
-              <div className="mx-auto w-3/4 rounded-md text-center shadow bg-gray-100 text-gray-800 font-sans p-10 my-10 text-xl">
+              <div className="repo-component--loadingview">
                 {loading ? (
-                  <div className="block mx-auto my-6 text-center justify-center">
-                    <div className="flex mx-auto my-6 text-center justify-center">
+                  <div className="block loadingview--content">
+                    <div className="flex loadingview--content">
                       <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
                     </div>
                     <div>Loading available repos...</div>
@@ -112,10 +109,10 @@ export default function RepoComponent(props) {
             )}
           </>
         </div>
-        <div className="fixed bottom-0 right-0 mb-10 mr-16 cursor-pointer block justify-center">
+        <div className="repo-component--addrepo">
           <div
             id="addRepoButton"
-            className="border-8 border-indigo-100 shadow-lg bg-indigo-300 hover:bg-indigo-400 rounded-full h-20 w-20 flex align-middle justify-center text-4xl text-white font-sans font-black"
+            className="addrepo--button"
             onClick={() => {
               setRepoFormEnable(true);
               dispatch({ type: ADD_FORM_CLOSE, payload: false });
@@ -132,7 +129,7 @@ export default function RepoComponent(props) {
             <span>+</span>
             <div
               id="pop-up"
-              className="fixed p-2 hidden rounded bg-white text-gray-700 w-48 text-center font-sans font-medium border border-gray-500 shadow-lg text-sm mx-auto w-1/8"
+              className="addrepo--button--tooltip hidden"
               style={{ marginTop: "-75px", width: "130px" }}
             >
               Click to add a new repo
@@ -148,7 +145,7 @@ export default function RepoComponent(props) {
   };
 
   return (
-    <div className="flex flex-wrap mx-auto justify-center text-center align-middle">
+    <div className="repo-component">
       {!repoFormEnable ? (
         showAvailableRepo()
       ) : (
