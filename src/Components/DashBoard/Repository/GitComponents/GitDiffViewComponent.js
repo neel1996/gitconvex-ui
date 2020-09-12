@@ -277,7 +277,7 @@ export default function GitDiffViewComponent() {
               className="flex items-center gap-4 bg-green-200 w-screen"
               key={`${line}-${uuidv4()}`}
             >
-              <div className="w-10 px-2 text-center box-content text-green-500 font-mono border-r-1 truncate border-r-2">
+              <div className="w-10 px-2 text-center box-content text-green-500 font-mono truncate border-r-2 border-green-500">
                 {++lineCounter}
               </div>
               <pre className="w-5/6 mx-2">
@@ -299,7 +299,7 @@ export default function GitDiffViewComponent() {
               className="flex gap-4 items-center bg-red-200 w-screen"
               key={`${line}-${uuidv4()}`}
             >
-              <div className="w-10 px-2 text-center box-content text-red-500 font-mono border-r-1 truncate border-r-2">
+              <div className="w-10 px-2 text-center box-content text-red-500 font-mono truncate border-r-2 border-red-500">
                 -
               </div>
               <pre className="w-5/6 mx-2">
@@ -322,7 +322,7 @@ export default function GitDiffViewComponent() {
                 className="flex items-center gap-4 bg-white-200 w-screen"
                 key={`${line}-${uuidv4()}`}
               >
-                <div className="w-10 px-2 text-center box-content text-gray-300 font-mono border-r-1 truncate border-r-2">
+                <div className="w-10 px-2 text-center box-content text-gray-300 font-mono truncate border-r-2">
                   {++lineCounter}
                 </div>
                 <pre className="w-5/6">
