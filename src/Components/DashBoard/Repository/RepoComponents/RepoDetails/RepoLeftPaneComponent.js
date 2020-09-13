@@ -64,19 +64,19 @@ export default function RepoLeftPaneComponent(props) {
   return (
     <>
       {props.received ? (
-        <div className="block rounded-md xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
+        <div className="repo-leftpane xl: w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12">
           <div className="block mx-auto my-6">
-            <div className="flex justify-evenly items-center">
+            <div className="repo-leftpane--remote">
               <div className="text-lg text-gray-600 w-1/4">Remote Host</div>
               <div className="flex justify-around items-center align-middle w-1/2">
-                <div className="w-3/4 flex cursor-pointer justify-center p-4 rounded-md shadow-md border border-dashed my-auto items-center align-middle">
+                <div className="repo-leftpane--remote--host">
                   {gitRemoteHost ? (
                     <div className="mx-2">{getRemoteLogo()}</div>
                   ) : null}
                   <div
                     className={`${
                       gitRemoteHost !== "No Remote Host Set" ? "text-xl" : ""
-                    } text-gray-800 border-b border-dashed border-gray-400 w-3/4 text-center`}
+                    } repo-leftpane--remote--name`}
                   >
                     {gitRemoteHost}
                   </div>
@@ -84,10 +84,10 @@ export default function RepoLeftPaneComponent(props) {
                 <div className="w-1/4">
                   <div
                     id="addRemote"
-                    className="rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-indigo-400 text-center mx-auto shadow hover:bg-indigo-500 cursor-pointer"
+                    className="add-btn bg-indigo-400 hover:bg-indigo-500"
                     onMouseEnter={(event) => {
                       let popUp =
-                        '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative" style="margin-left:-40px;">Click to add a new remote repo</div>';
+                        '<div class="tooltip" style="margin-left:-40px;">Click to add a new remote repo</div>';
                       event.target.innerHTML += popUp;
                     }}
                     onMouseLeave={(event) => {
@@ -103,17 +103,15 @@ export default function RepoLeftPaneComponent(props) {
               </div>
             </div>
 
-            <div className="flex justify-evenly my-4">
+            <div className="remote flex-even my-4">
               <div className="text-lg text-gray-600 w-1/4">
                 {`${gitRemoteHost} URL`}
               </div>
-              <div className="text-blue-400 hover:text-blue-500 cursor-pointer w-1/2 break-words">
-                {gitRemoteData}
-              </div>
+              <div className="remote--url">{gitRemoteData}</div>
             </div>
 
             {isMultiRemote ? (
-              <div className="flex justify-evenly my-2">
+              <div className="flex-even my-2">
                 <div className="font-sans text-gray-800 font-semibold w-1/4 border-dotted border-b-2 border-gray-200">
                   Entry truncated!
                 </div>
@@ -124,11 +122,11 @@ export default function RepoLeftPaneComponent(props) {
             ) : null}
           </div>
 
-          <div className="block mx-auto my-6">
-            <div className="flex justify-evenly my-3">
-              <div className="w-1/4 text-md text-gray-600">Commit Logs</div>
+          <div className="commitlogs">
+            <div className="flex-even my-3">
+              <div className="commitlogs--label">Commit Logs</div>
               <div
-                className="w-1/2 rounded-md shadow-md p-3 text-center bg-orange-300 cursor-pointer"
+                className="commitlogs--content"
                 onClick={(event) => {
                   showCommitLogsView();
                 }}

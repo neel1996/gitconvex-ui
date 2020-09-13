@@ -15,18 +15,18 @@ export default function RepoRightPaneComponent(props) {
   return (
     <>
       {props.received ? (
-        <div className="block rounded-md xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 shadow-sm border-2 border-dotted border-gray-400 p-1 my-6 mx-auto">
+        <div className="repo-rightpane xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 ">
           <div className="block mx-auto my-2">
             <div className="flex justify-around my-3">
               <div className="text-lg text-gray-500 w-1/4">Total Commits</div>
-              <div className="text-left text-md text-bold text-black-800 w-1/2">
+              <div className="total-commits">
                 {`${gitTotalCommits} Commits`}
               </div>
             </div>
 
             <div className="flex justify-around my-3">
               <div className="text-lg text-gray-500 w-1/4">Latest Commit</div>
-              <div className="text-left text-sm text-bold text-black-900 w-1/2 truncate ...">
+              <div className="latest-commit" title={gitLatestCommit}>
                 {gitLatestCommit}
               </div>
             </div>
@@ -36,7 +36,7 @@ export default function RepoRightPaneComponent(props) {
                 Available Branches
               </div>
 
-              <div className="w-1/2 flex justify-evenly align-middle items-center">
+              <div className="branch-list">
                 <div className="w-3/4 my-auto">
                   {gitBranchList &&
                     gitCurrentBranch &&
@@ -46,14 +46,14 @@ export default function RepoRightPaneComponent(props) {
                         if (entry) {
                           return entry === gitCurrentBranch ? (
                             <div
-                              className="text-lg font-semibold text-indigo-500 my-1 border-b border-dotted cursor-pointer hover:border-dashed hover:text-indigo-600"
+                              className="branch-list--current"
                               key={`${entry}-${uuid()}`}
                             >
                               {entry}
                             </div>
                           ) : (
                             <div
-                              className="text-md my-1 font-sans font-semibold my-2 border-b border-dotted cursor-pointer hover:border-dashed hover:text-indigo-400"
+                              className="branch-list--branches"
                               key={`entry-key-${uuid()}`}
                               onClick={() => {
                                 switchBranchHandler(entry);
@@ -73,7 +73,7 @@ export default function RepoRightPaneComponent(props) {
                         return false;
                       })}
                   <div
-                    className="border-b border-dashed font-sans text-blue-500 cursor-pointer hover:text-blue-800 my-2 text-center my-auto"
+                    className="branch-list__listbranch"
                     onClick={() => {
                       actionTrigger(actionType.LIST_BRANCH);
                     }}
@@ -86,7 +86,7 @@ export default function RepoRightPaneComponent(props) {
                   className="rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-green-400 text-center mx-auto shadow hover:bg-green-500 cursor-pointer"
                   onMouseEnter={(event) => {
                     let popUp =
-                      '<div class="p-2 rounded bg-white text-gray-700 w-32 text-center border border-gray-300 text-sm my-2 relative" style="margin-left:-40px;">Click to add a new branch</div>';
+                      '<div class="tooltip" style="margin-left:-40px;">Click to add a new branch</div>';
                     event.target.innerHTML += popUp;
                   }}
                   onMouseLeave={(event) => {
