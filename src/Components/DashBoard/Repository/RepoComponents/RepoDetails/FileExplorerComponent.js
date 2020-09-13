@@ -11,6 +11,7 @@ import {
   GIT_FOLDER_CONTENT,
   globalAPIEndpoint,
 } from "../../../../../util/env_config";
+import "../../../../styles/FileExplorer.css";
 
 export default function FileExplorerComponent(props) {
   library.add(fab, fas);
@@ -186,7 +187,7 @@ export default function FileExplorerComponent(props) {
 
           directoryEntry.push(
             <div
-              className="block w-full p-2 border-b border-gray-300"
+              className="folder-view--content"
               key={`directory-key-${uuid()}`}
             >
               <div className="flex cursor-pointer">
@@ -197,7 +198,7 @@ export default function FileExplorerComponent(props) {
                   ></FontAwesomeIcon>
                 </div>
                 <div
-                  className="w-2/4 text-gray-800 text-lg mx-3 font-sans hover:text-indigo-400 hover:font-semibold"
+                  className="folder-view--content--path"
                   onClick={(event) => {
                     fetchFolderContent(splitEntry[0], 0, false);
                   }}
@@ -205,7 +206,7 @@ export default function FileExplorerComponent(props) {
                   {directorypath}
                 </div>
 
-                <div className="w-2/4 p-2 bg-green-200 text-green-900 truncate rounded-lg text-left mx-auto w-3/5">
+                <div className="folder-view--content--commit bg-green-200 text-green-900">
                   {gitFileBasedCommits[index]
                     ? gitFileBasedCommits[index]
                         .split(" ")
@@ -220,10 +221,7 @@ export default function FileExplorerComponent(props) {
           );
         } else if (splitEntry[1].includes("File")) {
           fileEntry.push(
-            <div
-              className="block w-full p-2 border-b border-gray-300"
-              key={`file-key-${uuid()}`}
-            >
+            <div className="folder-view--content" key={`file-key-${uuid()}`}>
               <div className="flex">
                 <div className="w-1/6">
                   <FontAwesomeIcon
@@ -232,7 +230,7 @@ export default function FileExplorerComponent(props) {
                   ></FontAwesomeIcon>
                 </div>
                 <div
-                  className="w-2/4 text-gray-800 text-lg mx-3 font-sans hover:text-indigo-400 hover:font-semibold cursor-pointer"
+                  className="folder-view--content--path"
                   onClick={() => {
                     setCodeViewItem(cwd + "/" + splitEntry[0]);
                     setCodeViewToggle(true);
@@ -240,7 +238,7 @@ export default function FileExplorerComponent(props) {
                 >
                   {splitEntry[0]}
                 </div>
-                <div className="w-2/4 p-2 bg-indigo-200 truncate text-indigo-900 rounded-lg text-left mx-auto w-3/5">
+                <div className="folder-view--content--commit bg-indigo-200 text-indigo-900">
                   {gitFileBasedCommits[index]
                     ? gitFileBasedCommits[index]
                         .split(" ")
@@ -260,11 +258,8 @@ export default function FileExplorerComponent(props) {
       formattedFiles.push(fileEntry);
 
       return (
-        <div
-          className="block mx-auto justify-center p-2 text-blue-600 hover:text-blue-700"
-          key="repo-key"
-        >
-          <div className="flex justify-around w-full p-2 mx-auto pb-6 border-b border-blue-400">
+        <div className="folder-view--tracked--entries" key="repo-key">
+          <div className="tracked--entries--header">
             <div className="w-1/6"></div>
             <div className="w-2/4">File / Directory</div>
             <div className="w-2/4">Latest commit</div>
@@ -274,7 +269,7 @@ export default function FileExplorerComponent(props) {
       );
     } else if (gitRepoFiles && gitRepoFiles[0] === "NO_TRACKED_FILES") {
       return (
-        <div className="flex gap-4 w-3/4 mx-auto items-center justify-center rounded-lg text-gray-600 text-2xl text-center border-b-4 border-dashed border-gray-400 p-1">
+        <div className="folder-view--nofiles">
           <div>
             <FontAwesomeIcon icon={["fas", "unlink"]}></FontAwesomeIcon>
           </div>
@@ -284,8 +279,8 @@ export default function FileExplorerComponent(props) {
     } else {
       return (
         <>
-          <div className="flex justify-center mx-auto my-2 w-3/4">
-            <div className="w-full mx-auto text-2xl text-center font-sans font-semibold text-gray-800 border-b-2 border-dashed border-gray-500 p-1">
+          <div className="folder-view--loader">
+            <div className="folder-view--loader--label">
               Loading tracked files...
             </div>
           </div>
@@ -303,7 +298,7 @@ export default function FileExplorerComponent(props) {
     <>
       {codeViewToggle ? (
         <div
-          className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
+          className="code-view"
           id="code-view__backdrop"
           style={{ background: "rgba(0,0,0,0.5)", zIndex: 99 }}
           onClick={(event) => {
@@ -313,7 +308,7 @@ export default function FileExplorerComponent(props) {
           }}
         >
           <div
-            className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="close-btn-round"
             onClick={() => {
               setCodeViewToggle(false);
             }}
@@ -321,21 +316,16 @@ export default function FileExplorerComponent(props) {
             X
           </div>
 
-          <div
-            id="code-view-area"
-            className="w-full h-full block mx-auto my-auto mt-4 mb-10"
-          >
-            {memoizedCodeFileViewComponent}
-          </div>
+          <div className="code-view-area">{memoizedCodeFileViewComponent}</div>
         </div>
       ) : null}
       <div>
         {directoryNavigator &&
         gitRepoFiles &&
         gitRepoFiles[0] !== "NO_TRACKED_FILES" ? (
-          <div className="mx-6 p-3 font-sans flex gap-4 items-center justify-start">
+          <div className="folder-view">
             <div
-              className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl hover:text-black hover:border-black hover:scale-110 transition duration-500 ease-in-out"
+              className="folder-view--homebtn"
               onClick={() => {
                 fetchFolderContent("", 0, false, true);
               }}
@@ -346,20 +336,17 @@ export default function FileExplorerComponent(props) {
               <div>Home</div>
               <div className="text-2xl font-sans text-blue-400">./</div>
             </div>
-            <div
-              className="flex p-4 gap-4 items-center w-3/4 break-words overflow-x-auto"
-              id="repoFolderNavigator"
-            >
+            <div className="folder-view--navigator" id="repoFolderNavigator">
               {directoryNavigator.map((item, index) => {
                 return (
                   <div
-                    className="flex gap-2 justify-start items-center"
+                    className="folder-view--navigator--label"
                     key={item + "-" + index}
                   >
                     <div
                       className={`${
                         index !== directoryNavigator.length - 1
-                          ? "text-blue-600 font-semibold hover:underline hover:text-blue-700 cursor-pointer"
+                          ? "folder-view--navigator--label__active"
                           : ""
                       } text-xl`}
                       onClick={() => {
@@ -377,7 +364,7 @@ export default function FileExplorerComponent(props) {
             </div>
           </div>
         ) : null}
-        <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-white p-2 shadow-md overflow-auto border">
+        <div className="folder-view--tracked-content">
           {gitTrackedFileComponent()}
         </div>
       </div>
