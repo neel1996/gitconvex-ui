@@ -4,15 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import {
-  GIT_TRACKED_FILES,
   GIT_ACTION_TRACKED_FILES,
   GIT_ACTION_UNTRACKED_FILES,
+  GIT_TRACKED_FILES,
 } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_TRACKED_DIFF,
 } from "../../../../util/env_config";
+import "../../../styles/GitTrackedComponent.css";
 import GitDiffViewComponent from "./GitDiffViewComponent";
 import GitOperationComponent from "./GitOperation/GitOperationComponent";
 
@@ -138,26 +139,22 @@ export default function GitTrackedComponent(props) {
           case "M":
             styleSelector += "text-yellow-900 bg-yellow-200";
             modifiedArtifacts.push(
-              <div className="flex mx-auto justify-between" key={name}>
+              <div className="git-tracked--changes" key={name}>
                 <div className={`${styleSelector} w-11/12 break-all`}>
                   {name}
                 </div>
-                <div className="rounded-lg shadow-sm border border-gray-300 p-2 text-center w-1/6 my-auto">
-                  Modified
-                </div>
+                <div className="git-tracked--changes--status">Modified</div>
               </div>
             );
             break;
           case "D":
             styleSelector += "text-red-900 bg-red-200";
             deletedArtifacts.push(
-              <div className="flex mx-auto justify-between" key={name}>
+              <div className="git-tracked--changes" key={name}>
                 <div className={`${styleSelector} w-11/12 break-all`}>
                   {name}
                 </div>
-                <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 my-auto">
-                  Deleted
-                </div>
+                <div className="git-tracked--changes--status">Deleted</div>
               </div>
             );
             break;
@@ -213,13 +210,9 @@ export default function GitTrackedComponent(props) {
 
     return untrackedFiles.map((entry, index) => {
       return (
-        <div className="flex" key={`${entry}-${index}`}>
-          <div className="bg-indigo-100 text-indigo-800 flex p-2 block w-11/12 break-all">
-            {entry}
-          </div>
-          <div className="rounded-sm shadow-sm border border-gray-300 p-2 text-center w-1/6 text-sm my-auto">
-            New / Untracked
-          </div>
+        <div className="flex git-tracked--untracked" key={`${entry}-${index}`}>
+          <div className="git-tracked--untracked--label">{entry}</div>
+          <div className="git-tracked--untracked--status">New / Untracked</div>
         </div>
       );
     });
@@ -234,7 +227,7 @@ export default function GitTrackedComponent(props) {
       case FILE_VIEW:
         if (!noChangeMarker) {
           return (
-            <div className="shadow-sm rounded-sm my-2 block justify-center mx-auto border border-gray-300">
+            <div className="git-tracked--diff">
               {gitDiffFilesState ? (
                 diffPane()
               ) : (
@@ -265,10 +258,9 @@ export default function GitTrackedComponent(props) {
   function presentChangeComponent() {
     return (
       <>
-        <div className="flex my-4 mx-auto w-11/12 justify-around font-sans font-semibold rounded-sm shadow-md cursor-pointer">
+        <div className="git-tracked--topmenu">
           {topMenuItems.map((item) => {
-            let styleSelector =
-              "w-full py-3 px-1 text-center border-r border-blue-400 ";
+            let styleSelector = "git-tracked--menu-default ";
             if (item === topMenuItemState) {
               styleSelector +=
                 "bg-blue-100 text-blue-800 border-b border-blue-700";
@@ -277,7 +269,7 @@ export default function GitTrackedComponent(props) {
             }
             return (
               <div
-                className={`w-full py-3 px-1 text-center border-r border-blue-400 hover:bg-blue-200 hover:text-blue-900 ${styleSelector}`}
+                className={`git-tracked--menu-default ${styleSelector}`}
                 key={item}
                 onClick={(event) => {
                   setTopMenuItemState(item);
@@ -296,28 +288,24 @@ export default function GitTrackedComponent(props) {
     <>
       {noChangeMarker ? (
         <>
-          <div className="w-11/12 block mx-auto my-6">
-            {memoizedGitOperationView}
-          </div>
-          <div className="mt-10 w-11/12 rounded-sm shadow-sm h-full my-auto bock mx-auto text-center align-middle p-6 bg-pink-200 text-xl text-pink-600">
+          <div className="git-tracked--wrapper">{memoizedGitOperationView}</div>
+          <div className="git-tracked--nochange">
             No changes found in the selected git repo
           </div>
-          <div className="p-6 rounded-lg border-2 border-gray-100 w-3/4 block mx-auto my-20">
+          <div className="git-tracked--alert">
             <div>
               <FontAwesomeIcon
                 icon={["fab", "creative-commons-zero"]}
-                className="flex text-6xl mt-20 text-center text-gray-300 font-bold mx-auto my-auto h-full w-full"
+                className="git-tracked--alert--icon"
               ></FontAwesomeIcon>
             </div>
-            <div className="block text-6xl text-gray-200 mx-auto text-center align-middle">
-              "0" changes in repo
-            </div>
+            <div className="git-tracked--alert--msg">"0" changes in repo</div>
           </div>
         </>
       ) : (
         <>
           {presentChangeComponent()}
-          <div className="w-11/12 block mx-auto my-6"> {menuComponent()} </div>
+          <div className="git-tracked--wrapper"> {menuComponent()} </div>
         </>
       )}
     </>
