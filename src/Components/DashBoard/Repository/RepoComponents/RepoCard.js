@@ -10,6 +10,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "../../../styles/RepoCard.css";
 
 export default function RepoCard(props) {
   library.add(fab, fas);
@@ -78,16 +79,12 @@ export default function RepoCard(props) {
   return (
     <NavLink
       to={`/dashboard/repository/${repoData.id}`}
-      className="xl:w-1/3 lg:w-2/4 md:w-1/2 block p-6 rounded-lg border border-gray-300 shadow-md my-6 text-center bg-indigo-500 cursor-pointer hover:shadow-xl"
+      className="xl:w-1/3 lg:w-2/4 md:w-1/2 repo-card"
       key={repoData.repoName}
     >
-      <div className="text-center bg-indigo-300 text-white text-5xl my-2 px-10 py-5 rounded shadow">
-        {avatar}
-      </div>
-      <div className="my-4 font-sans text-2xl text-white border-dashed border-b-2 pb-2 border-indigo-300">
-        {repoData.repoName}
-      </div>
-      <div className="w-full flex justify-center mx-auto my-2 text-center rounded-md shadow-sm align-middle">
+      <div className="repo-card--avatar">{avatar}</div>
+      <div className="repo-card--name">{repoData.repoName}</div>
+      <div className="repo-card--footer">
         {loading || !repoFooterData ? (
           <div className="block mx-auto w-full bg-white rounded">
             <div className="flex mx-auto my-6 text-center justify-center">
@@ -98,12 +95,12 @@ export default function RepoCard(props) {
           </div>
         ) : (
           <>
-            <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-l-md my-2 items-center">
+            <div className="footer--items rounded-l-md">
               <FontAwesomeIcon
                 className="my-auto"
                 icon={["fas", "grip-lines"]}
               ></FontAwesomeIcon>
-              <div className="mx-2 text-sm text-center font-sans text-center">
+              <div className="footer--items--label">
                 {repoFooterData ? (
                   <>{repoFooterData.gitTotalCommits} Commits</>
                 ) : (
@@ -111,12 +108,12 @@ export default function RepoCard(props) {
                 )}
               </div>
             </div>
-            <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 my-2 items-center">
+            <div className="footer--items">
               <FontAwesomeIcon
                 className="my-auto"
                 icon={["fas", "file-alt"]}
               ></FontAwesomeIcon>
-              <div className="mx-2 text-sm text-center font-sans text-center">
+              <div className="footer--items--label">
                 {repoFooterData ? (
                   <>{repoFooterData.gitTotalTrackedFiles} Tracked Files</>
                 ) : (
@@ -124,12 +121,12 @@ export default function RepoCard(props) {
                 )}
               </div>
             </div>
-            <div className="w-1/2 flex p-2 bg-white shadow-lg border-indigo-300 rounded-r-md my-2 items-center">
+            <div className="footer--items rounded-r-md">
               <FontAwesomeIcon
                 className="my-auto"
                 icon={["fas", "code-branch"]}
               ></FontAwesomeIcon>
-              <div className="mx-2  text-sm text-center font-sans text-center font-semibold my-auto items-center">
+              <div className="footer--items--label font-semibold">
                 {repoFooterData ? (
                   <>{repoFooterData.gitCurrentBranch}</>
                 ) : (

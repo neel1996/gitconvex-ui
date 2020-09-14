@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_GIT_STAGED_FILES,
 } from "../../../../../util/env_config";
+import "../../../../styles/GitOperations.css";
 
 export default function CommitComponent(props) {
   const { repoId } = props;
@@ -104,15 +105,15 @@ export default function CommitComponent(props) {
       return (
         <>
           {!commitDone ? (
-            <div className="p-3 mx-auto w-5/6 block justify-center">
-              <div className="text-2xl my-2 font-sans font-semibold">
+            <div className="git-ops--commit--wrapper">
+              <div className="git-ops--commit--header">
                 {stagedCount} Changes to commit...
               </div>
               <div className="overflow-auto" style={{ height: "300px" }}>
                 {stagedFilesState.map((stagedFile) => {
                   return (
                     <div
-                      className="m-1 mx-auto w-11/12 break-all border-b text-left font-sans text-gray-700"
+                      className="git-ops--commit--stagedfiles"
                       key={stagedFile}
                     >
                       {stagedFile}
@@ -122,24 +123,24 @@ export default function CommitComponent(props) {
               </div>
               <div className="text-xl my-4">Commit Message</div>
               <textarea
-                className="p-2 rounded-md shadow-md text-gray-900 font-sans w-full outline-none"
+                className="git-ops--commit--message"
                 placeholder="Enter commit message"
                 cols="20"
                 rows="5"
                 ref={commitRef}
               ></textarea>
               {commitError ? (
-                <div className="my-2 mx-auto text-center p-2 rounded shadow bg-red-200 border-red-400 text-red-800">
+                <div className="git-ops--commit--alert--failed">
                   Commit Failed!
                 </div>
               ) : null}
               {loadingCommit ? (
-                <div className="my-4 p-2 text-center mx-auto text-xl bg-gray-400 hover:bg-gray-700 rounded shadow w-full cursor-pointer text-white">
+                <div className="git-ops--commit--alert--progress">
                   Committing Changes...
                 </div>
               ) : (
                 <div
-                  className="my-4 p-2 text-center mx-auto text-xl bg-green-400 hover:bg-green-700 rounded shadow w-full cursor-pointer text-white"
+                  className="git-ops--commit--btn"
                   onClick={(event) => {
                     const commitMsg = commitRef.current.value;
 
@@ -155,8 +156,8 @@ export default function CommitComponent(props) {
               )}
             </div>
           ) : (
-            <div className="mx-auto my-2 p-3 bg-green-200 text-green-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-green-300">
-              All changes are committed!
+            <div className="git-ops--commit--alert--success">
+              All changes have been committed!
             </div>
           )}
         </>
@@ -165,11 +166,11 @@ export default function CommitComponent(props) {
   }
 
   return (
-    <div className="w-3/4 mx-auto my-auto bg-gray-200 p-6 rounded-md">
+    <div className="git-ops--commit">
       {stagedFilesState && stagedFilesState.length > 0 ? (
         commitComponent()
       ) : (
-        <div className="bg-orange-200 border-b-4 border-orange-400 border-dashed rounded-lg shadow-md p-6 text-3xl font-sans text-center font-light text-orange-700">
+        <div className="git-ops--commit--alert">
           {loading ? (
             <span>Loading staged files to commit...</span>
           ) : stagedFilesState.length === 0 ? (

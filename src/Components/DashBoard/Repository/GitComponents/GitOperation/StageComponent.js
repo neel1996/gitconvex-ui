@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { globalAPIEndpoint } from "../../../../../util/env_config";
+import "../../../../styles/GitOperations.css";
 
 export default function StageComponent(props) {
   const { stageComponents, repoId } = props;
@@ -45,21 +46,18 @@ export default function StageComponent(props) {
 
   return (
     <>
-      <div className="w-5/6 mx-auto my-auto bg-gray-200 p-6 rounded-md">
+      <div className="git-ops--stage">
         <>
           {stageComponents.length > 0 && !allStaged ? (
             <>
-              <div className="p-5 font-sans text-2xl font-sans font-bold">
+              <div className="git-ops--stage--header">
                 All these changes will be staged:
               </div>
               <div className="overflow-y-auto" style={{ height: "400px" }}>
                 {stageComponents &&
                   stageComponents.map((item) => {
                     return (
-                      <div
-                        className="p-1 font-sans text-lg mx-4 border-b w-11/12 break-words"
-                        key={item}
-                      >
+                      <div className="git-ops--stage--item" key={item}>
                         {item}
                       </div>
                     );
@@ -67,17 +65,17 @@ export default function StageComponent(props) {
               </div>
 
               {errorInd ? (
-                <div className="my-2 mx-auto text-center p-2 rounded shadow bg-red-200 border-red-400 text-red-800">
+                <div className="git-ops--stage--alert--failure">
                   Staging Failed!
                 </div>
               ) : null}
               {loading ? (
-                <div className="mx-auto my-4 text-center bg-gray-600 text-xl p-3 rounded-md shadow-md font-sans text-white hover:bg-gray-400 cursor-pointer">
+                <div className="git-ops--stage--alert--progress">
                   Staging in prgoress...
                 </div>
               ) : (
                 <div
-                  className="mx-auto my-4 text-center bg-green-600 text-xl p-3 rounded-md shadow-md font-sans text-white hover:bg-green-400 cursor-pointer"
+                  className="git-ops--stage--btn"
                   onClick={() => {
                     stageAllChanges();
                   }}
@@ -87,12 +85,12 @@ export default function StageComponent(props) {
               )}
             </>
           ) : (
-            <div className="bg-white p-6 font-sans text-3xl font-light text-gray-500 border-b-4 border-dashed rounded-lg shadow-lg border-gray-500 text-center">
+            <div className="git-ops--stage--alert--nochange">
               No Changes for staging...
             </div>
           )}
           {allStaged ? (
-            <div className="mx-auto my-2 p-3 bg-green-200 text-green-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-green-300">
+            <div className="git-ops--stage--alert--success">
               All changes Staged!
             </div>
           ) : null}

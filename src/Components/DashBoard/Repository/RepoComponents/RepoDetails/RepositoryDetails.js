@@ -5,9 +5,10 @@ import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import {
   globalAPIEndpoint,
-  ROUTE_REPO_DETAILS,
+  ROUTE_REPO_DETAILS
 } from "../../../../../util/env_config";
 import LoadingHOC from "../../../../LoadingHOC";
+import "../../../../styles/RepositoryDetails.css";
 import FileExplorerComponent from "./FileExplorerComponent";
 import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
 import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
@@ -231,7 +232,7 @@ export default function RepositoryDetails(props) {
             }}
           >
             <div
-              className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+              className="commitlogs-view"
               onClick={() => {
                 setShowCommitLogs(false);
               }}
@@ -249,7 +250,7 @@ export default function RepositoryDetails(props) {
       ) : null}
       {backdropToggle || codeViewToggle ? (
         <div
-          className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
+          className="backdrop-view"
           id="repo-backdrop"
           style={{ background: "rgba(0,0,0,0.7)" }}
           onClick={(event) => {
@@ -261,7 +262,7 @@ export default function RepositoryDetails(props) {
         >
           <>{action ? actionComponentPicker() : null}</>
           <div
-            className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="action-view"
             onClick={() => {
               setBackdropToggle(false);
               setCodeViewToggle(false);
@@ -274,7 +275,7 @@ export default function RepositoryDetails(props) {
       ) : null}
       <>
         {!loading && gitRepoStatus && !repoFetchFailed ? (
-          <div className="xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none rp_repo-view w-full h-full p-6 mx-auto rounded-lg justify-evenly">
+          <div className="xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none repo-details">
             <div className="flex px-3 py-2">
               {gitRepoStatus ? (
                 <RepoInfoComponent
