@@ -293,7 +293,9 @@ export default function PushComponent(props) {
             <>
               {loading ? (
                 <div className="git-ops--push--loader">
-                  <div>Pushing to remote...</div>
+                  <div className="text-green-500 text-2xl">
+                    Pushing to remote...
+                  </div>
                   <div className="flex mx-auto my-6 text-center justify-center">
                     <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
                   </div>
