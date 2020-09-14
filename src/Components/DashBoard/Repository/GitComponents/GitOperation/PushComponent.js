@@ -1,11 +1,12 @@
-import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import React, { useEffect, useRef, useState } from "react";
 import {
   globalAPIEndpoint,
-  ROUTE_REPO_DETAILS,
   ROUTE_GIT_UNPUSHED_COMMITS,
+  ROUTE_REPO_DETAILS,
 } from "../../../../../util/env_config";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
+import "../../../../styles/GitOperations.css";
 
 export default function PushComponent(props) {
   const { repoId } = props;
@@ -193,13 +194,11 @@ export default function PushComponent(props) {
     <>
       {!pushDone ? (
         <>
-          <div className="w-3/4 mx-auto my-auto p-6 rounded shadow bg-white block">
-            <div className="m-3 text-2xl font-sans text-ghray-800">
-              Available remote repos
-            </div>
+          <div className="git-ops--push">
+            <div className="git-ops--push--header">Available remote repos</div>
             <div>
               <select
-                className="border p-3 my-4 text-xl rounded shadow"
+                className="git-ops--push--select"
                 defaultValue="checked"
                 onChange={() => {
                   setIsRemoteSet(true);
@@ -219,7 +218,7 @@ export default function PushComponent(props) {
             {isRemoteSet ? (
               <div>
                 <select
-                  className="border p-3 my-4 text-xl rounded shadow"
+                  className="git-ops--push--select"
                   defaultValue="checked"
                   onChange={() => {
                     setIsBranchSet(true);
@@ -236,8 +235,8 @@ export default function PushComponent(props) {
             ) : null}
 
             {unpushedCommits && unpushedCommits.length > 0 ? (
-              <div className="my-2 p-3 rounded bg-gray-300 shadow-md border-gray-100">
-                <div className="my-2 font-sans text-2xl font-semibold">
+              <div className="git-ops--push--unpushed">
+                <div className="git-ops--push--unpushed--label">
                   Commits to be pushed
                 </div>
                 <div className="overflow-auto" style={{ height: "200px" }}>
@@ -245,7 +244,7 @@ export default function PushComponent(props) {
                     return (
                       <div
                         key={`unpushed-commit-${index}`}
-                        className="my-2 border-b-2 block justify-evenly mx-auto"
+                        className="git-ops--push--commits"
                       >
                         {commitModel(commits)}
                       </div>
@@ -259,7 +258,7 @@ export default function PushComponent(props) {
 
             {pushFailed ? (
               <>
-                <div className="my-2 mx-auto my-2 p-3 bg-red-200 text-red-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-red-300">
+                <div className="git-ops--push--nochange">
                   Failed to push changes!
                 </div>
               </>
@@ -270,7 +269,7 @@ export default function PushComponent(props) {
             unpushedCommits.length > 0 &&
             !loading ? (
               <div
-                className="my-4 text-center bg-indigo-400 rounded shadow text-white text-xl font-sans p-2 mx-auto hover:bg-indigo-600 cursor-pointer"
+                className="git-ops--push--btn"
                 onClick={() => {
                   const remoteHost = remoteRef.current.value.trim();
                   const branchName = branchRef.current.value.trim();
@@ -285,7 +284,7 @@ export default function PushComponent(props) {
             ) : (
               <>
                 {isCommitEmpty ? (
-                  <div className="my-4 text-center bg-gray-500 rounded shadow text-white text-xl font-sans p-2 mx-auto hover:bg-gray-600 cursor-pointer">
+                  <div className="git-ops--push--nocommits">
                     No Commits to Push
                   </div>
                 ) : null}
@@ -293,7 +292,7 @@ export default function PushComponent(props) {
             )}
             <>
               {loading ? (
-                <div className="my-4 text-center border-2 border-dashed border-green-600 rounded shadow text-green-700 bg-green-100 rounded shadow text-white text-xl font-light font-sans p-2 mx-auto cursor-pointer">
+                <div className="git-ops--push--loader">
                   <div>Pushing to remote...</div>
                   <div className="flex mx-auto my-6 text-center justify-center">
                     <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
@@ -304,8 +303,8 @@ export default function PushComponent(props) {
           </div>
         </>
       ) : (
-        <div className="w-1/2 mx-auto my-auto p-6 rounded shadow bg-white block">
-          <div className="mx-auto my-2 p-3 bg-green-200 text-green-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-green-300">
+        <div className="git-ops--push--success">
+          <div className="git-ops--push--alert--success">
             Changes have been pushed to remote
           </div>
         </div>

@@ -4,9 +4,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import {
   globalAPIEndpoint,
-  ROUTE_REPO_TRACKED_DIFF,
   ROUTE_GIT_STAGED_FILES,
+  ROUTE_REPO_TRACKED_DIFF,
 } from "../../../../../util/env_config";
+import "../../../../styles/GitOperations.css";
 import CommitComponent from "./CommitComponent";
 import PushComponent from "./PushComponent";
 import StageComponent from "./StageComponent";
@@ -207,19 +208,19 @@ export default function GitOperationComponent(props) {
     let statusPill = (status) => {
       if (status === "M") {
         return (
-          <div className="p-1 mx-auto text-center w-2/3 text-yellow-700 border border-yellow-500 rounded-md shadow-sm">
+          <div className="git-ops--file--status text-yellow-700 border-yellow-500 ">
             Modified
           </div>
         );
       } else if (status === "D") {
         return (
-          <div className="p-1 mx-auto text-center w-2/3 text-red-700 border bg-red-200 border-red-500 rounded-md shadow-sm">
+          <div className="git-ops--file--status text-red-700 bg-red-200 border-red-500 ">
             Removed
           </div>
         );
       } else {
         return (
-          <div className="p-1 mx-auto text-center w-2/3 text-indigo-700 border border-indigo-500 rounded-md shadow-sm">
+          <div className="git-ops--file--status text-indigo-700 border-indigo-500 ">
             Untracked
           </div>
         );
@@ -229,7 +230,7 @@ export default function GitOperationComponent(props) {
     let actionButton = (stageItem) => {
       return (
         <div
-          className="p-1 mx-auto cursor-pointer bg-green-300 text-white w-2/3 rounded-md shadow-sm hover:shadow-md hover:bg-green-600"
+          className="git-ops--stageitem--add"
           onClick={(event) => {
             stageGitComponent(stageItem, event);
             setUnstageFailed(false);
@@ -353,13 +354,13 @@ export default function GitOperationComponent(props) {
 
     if (stageItems && stageItems.length > 0) {
       return (
-        <div className="w-full mx-auto my-20 p-2 border border-gray-200 rounded">
-          <div className="flex items-center align-middle my-4">
+        <div className="git-ops--stagearea">
+          <div className="git-ops--stagearea--top">
             <div className="text-5xl font-sans text-gray-800 mx-4">
               Staged Files
             </div>
             <div
-              className="p-2 rounded text-white bg-red-700 text-xl rounded shadow cursor-pointer hover:bg-red-800"
+              className="git-ops--unstage--btn"
               onClick={(event) => {
                 removeAllStagedItems(event);
                 setUnstageFailed(false);
@@ -378,27 +379,19 @@ export default function GitOperationComponent(props) {
               to perform a complete git reset
             </div>
           ) : null}
-          <div className="flex mx-auto p-2 text-center font-sans text-lg text-white bg-indigo-400 rounded">
+          <div className="git-ops--unstage--header">
             <div className="w-3/4">Staged File</div>
             <div className="w-1/2">Action</div>
           </div>
-          <div
-            className="block mx-auto overflow-auto"
-            style={{ height: "450px" }}
-          >
+          <div className="git-ops--unstage--table" style={{ height: "450px" }}>
             {stageItems.map((item) => {
               if (item) {
                 return (
-                  <div
-                    className="flex mx-auto my-4 border-b my-auto items-center align-middle py-4"
-                    key={item}
-                  >
-                    <div className="w-3/4 break-all mx-4 text-xl text-gray-800 font-sans">
-                      {item}
-                    </div>
+                  <div className="git-ops--unstage--table--data" key={item}>
+                    <div className="git-ops--unstage--table--item">{item}</div>
                     <div className="w-1/2 mx-auto">
                       <div
-                        className="mx-auto w-1/2 text-white cursor-pointer break-all text-center p-2 rounded bg-red-500 shadow hover:bg-red-600 hover:shadow-md"
+                        className="git-ops--unstage--remove--btn"
                         onClick={(event) => {
                           removeStagedItem(item, event);
                           setUnstageFailed(false);
@@ -449,7 +442,7 @@ export default function GitOperationComponent(props) {
 
   function noChangesComponent() {
     return (
-      <div className="p-4 mx-auto my-10 bg-white text-3xl text-red-500 font-sans font-light text-center rounded shadow-lg border-b-4 border-red-300 border-dashed">
+      <div className="git-ops--nochange">
         {!isLoading ? (
           <span>No files changes found in the repo.</span>
         ) : (
@@ -463,7 +456,7 @@ export default function GitOperationComponent(props) {
     <>
       {action ? (
         <div
-          className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
+          className="git-ops--backdrop"
           id="operation-backdrop"
           style={{ background: "rgba(0,0,0,0.6)" }}
           onClick={(event) => {
@@ -481,7 +474,7 @@ export default function GitOperationComponent(props) {
           {actionComponent(action)}
 
           <div
-            className="float-right fixed right-0 top-0 font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="git-ops--backdrop--close"
             onClick={() => {
               setAction("");
             }}
@@ -490,12 +483,12 @@ export default function GitOperationComponent(props) {
           </div>
         </div>
       ) : null}
-      <div className="my-2 flex mx-auto p-3 justify-around">
+      <div className="git-ops--actions">
         {actionButtons.map((item) => {
           const { label, color, key } = item;
           return (
             <div
-              className={`my-auto align-middle item-center w-1/4 text-center p-2 rounded-md bg-0 border border-${color}-500 text-${color}-700 font-sans cursor-pointer hover:bg-${color}-500 hover:text-white`}
+              className={`git-ops--actions--btn border-${color}-500 text-${color}-700 hover:bg-${color}-500`}
               key={key}
               onClick={() => setAction(key)}
             >
@@ -505,13 +498,13 @@ export default function GitOperationComponent(props) {
         })}
       </div>
       {getTableData() && getTableData().length > 0 ? (
-        <div className="p-2 mx-auto rounded shadow border">
-          <div className="table-header flex justify-between w-full bg-orange-300 p-3 text-xl font-sans">
+        <div className="git-ops--file-table">
+          <div className="git-ops--file-table--header">
             {tableColumns.map((column, index) => {
               return (
                 <div
                   key={column}
-                  className={`font-bold text-center border-r border-gray-200 ${
+                  className={`git-ops--file-table--cols ${
                     index === 0 ? "w-3/4" : "w-1/4"
                   }`}
                 >
@@ -522,7 +515,7 @@ export default function GitOperationComponent(props) {
           </div>
 
           <div
-            className="block table-rows w-full overflow-auto"
+            className="git-ops--file-table--data"
             style={{ height: "400px" }}
           >
             <div>
@@ -530,7 +523,7 @@ export default function GitOperationComponent(props) {
                 getTableData().map((tableData, index) => {
                   return (
                     <div
-                      className="flex font-sans p-3 border-b-2 border-b border-gray-300"
+                      className="git-ops--file-table--items"
                       key={`tableItem-${index}`}
                     >
                       {tableData.map((data, index) => {
