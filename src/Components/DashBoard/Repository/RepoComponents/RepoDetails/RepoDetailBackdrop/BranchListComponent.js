@@ -163,11 +163,9 @@ export default function BranchListComponent({ repoId, currentBranch }) {
   }
 
   return (
-    <div className="bg-gray-200 p-6 w-11/12 xl:w-3/4 mx-auto my-auto items-center align-middle lg:w-3/4 md:w-11/12 sm:w-11/12 rounded-md shadow">
-      <div className="font-sans mx-4 p-2 text-4xl font-semibold border-b-2 border-dashed text-gray-800">
-        Available Branches
-      </div>
-      <div className="flex my-auto p-3 mx-auto border-b-2 border-dashed text-red-600 border-red-800 items-center align-middle">
+    <div className="repo-backdrop--branchlist xl:w-3/4 lg:w-3/4 md:w-11/12 sm:w-11/12">
+      <div className="branchlist--header">Available Branches</div>
+      <div className="branchlist--warn">
         <div className="mx-2">
           <FontAwesomeIcon
             icon={["fas", "exclamation-circle"]}
@@ -178,17 +176,12 @@ export default function BranchListComponent({ repoId, currentBranch }) {
           cautious!
         </div>
       </div>
-      <div className="font-sans mx-4 p-2 font-light italic font-semibold border-b-2 border-dashed text-gray-500">
+      <div className="branchlist--infotext">
         Click on a branch to checkout to that branch
       </div>
-      <div
-        className="pr-6 mx-auto w-full my-4 mx-10 overflow-auto overflow-x-hidden"
-        style={{ height: "400px" }}
-      >
+      <div className="branchlist--list-area" style={{ height: "400px" }}>
         {branchList.length === 0 ? (
-          <div className="p-2 rounded border-gray-500 shadow text-center my-4 mx-auto font-sans font-semibold text-xl">
-            Collecting branch list...
-          </div>
+          <div className="list-area--message">Collecting branch list...</div>
         ) : null}
         {!listError &&
           branchList &&
@@ -209,17 +202,17 @@ export default function BranchListComponent({ repoId, currentBranch }) {
               }
               return (
                 <div
-                  className="flex my-2 border-b border-dashed py-4 my-auto items-center justify-center"
+                  className="list-area--branches"
                   key={branchType + branchName}
                 >
-                  <div className="w-1/8 mx-2 text-2xl text-blue-500 text-center">
+                  <div className="list-area--branches--icon">
                     <FontAwesomeIcon icon={["fas", icon]}></FontAwesomeIcon>
                   </div>
-                  <div className="w-1/3 hidden xl:block lg:block md:block sm:hidden text-lg font-sans font-semibold text-center text-indigo-500">
+                  <div className="xl:block lg:block md:block sm:hidden list-area--branches--type">
                     {branchType}
                   </div>
                   <div
-                    className={`w-1/2 text-lg font-sans font-semibold text-left text-gray-700 hover:text-blue-700 cursor-pointer truncate ${activeSwitchStyle}`}
+                    className={`list-area--branches--name ${activeSwitchStyle}`}
                     title={branchName}
                     onClick={() => {
                       if (!activeBranchFlag) {
@@ -230,9 +223,9 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                     {branchName}
                   </div>
                   {!activeBranchFlag && branchType === "Local Branch" ? (
-                    <div className="flex mx-4 justify-between my-auto text-center items-center align-middle w-1/4 px-2 p-1">
+                    <div className="list-area--branches--active">
                       <div
-                        className="w-1/2 block mx-auto text-center my-auto justify-center cursor-pointer px-2"
+                        className="list-area--branches--delete"
                         title="Will delete only if the branch is clean and safe"
                         onClick={() => {
                           if (!activeBranchFlag) {
@@ -240,17 +233,17 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                           }
                         }}
                       >
-                        <div className="bg-red-600 cursor-pointer rounded text-center text-white text-xl align-middle items-center hover:bg-red-700 px-2 py-1">
+                        <div className="list-area--branches--delete--btn">
                           <FontAwesomeIcon
                             icon={["fas", "trash-alt"]}
                           ></FontAwesomeIcon>
                         </div>
-                        <div className="font-light text-sm my-2 font-sans text-red-500 border-b border-dashed border-red-700">
+                        <div className="list-area--branches--delete--type">
                           Normal
                         </div>
                       </div>
                       <div
-                        className="w-1/2 block mx-auto text-center my-auto justify-center cursor-pointer px-2"
+                        className="list-area--branches--delete"
                         title="Will delete the branch forcefully.Be careful!"
                         onClick={() => {
                           if (!activeBranchFlag) {
@@ -258,12 +251,12 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                           }
                         }}
                       >
-                        <div className="bg-red-600 cursor-pointer rounded text-center text-white text-xl align-middle items-center hover:bg-red-700 px-2 py-1">
+                        <div className="list-area--branches--delete--btn">
                           <FontAwesomeIcon
                             icon={["fas", "minus-square"]}
                           ></FontAwesomeIcon>
                         </div>
-                        <div className="font-light text-sm my-2 font-sans text-red-500 border-b border-dashed border-red-700">
+                        <div className="list-area--branches--delete--type">
                           Force
                         </div>
                       </div>
@@ -271,11 +264,11 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                   ) : (
                     <>
                       {activeBranchFlag ? (
-                        <div className="w-1/4 font-sans mx-4 text-sm px-2 font-light bg-blue-200 border border-dashed border-blue-800 rounded-full p-1 my-auto items-center text-center align-middle">
+                        <div className="list-area--branches--pill bg-blue-200 border-blue-800">
                           Active
                         </div>
                       ) : (
-                        <div className="w-1/4 font-sans mx-4 text-sm px-2 font-light bg-orange-200 border border-dashed border-orange-800 rounded-full p-1 my-auto items-center text-center align-middle">
+                        <div className="list-area--branches--pill bg-orange-200 border-orange-800">
                           Remote
                         </div>
                       )}

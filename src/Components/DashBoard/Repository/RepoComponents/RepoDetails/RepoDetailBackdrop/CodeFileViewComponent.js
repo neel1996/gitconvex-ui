@@ -118,13 +118,13 @@ export default function CodeFileViewComponent(props) {
   }
 
   return (
-    <div className="p-6 rounded-md shadow-sm flex justify-center mx-auto my-auto mb-6 w-full h-full">
+    <div className="repo-backdrop--codeview">
       {isInvalidFile ? (
         invalidFileAlert()
       ) : (
-        <div className="mx-auto mb-4 w-11/12 h-auto p-6">
-          <div className="bg-white p-4 rounded-lg shadow block">
-            <div className="flex w-11/12 mx-auto justify-between gap-4">
+        <div className="codeview">
+          <div className="codeview--toppane">
+            <div className="codeview--language">
               {languageState
                 ? topPanePills("Language", languageState, "pink")
                 : null}
@@ -133,12 +133,12 @@ export default function CodeFileViewComponent(props) {
                 : null}
             </div>
             {latestCommit ? (
-              <div className="block mx-auto my-10 w-11/12">
-                <div className="flex gap-8 items-center align-middle">
-                  <div className="text-center w-1/6 font-light font-sans text-xl border-b-4 border-dashed text-gray-700">
+              <div className="codeview--commits">
+                <div className="codeview--commits--latest">
+                  <div className="codeview--commits--latest--label">
                     Latest Commit
                   </div>
-                  <div className="w-full mx-auto rounded p-2 text-center bg-indigo-100 text-indigo-500 text-sm font-semibold">
+                  <div className="codeview--commits--latest--data">
                     {latestCommit}
                   </div>
                 </div>
@@ -147,8 +147,8 @@ export default function CodeFileViewComponent(props) {
           </div>
 
           {fileDataState && prismIndicator ? (
-            <div className="mt-10 mb-10 my-auto mx-auto bg-gray-100 mx-auto p-10 rounded shadow overflow-auto">
-              <pre className="px-10 py-10 border rounded overflow-x-auto shadow bg-gray-900 text-gray-300 selection:bg-gray-500">
+            <div className="codeview--prismview">
+              <pre className="codeview--prismview--pre">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: highlightedCode.join("\n"),
