@@ -157,7 +157,7 @@ export default function CommitComponent(props) {
             </div>
           ) : (
             <div className="git-ops--commit--alert--success">
-              All changes are committed!
+              All changes have been committed!
             </div>
           )}
         </>
