@@ -182,10 +182,10 @@ export default function FetchFromRemoteComponent(props) {
 
   return (
     <>
-      <div className="w-3/4 mx-auto my-auto p-6 rounded shadow bg-white block">
+      <div className="repo-backdrop--fetchpull">
         {actionType === "fetch" ? (
           <div
-            className="flex justify-center items-center w-11/12 xl:w-3/5 lg:w-3/4 md:w-3/4 sm:w-11/12 mx-auto my-4 p-1 text-center border-b-2 border-dashed border-gray-400 text-lg font-sans font-medium cursor-pointer text-indigo-400 hover:text-indigo-600 rounded-lg hover:border-gray-600"
+            className="fetchpull--fetch-global xl:w-3/5 lg:w-3/4 md:w-3/4 sm:w-11/12"
             onClick={() => {
               actionHandler();
             }}
@@ -198,12 +198,12 @@ export default function FetchFromRemoteComponent(props) {
             <div>Click to Fetch without branch selection</div>
           </div>
         ) : null}
-        <div className="m-3 text-2xl font-sans text-ghray-800">
+        <div className="m-3 text-2xl font-sans text-gray-800">
           Available remote repos
         </div>
         <div>
           <select
-            className="border p-3 my-4 text-xl rounded shadow"
+            className="fetchpull--select"
             defaultValue="checked"
             disabled={remoteData ? false : true}
             onChange={() => {
@@ -226,7 +226,7 @@ export default function FetchFromRemoteComponent(props) {
         {isRemoteSet ? (
           <div>
             <select
-              className="border p-3 my-4 text-xl rounded shadow"
+              className="fetchpull--select"
               defaultValue="checked"
               onChange={() => {
                 setIsBranchSet(true);
@@ -246,7 +246,7 @@ export default function FetchFromRemoteComponent(props) {
 
         {isRemoteSet && isBranchSet && !loading ? (
           <div
-            className="my-4 text-center bg-indigo-400 rounded shadow text-white text-xl font-sans p-2 mx-auto hover:bg-indigo-600 cursor-pointer"
+            className="fetchpull--btn"
             onClick={(event) => {
               const remoteHost = remoteRef.current.value;
               const branchName = branchRef.current.value;
@@ -265,7 +265,7 @@ export default function FetchFromRemoteComponent(props) {
         <div>
           {loading ? (
             <>
-              <div className="my-4 text-center border-2 border-dashed border-gray-600 rounded shadow text-gray-700 bg-gray-100 rounded shadow text-white text-xl font-light font-sans p-2 mx-auto cursor-pointer">
+              <div className="fetchpull--loader">
                 {actionType === "pull" ? "Pulling changes" : "Fetching"} from
                 remote...
               </div>
@@ -278,7 +278,7 @@ export default function FetchFromRemoteComponent(props) {
 
         {!loading && result && result.length > 0 ? (
           <>
-            <div className="p-3 rounded shadow bg-indigo-100 text-md font-sans text-gray-700 truncate">
+            <div className="fetchpull--result">
               {result.map((result) => {
                 return (
                   <div
