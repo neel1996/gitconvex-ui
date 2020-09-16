@@ -23,6 +23,16 @@ export default function LeftPane(props) {
       label: "Repositories",
     },
     {
+      link: "/dashboard/compare",
+      icon: (
+        <FontAwesomeIcon
+          icon={["fas", "object-group"]}
+          className="text-3xl text-gray-600"
+        ></FontAwesomeIcon>
+      ),
+      label: "Compare",
+    },
+    {
       link: "/dashboard/settings",
       icon: (
         <FontAwesomeIcon

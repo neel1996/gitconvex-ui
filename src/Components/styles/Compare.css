@@ -1,0 +1,19 @@
+.compare {
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
+  width: 100%;
+  height: 100%;
+}
+
+.compare--header {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  margin-left: 2.5rem;
+  margin-right: 2.5rem;
+  font-size: 2rem;
+  --text-opacity: 1;
+  color: #2d3748;
+  color: rgba(45, 55, 72, var(--text-opacity));
+  font-weight: 300;
+}

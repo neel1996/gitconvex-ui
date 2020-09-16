@@ -9,6 +9,7 @@ import Help from "./Help/Help";
 import RepositoryAction from "./Repository/RepoComponents/RepositoryAction";
 import RepositoryDetails from "./Repository/RepoComponents/RepoDetails/RepositoryDetails";
 import Settings from "./Settings/Settings";
+import CompareComponent from "./Compare/CompareComponent";
 
 export default function Dashboard(props) {
   const { state } = useContext(ContextProvider);
@@ -20,6 +21,10 @@ export default function Dashboard(props) {
   const memoizedRepoDetails = useMemo(() => {
     return <RepositoryDetails parentProps={props}></RepositoryDetails>;
   }, [props]);
+
+  const memoizedCompare = useMemo(() => {
+    return <CompareComponent></CompareComponent>;
+  }, []);
 
   const memoizedSettings = useMemo(() => {
     return <Settings></Settings>;
@@ -104,6 +109,8 @@ export default function Dashboard(props) {
         return <RightPane params={params}></RightPane>;
       case "/dashboard/repository":
         return <RepositoryAction></RepositoryAction>;
+      case "/dashboard/compare":
+        return memoizedCompare;
       case "/dashboard/settings":
         return memoizedSettings;
       case "/dashboard/help":
