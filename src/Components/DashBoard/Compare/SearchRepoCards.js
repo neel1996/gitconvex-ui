@@ -4,6 +4,7 @@ import { globalAPIEndpoint, ROUTE_FETCH_REPO } from "../../../util/env_config";
 
 export default function SearchRepoCards(props) {
   const [repo, setRepo] = useState([]);
+  const [isValidSearchQuery, setIsValidSearchQuery] = useState(false);
 
   useEffect(() => {
     const token = axios.CancelToken;
@@ -35,11 +36,13 @@ export default function SearchRepoCards(props) {
           let repoContent = [];
 
           repoId.forEach((entry, index) => {
-            repoContent.push({
-              id: entry,
-              repoName: repoName[index],
-              repoPath: repoPath[index],
-            });
+            if (repoName[index].match(props.searchQuery)) {
+              repoContent.push({
+                id: entry,
+                repoName: repoName[index],
+                repoPath: repoPath[index],
+              });
+            }
           });
 
           setRepo(repoContent);
@@ -59,6 +62,7 @@ export default function SearchRepoCards(props) {
           return (
             <div
               className="my-4 p-4 border-b mx-auto flex justify-around items-center cursor-pointer hover:bg-gray-200"
+              key={item.id}
               onClick={(e) => {
                 props.setSelectedRepoHandler(item);
               }}
@@ -82,6 +86,11 @@ export default function SearchRepoCards(props) {
           Loading...
         </div>
       )}
+      {!repo[0] ? (
+        <div className="text-3xl my-6 font-sans font-light text-gray-600">
+          There are no matching repos...
+        </div>
+      ) : null}
     </div>
   );
 }

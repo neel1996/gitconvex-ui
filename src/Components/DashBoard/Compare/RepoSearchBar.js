@@ -1,12 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchRepoCards from "./SearchRepoCards";
+import debounce from "lodash.debounce";
 
 export default function RepoSearchBar() {
-  library.add(fas);
+  library.add(fas, far);
+
+  const debounceRef = useRef(
+    debounce(
+      function () {
+        setSelectedRepo("");
+        setToggleSearchResult(true);
+      },
+      1500,
+      { maxWait: 1500 }
+    )
+  ).current;
 
   const [toggleSearchResult, setToggleSearchResult] = useState(false);
   const [searchQueryState, setSearchQueryState] = useState("");
@@ -37,10 +49,9 @@ export default function RepoSearchBar() {
             type="text"
             className="w-full p-3 outline-none text-lg font-light font-sans"
             placeholder="Enter repo name to search"
-            value={searchQueryState}
             onChange={(event) => {
-              setToggleSearchResult(true);
-              setSearchQueryState(event.currentTarget.value);
+              setSearchQueryState(event.target.value);
+              debounceRef();
             }}
           />
         </div>
@@ -54,7 +65,7 @@ export default function RepoSearchBar() {
           ></FontAwesomeIcon>
         </div>
       </div>
-      {toggleSearchResult && searchQueryState ? (
+      {toggleSearchResult && searchQueryState && !selectedRepo ? (
         <div className="w-11/12 mx-auto rounded-b-md p-3 border">
           <SearchRepoCards
             searchQuery={searchQueryState}
