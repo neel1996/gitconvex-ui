@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SearchRepoCards from "./SearchRepoCards";
 
@@ -9,6 +10,24 @@ export default function RepoSearchBar() {
 
   const [toggleSearchResult, setToggleSearchResult] = useState(false);
   const [searchQueryState, setSearchQueryState] = useState("");
+  const [selectedRepo, setSelectedRepo] = useState("");
+
+  function setSelectedRepoHandler(repo) {
+    setSelectedRepo(repo);
+  }
+
+  function noRepoBanner() {
+    return (
+      <div className="w-full mx-auto my-auto text-center block">
+        <FontAwesomeIcon
+          icon={["far", "object-group"]}
+          className="font-sans text-center text-gray-300 my-20"
+          size="10x"
+        ></FontAwesomeIcon>
+        <div className="text-6xl text-gray-200">Select a Repo to compare</div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -37,9 +56,14 @@ export default function RepoSearchBar() {
       </div>
       {toggleSearchResult && searchQueryState ? (
         <div className="w-11/12 mx-auto rounded-b-md p-3 border">
-          <SearchRepoCards searchQuery={searchQueryState}></SearchRepoCards>
+          <SearchRepoCards
+            searchQuery={searchQueryState}
+            setSelectedRepoHandler={setSelectedRepoHandler}
+          ></SearchRepoCards>
         </div>
       ) : null}
+
+      {selectedRepo ? <div></div> : noRepoBanner()}
     </>
   );
 }

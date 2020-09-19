@@ -57,7 +57,12 @@ export default function SearchRepoCards(props) {
       {repo ? (
         repo.map((item) => {
           return (
-            <div className="my-4 p-4 border-b mx-auto flex justify-around items-center cursor-pointer hover:bg-gray-200">
+            <div
+              className="my-4 p-4 border-b mx-auto flex justify-around items-center cursor-pointer hover:bg-gray-200"
+              onClick={(e) => {
+                props.setSelectedRepoHandler(item);
+              }}
+            >
               <div className="w-1/2 text-2xl font-sand font-semibold">
                 {item.repoName}
               </div>
