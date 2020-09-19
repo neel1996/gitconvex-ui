@@ -4,7 +4,6 @@ import { globalAPIEndpoint, ROUTE_FETCH_REPO } from "../../../util/env_config";
 
 export default function SearchRepoCards(props) {
   const [repo, setRepo] = useState([]);
-  const [isValidSearchQuery, setIsValidSearchQuery] = useState(false);
 
   useEffect(() => {
     const token = axios.CancelToken;
