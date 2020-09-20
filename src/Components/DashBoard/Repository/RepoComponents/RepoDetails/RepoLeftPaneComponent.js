@@ -64,7 +64,7 @@ export default function RepoLeftPaneComponent(props) {
   return (
     <>
       {props.received ? (
-        <div className="repo-leftpane xl: w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12">
+        <div className="repo-leftpane xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12">
           <div className="block mx-auto my-6">
             <div className="repo-leftpane--remote">
               <div className="text-lg text-gray-600 w-1/4">Remote Host</div>

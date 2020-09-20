@@ -1,12 +1,50 @@
-import React from "react";
+import React, { useState } from "react";
 import "../../styles/Compare.css";
+import CompareActionButtons from "./CompareActionButtons";
 import RepoSearchBar from "./RepoSearchBar";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { far } from "@fortawesome/free-regular-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import CompareActiveRepoPane from "./CompareActiveRepoPane";
 
 export default function CompareComponent() {
+  library.add(fas, far);
+
+  const [selectedRepo, setSelectedRepo] = useState("");
+
+  function activateCompare(repo) {
+    console.log(repo);
+    setSelectedRepo(repo);
+  }
+
+  function noSelectedRepobanner() {
+    return (
+      <div className="w-full mx-auto my-auto text-center block">
+        <FontAwesomeIcon
+          icon={["far", "object-group"]}
+          className="font-sans text-center text-gray-300 my-20"
+          size="10x"
+        ></FontAwesomeIcon>
+        <div className="text-6xl text-gray-200">Select a Repo to compare</div>
+      </div>
+    );
+  }
+
   return (
     <div className="compare">
       <div className="compare--header">Compare Branches and Commits</div>
-      <RepoSearchBar></RepoSearchBar>
+      <RepoSearchBar activateCompare={activateCompare}></RepoSearchBar>
+      {selectedRepo ? (
+        <>
+          <CompareActionButtons></CompareActionButtons>
+          <CompareActiveRepoPane
+            repoName={selectedRepo.repoName}
+          ></CompareActiveRepoPane>
+        </>
+      ) : (
+        noSelectedRepobanner()
+      )}
     </div>
   );
 }

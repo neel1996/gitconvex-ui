@@ -1,21 +1,16 @@
-import React, { useState, useRef } from "react";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
-import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import SearchRepoCards from "./SearchRepoCards";
 import debounce from "lodash.debounce";
+import React, { useRef, useState } from "react";
+import SearchRepoCards from "./SearchRepoCards";
 
-export default function RepoSearchBar() {
-  library.add(fas, far);
-
+export default function RepoSearchBar(props) {
   const debounceRef = useRef(
     debounce(
       function () {
         setSelectedRepo("");
         setToggleSearchResult(true);
       },
-      1500,
+      500,
       { maxWait: 1500 }
     )
   ).current;
@@ -24,21 +19,11 @@ export default function RepoSearchBar() {
   const [searchQueryState, setSearchQueryState] = useState("");
   const [selectedRepo, setSelectedRepo] = useState("");
 
+  const searchTextRef = useRef();
+
   function setSelectedRepoHandler(repo) {
     setSelectedRepo(repo);
-  }
-
-  function noRepoBanner() {
-    return (
-      <div className="w-full mx-auto my-auto text-center block">
-        <FontAwesomeIcon
-          icon={["far", "object-group"]}
-          className="font-sans text-center text-gray-300 my-20"
-          size="10x"
-        ></FontAwesomeIcon>
-        <div className="text-6xl text-gray-200">Select a Repo to compare</div>
-      </div>
-    );
+    searchTextRef.current.value = "";
   }
 
   return (
@@ -47,6 +32,7 @@ export default function RepoSearchBar() {
         <div className="w-11/12 rounded-r-md">
           <input
             type="text"
+            ref={searchTextRef}
             className="w-full p-3 outline-none text-lg font-light font-sans"
             placeholder="Enter repo name to search"
             onChange={(event) => {
@@ -57,7 +43,9 @@ export default function RepoSearchBar() {
         </div>
         <div
           className="px-6 py-4 bg-gray-200 text-center rounded-r-lg hover:bg-gray-400 cursor-pointer"
-          onClick={() => {}}
+          onClick={() => {
+            debounceRef();
+          }}
         >
           <FontAwesomeIcon
             icon={["fas", "search"]}
@@ -74,7 +62,7 @@ export default function RepoSearchBar() {
         </div>
       ) : null}
 
-      {selectedRepo ? <div></div> : noRepoBanner()}
+      {selectedRepo ? props.activateCompare(selectedRepo) : null}
     </>
   );
 }
