@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import "../../styles/Compare.css";
 import CompareActionButtons from "./CompareActionButtons";
 import RepoSearchBar from "./RepoSearchBar";
@@ -8,6 +8,7 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CompareActiveRepoPane from "./CompareActiveRepoPane";
 import CompareSelectionHint from "./CompareSelectionHint";
+import BranchCompareComponent from "./BranchCompareComponent";
 
 export default function CompareComponent() {
   library.add(fas, far);
@@ -18,6 +19,12 @@ export default function CompareComponent() {
   function activateCompare(repo) {
     setSelectedRepo(repo);
   }
+
+  const memoizedBranchCompareComponent = useMemo(() => {
+    return (
+      <BranchCompareComponent repoId={selectedRepo.id}></BranchCompareComponent>
+    );
+  }, [selectedRepo]);
 
   function noSelectedRepobanner() {
     return (
@@ -47,7 +54,9 @@ export default function CompareComponent() {
             }}
           ></CompareActionButtons>
           {compareAction ? (
-            <div></div>
+            compareAction === "branch-compare" ? (
+              memoizedBranchCompareComponent
+            ) : null
           ) : (
             <CompareSelectionHint></CompareSelectionHint>
           )}

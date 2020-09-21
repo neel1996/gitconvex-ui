@@ -50,7 +50,7 @@ export default function SearchRepoCards(props) {
       .catch((err) => {});
 
     return () => {
-      source.cancel();
+      return source.cancel;
     };
   }, [props.searchQuery]);
 
