@@ -7,14 +7,15 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CompareActiveRepoPane from "./CompareActiveRepoPane";
+import CompareSelectionHint from "./CompareSelectionHint";
 
 export default function CompareComponent() {
   library.add(fas, far);
 
   const [selectedRepo, setSelectedRepo] = useState("");
+  const [compareAction, setCompareAction] = useState("");
 
   function activateCompare(repo) {
-    console.log(repo);
     setSelectedRepo(repo);
   }
 
@@ -37,10 +38,19 @@ export default function CompareComponent() {
       <RepoSearchBar activateCompare={activateCompare}></RepoSearchBar>
       {selectedRepo ? (
         <>
-          <CompareActionButtons></CompareActionButtons>
           <CompareActiveRepoPane
             repoName={selectedRepo.repoName}
           ></CompareActiveRepoPane>
+          <CompareActionButtons
+            setCompareAction={(action) => {
+              setCompareAction(action);
+            }}
+          ></CompareActionButtons>
+          {compareAction ? (
+            <div></div>
+          ) : (
+            <CompareSelectionHint></CompareSelectionHint>
+          )}
         </>
       ) : (
         noSelectedRepobanner()
