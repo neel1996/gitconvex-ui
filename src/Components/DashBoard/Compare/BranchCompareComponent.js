@@ -7,13 +7,14 @@ import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
 } from "../../../util/env_config";
+import BranchCommitLogChanges from "./BranchCommitLogChanges";
 
 export default function BranchCompareComponent(props) {
   library.add(fas);
   const [branchList, setBranchList] = useState([]);
   const [currentBranch, setCurrentBranch] = useState("");
   const [compareBranch, setCompareBranch] = useState("");
-  const [baseBramch, setBaseBranch] = useState("");
+  const [baseBranch, setBaseBranch] = useState("");
 
   useEffect(() => {
     const token = axios.CancelToken;
@@ -51,9 +52,13 @@ export default function BranchCompareComponent(props) {
             return branch.trim();
           });
 
+        if (gitBranchList.length > 0) {
+          setCurrentBranch(gitBranchList[1].trim());
+        }
+
         setBranchList(gitBranchList);
         setCurrentBranch(gitCurrentBranch);
-        setBaseBranch(currentBranch);
+        setBaseBranch(gitCurrentBranch);
       })
       .catch((err) => {
         console.log(err);
@@ -83,19 +88,53 @@ export default function BranchCompareComponent(props) {
     return (
       <div className="w-11/12 p-3 flex mx-auto items-center align-middle rounded-lg shadow-md border-2 justify-around">
         <div className="flex gap-6 justify-between items-center">
-          <div>Base branch</div>
+          <div className="text-xl text-center font-sans font-semibold border-b-2 border-dashed border-gray-400">
+            Base branch
+          </div>
           <div>
             <select
+              defaultValue={currentBranch}
               className="outline-none p-2 shadow border-2 bg-white rounded-lg"
               onChange={(e) => {
                 setBaseBranch(e.currentTarget.value);
               }}
             >
-              <option value={currentBranch} selected>
-                {currentBranch}
-              </option>
+              <option value={currentBranch}>{currentBranch}</option>
               {branchList.slice(1).map((branch) => {
-                return <option value={branch}>{branch}</option>;
+                return (
+                  <option value={branch} key={branch}>
+                    {branch}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+        </div>
+        <div className="flex gap-6 justify-between items-center">
+          <div className="text-xl text-center font-sans font-semibold border-b-2 border-dashed border-gray-400">
+            Compare branch
+          </div>
+          <div>
+            <select
+              className="outline-none p-2 shadow border-2 bg-white rounded-lg"
+              onChange={(e) => {
+                setCompareBranch(e.currentTarget.value);
+              }}
+            >
+              {branchList.map((branch, index) => {
+                if (baseBranch && baseBranch !== branch) {
+                  return (
+                    <option value={branch} key={branch}>
+                      {branch}
+                    </option>
+                  );
+                } else {
+                  return index === 0 ? null : (
+                    <option value={branch} key={branch}>
+                      {branch}
+                    </option>
+                  );
+                }
               })}
             </select>
           </div>
@@ -115,6 +154,12 @@ export default function BranchCompareComponent(props) {
       ) : (
         compareBranchSelectPane()
       )}
+      {baseBranch ? (
+        <BranchCommitLogChanges
+          baseBranch={baseBranch}
+          compareBranch={compareBranch}
+        ></BranchCommitLogChanges>
+      ) : null}
     </div>
   );
 }
