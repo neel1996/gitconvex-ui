@@ -40,7 +40,7 @@ export default function CompareComponent() {
   }
 
   return (
-    <div className="compare">
+    <div className="compare overflow-auto">
       <div className="compare--header">Compare Branches and Commits</div>
       <RepoSearchBar activateCompare={activateCompare}></RepoSearchBar>
       {selectedRepo ? (

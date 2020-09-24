@@ -53,7 +53,7 @@ export default function BranchCompareComponent(props) {
           });
 
         if (gitBranchList.length > 0) {
-          setCurrentBranch(gitBranchList[1].trim());
+          setCompareBranch(gitBranchList[1].trim());
         }
 
         setBranchList(gitBranchList);
@@ -154,8 +154,9 @@ export default function BranchCompareComponent(props) {
       ) : (
         compareBranchSelectPane()
       )}
-      {baseBranch ? (
+      {baseBranch && compareBranch ? (
         <BranchCommitLogChanges
+          repoId={props.repoId}
           baseBranch={baseBranch}
           compareBranch={compareBranch}
         ></BranchCommitLogChanges>
