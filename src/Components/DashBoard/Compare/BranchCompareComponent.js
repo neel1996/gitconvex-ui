@@ -2,7 +2,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
@@ -15,6 +15,16 @@ export default function BranchCompareComponent(props) {
   const [currentBranch, setCurrentBranch] = useState("");
   const [compareBranch, setCompareBranch] = useState("");
   const [baseBranch, setBaseBranch] = useState("");
+
+  const memoizedBranchCommitLogChangesComponent = useMemo(() => {
+    return (
+      <BranchCommitLogChanges
+        repoId={props.repoId}
+        baseBranch={baseBranch}
+        compareBranch={compareBranch}
+      ></BranchCommitLogChanges>
+    );
+  }, [props.repoId, baseBranch, compareBranch]);
 
   useEffect(() => {
     const token = axios.CancelToken;
@@ -57,8 +67,8 @@ export default function BranchCompareComponent(props) {
         }
 
         setBranchList(gitBranchList);
-        setCurrentBranch(gitCurrentBranch);
-        setBaseBranch(gitCurrentBranch);
+        setCurrentBranch(gitCurrentBranch.trim());
+        setBaseBranch(gitCurrentBranch.trim());
       })
       .catch((err) => {
         console.log(err);
@@ -96,7 +106,7 @@ export default function BranchCompareComponent(props) {
               defaultValue={currentBranch}
               className="outline-none p-2 shadow border-2 bg-white rounded-lg"
               onChange={(e) => {
-                setBaseBranch(e.currentTarget.value);
+                setBaseBranch(e.currentTarget.value.trim());
               }}
             >
               <option value={currentBranch}>{currentBranch}</option>
@@ -154,13 +164,9 @@ export default function BranchCompareComponent(props) {
       ) : (
         compareBranchSelectPane()
       )}
-      {baseBranch && compareBranch ? (
-        <BranchCommitLogChanges
-          repoId={props.repoId}
-          baseBranch={baseBranch}
-          compareBranch={compareBranch}
-        ></BranchCommitLogChanges>
-      ) : null}
+      {baseBranch && compareBranch
+        ? memoizedBranchCommitLogChangesComponent
+        : null}
     </div>
   );
 }
