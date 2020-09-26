@@ -69,7 +69,10 @@ export default function BranchCommitLogChanges(props) {
         commitLogs &&
         commitLogs.map((commit) => {
           return (
-            <div className="my-4 border-b p-3 border border-gray-400 shadow-md rounded">
+            <div
+              className="my-4 border-b p-3 border border-gray-400 shadow-md rounded"
+              key={commit.date}
+            >
               <div className="flex items-center gap-10 text-xl font-sans font-semibold text-gray-800 border-b">
                 <div>
                   <FontAwesomeIcon
@@ -82,7 +85,10 @@ export default function BranchCommitLogChanges(props) {
               <div>
                 {commit.commits.map((item) => {
                   return (
-                    <div className="flex p-3 justify-between items-center mx-auto border-b w-full">
+                    <div
+                      className="flex p-3 justify-between items-center mx-auto border-b w-full"
+                      key={item.hash}
+                    >
                       <div className="block p-2 font-sans font-light text-gray-800">
                         <div>{item.commitMessage}</div>
                         <div className="flex items-center gap-4 my-2 align-middle">
