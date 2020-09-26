@@ -8,7 +8,7 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CompareActiveRepoPane from "./CompareActiveRepoPane";
 import CompareSelectionHint from "./CompareSelectionHint";
-import BranchCompareComponent from "./BranchCompareComponent";
+import BranchCompareComponent from "./BranchCompareComponent/BranchCompareComponent";
 
 export default function CompareComponent() {
   library.add(fas, far);

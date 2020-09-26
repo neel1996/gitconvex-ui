@@ -3,7 +3,7 @@ import axios from "axios";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { globalAPIEndpoint, BRANCH_COMPARE } from "../../../util/env_config";
+import { globalAPIEndpoint, BRANCH_COMPARE } from "../../../../util/env_config";
 
 export default function BranchCommitLogChanges(props) {
   library.add(fas);

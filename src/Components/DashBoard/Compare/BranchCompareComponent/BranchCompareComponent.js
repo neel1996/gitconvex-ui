@@ -6,7 +6,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_REPO_DETAILS,
-} from "../../../util/env_config";
+} from "../../../../util/env_config";
 import BranchCommitLogChanges from "./BranchCommitLogChanges";
 
 export default function BranchCompareComponent(props) {
