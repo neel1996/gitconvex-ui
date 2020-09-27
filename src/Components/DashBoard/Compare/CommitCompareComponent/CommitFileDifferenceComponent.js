@@ -73,7 +73,7 @@ export default function CommitFileDifferenceComponent(props) {
         setError(true);
         console.log(err);
       });
-  }, [props.repoId, props.baseCommit, props.compareCommit]);
+  }, [repoId, baseCommit, compareCommit]);
 
   return (
     <div className="my-4 w-11/12 mx-auto p-6 rounded shadow bg-blue-100">
