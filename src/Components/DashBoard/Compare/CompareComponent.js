@@ -8,7 +8,8 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import CompareActiveRepoPane from "./CompareActiveRepoPane";
 import CompareSelectionHint from "./CompareSelectionHint";
-import BranchCompareComponent from "./BranchCompareComponent";
+import BranchCompareComponent from "./BranchCompareComponent/BranchCompareComponent";
+import CommitCompareComponent from "./CommitCompareComponent/CommitCompareComponent";
 
 export default function CompareComponent() {
   library.add(fas, far);
@@ -24,7 +25,13 @@ export default function CompareComponent() {
     return (
       <BranchCompareComponent repoId={selectedRepo.id}></BranchCompareComponent>
     );
-  }, [selectedRepo]);
+  }, [selectedRepo.id]);
+
+  const memoizedCommitCompareComponent = useMemo(() => {
+    return (
+      <CommitCompareComponent repoId={selectedRepo.id}></CommitCompareComponent>
+    );
+  }, [selectedRepo.id]);
 
   function noSelectedRepobanner() {
     return (
@@ -56,7 +63,13 @@ export default function CompareComponent() {
           {compareAction ? (
             compareAction === "branch-compare" ? (
               memoizedBranchCompareComponent
-            ) : null
+            ) : (
+              <>
+                {compareAction === "commit-compare"
+                  ? memoizedCommitCompareComponent
+                  : null}
+              </>
+            )
           ) : (
             <CompareSelectionHint></CompareSelectionHint>
           )}
