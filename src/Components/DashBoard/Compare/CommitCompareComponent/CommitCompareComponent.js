@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import {
-  ROUTE_REPO_COMMIT_LOGS,
-  globalAPIEndpoint,
-} from "../../../../util/env_config";
+import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import axios from "axios";
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  globalAPIEndpoint,
+  ROUTE_REPO_COMMIT_LOGS,
+} from "../../../../util/env_config";
+import CommitFileDifferenceComponent from "./CommitFileDifferenceComponent";
 import CommitLogCardComponent from "./CommitLogCardComponent";
-import { library } from "@fortawesome/fontawesome-svg-core";
 
 export default function CommitCompareComponent(props) {
   library.add(fas);
@@ -18,7 +18,18 @@ export default function CommitCompareComponent(props) {
   const [baseCommit, setBaseCommit] = useState("");
   const [compareCommit, setCompareCommit] = useState("");
 
+  const memoizedCommitFileDifference = useMemo(() => {
+    return (
+      <CommitFileDifferenceComponent
+        repoId={props.repoId}
+        baseCommit={baseCommit}
+        compareCommit={compareCommit}
+      ></CommitFileDifferenceComponent>
+    );
+  }, [props.repoId, baseCommit, compareCommit]);
+
   useEffect(() => {
+    setCommitData([]);
     const payload = JSON.stringify(
       JSON.stringify({ repoId: props.repoId, skipLimit: skipCount })
     );
@@ -136,7 +147,7 @@ export default function CommitCompareComponent(props) {
   }
 
   return (
-    <div>
+    <>
       {baseAndCompareCommitComponent()}
       {commitData.length === 0 ? (
         <div className="text-3xl text-center font-sans text-gray-300">
@@ -162,6 +173,7 @@ export default function CommitCompareComponent(props) {
           ) : null}
         </div>
       )}
-    </div>
+      {baseCommit && compareCommit ? memoizedCommitFileDifference : null}
+    </>
   );
 }

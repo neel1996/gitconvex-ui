@@ -25,13 +25,13 @@ export default function CompareComponent() {
     return (
       <BranchCompareComponent repoId={selectedRepo.id}></BranchCompareComponent>
     );
-  }, [selectedRepo]);
+  }, [selectedRepo.id]);
 
-  const memoizedCommitCompareComopnent = useMemo(() => {
+  const memoizedCommitCompareComponent = useMemo(() => {
     return (
       <CommitCompareComponent repoId={selectedRepo.id}></CommitCompareComponent>
     );
-  }, [selectedRepo]);
+  }, [selectedRepo.id]);
 
   function noSelectedRepobanner() {
     return (
@@ -66,7 +66,7 @@ export default function CompareComponent() {
             ) : (
               <>
                 {compareAction === "commit-compare"
-                  ? memoizedCommitCompareComopnent
+                  ? memoizedCommitCompareComponent
                   : null}
               </>
             )
