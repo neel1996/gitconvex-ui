@@ -14,6 +14,7 @@ export default function CommitCompareComponent(props) {
   library.add(fas);
 
   const [skipCount, setSkipCount] = useState(0);
+  const [totalCommitCount, setTotalCommitCount] = useState(0);
   const [commitData, setCommitData] = useState([]);
   const [baseCommit, setBaseCommit] = useState("");
   const [compareCommit, setCompareCommit] = useState("");
@@ -29,7 +30,6 @@ export default function CommitCompareComponent(props) {
   }, [props.repoId, baseCommit, compareCommit]);
 
   useEffect(() => {
-    setCommitData([]);
     const payload = JSON.stringify(
       JSON.stringify({ repoId: props.repoId, skipLimit: skipCount })
     );
@@ -60,10 +60,18 @@ export default function CommitCompareComponent(props) {
     })
       .then((res) => {
         if (res.data.data) {
-          const { commits } = res.data.data.gitConvexApi.gitCommitLogs;
+          const {
+            commits,
+            totalCommits,
+          } = res.data.data.gitConvexApi.gitCommitLogs;
+          setTotalCommitCount(totalCommits);
 
           setCommitData((data) => {
-            return [...data, ...commits];
+            if (data) {
+              return [...data, ...commits];
+            } else {
+              return [...commits];
+            }
           });
         }
       })
@@ -85,14 +93,17 @@ export default function CommitCompareComponent(props) {
               ></CommitLogCardComponent>
             );
           })}
-        <div
-          className="p-3 border cursor-pointer hover:bg-gray-100 text-center font-sans font-semibold"
-          onClick={() => {
-            setSkipCount(skipCount + 10);
-          }}
-        >
-          Load More commits
-        </div>
+        {(skipCount >= 10 || skipCount === 0) &&
+        skipCount <= totalCommitCount ? (
+          <div
+            className="p-3 border cursor-pointer hover:bg-gray-100 text-center font-sans font-semibold"
+            onClick={() => {
+              setSkipCount(skipCount + 10);
+            }}
+          >
+            Load More commits
+          </div>
+        ) : null}
       </>
     );
   }
