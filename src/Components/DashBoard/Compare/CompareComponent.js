@@ -1,15 +1,15 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { far } from "@fortawesome/free-regular-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useMemo, useState } from "react";
 import "../../styles/Compare.css";
-import CompareActionButtons from "./CompareActionButtons";
-import RepoSearchBar from "./RepoSearchBar";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
-import { far } from "@fortawesome/free-regular-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CompareActiveRepoPane from "./CompareActiveRepoPane";
-import CompareSelectionHint from "./CompareSelectionHint";
 import BranchCompareComponent from "./BranchCompareComponent/BranchCompareComponent";
 import CommitCompareComponent from "./CommitCompareComponent/CommitCompareComponent";
+import CompareActionButtons from "./CompareActionButtons";
+import CompareActiveRepoPane from "./CompareActiveRepoPane";
+import CompareSelectionHint from "./CompareSelectionHint";
+import RepoSearchBar from "./RepoSearchBar";
 
 export default function CompareComponent() {
   library.add(fas, far);
