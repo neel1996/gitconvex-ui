@@ -21,6 +21,7 @@ export default function CommitFileDifferenceComponent(props) {
 
     if (baseCommit === compareCommit) {
       setLoading(false);
+      setFileDifference([]);
       return;
     }
 
@@ -87,7 +88,7 @@ export default function CommitFileDifferenceComponent(props) {
           Error occurred while fetching comparison results!
         </div>
       ) : null}
-      {!error && fileDifference && !loading ? (
+      {!error && fileDifference.length > 0 && !loading ? (
         <>
           <div className="text-left font-sans font-semibold text-2xl mx-2 my-4 text-gray-800">
             Differing Files
@@ -148,11 +149,12 @@ export default function CommitFileDifferenceComponent(props) {
             );
           })}
         </>
-      ) : (
+      ) : null}
+      {loading ? (
         <div className="my-2 text-2xl font-sans font-semibold text-gray-500">
           Loading comparison results...
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

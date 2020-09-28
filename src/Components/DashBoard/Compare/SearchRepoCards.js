@@ -35,7 +35,11 @@ export default function SearchRepoCards(props) {
           let repoContent = [];
 
           repoId.forEach((entry, index) => {
-            if (repoName[index].match(props.searchQuery)) {
+            if (
+              repoName[index]
+                .toLowerCase()
+                .match(props.searchQuery.toLowerCase())
+            ) {
               repoContent.push({
                 id: entry,
                 repoName: repoName[index],

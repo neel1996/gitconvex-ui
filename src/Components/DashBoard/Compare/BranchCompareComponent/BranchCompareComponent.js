@@ -62,7 +62,7 @@ export default function BranchCompareComponent(props) {
             return branch.trim();
           });
 
-        if (gitBranchList.length > 0) {
+        if (gitBranchList.length > 1) {
           setCompareBranch(gitBranchList[1].trim());
         }
 

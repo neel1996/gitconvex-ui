@@ -1,17 +1,26 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { ADD_FORM_CLOSE, DELETE_PRESENT_REPO, PRESENT_REPO } from "../../../../actionStore";
+import {
+  ADD_FORM_CLOSE,
+  DELETE_PRESENT_REPO,
+  PRESENT_REPO,
+} from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import {
   globalAPIEndpoint,
-  ROUTE_FETCH_REPO
+  ROUTE_FETCH_REPO,
 } from "../../../../util/env_config";
 import InfiniteLoader from "../../../Animations/InfiniteLoader";
 import "../../../styles/RepoComponent.css";
 import AddRepoFormComponent from "./AddRepoForm";
 import RepoCard from "./RepoCard";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function RepoComponent(props) {
+  library.add(fas);
+
   const [repo, setRepo] = useState([]);
   const [repoFormEnable, setRepoFormEnable] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -109,10 +118,10 @@ export default function RepoComponent(props) {
             )}
           </>
         </div>
-        <div className="repo-component--addrepo">
+        <div className="fixed bottom-0 right-0 mb-10 mr-16 cursor-pointer justify-center">
           <div
             id="addRepoButton"
-            className="addrepo--button"
+            className="border-8 border-indigo-100 shadow-lg bg-indigo-300 hover:bg-indigo-400 rounded-full h-20 w-20 flex justify-center text-white font-sans font-black"
             onClick={() => {
               setRepoFormEnable(true);
               dispatch({ type: ADD_FORM_CLOSE, payload: false });
@@ -126,7 +135,15 @@ export default function RepoComponent(props) {
               document.getElementById("pop-up").classList.add("hidden");
             }}
           >
-            <span>+</span>
+            <div className="flex w-full h-full justify-center items-center text-center">
+              <div>
+                <FontAwesomeIcon
+                  icon={["fas", "plus"]}
+                  size="2x"
+                  className="text-indigo-100"
+                ></FontAwesomeIcon>
+              </div>
+            </div>
             <div
               id="pop-up"
               className="addrepo--button--tooltip hidden"

@@ -1,21 +1,25 @@
-import React, { useMemo, useState } from "react";
-import "../../styles/Compare.css";
-import CompareActionButtons from "./CompareActionButtons";
-import RepoSearchBar from "./RepoSearchBar";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import CompareActiveRepoPane from "./CompareActiveRepoPane";
-import CompareSelectionHint from "./CompareSelectionHint";
+import React, { useEffect, useMemo, useState } from "react";
+import "../../styles/Compare.css";
 import BranchCompareComponent from "./BranchCompareComponent/BranchCompareComponent";
 import CommitCompareComponent from "./CommitCompareComponent/CommitCompareComponent";
+import CompareActionButtons from "./CompareActionButtons";
+import CompareActiveRepoPane from "./CompareActiveRepoPane";
+import CompareSelectionHint from "./CompareSelectionHint";
+import RepoSearchBar from "./RepoSearchBar";
 
 export default function CompareComponent() {
   library.add(fas, far);
 
   const [selectedRepo, setSelectedRepo] = useState("");
   const [compareAction, setCompareAction] = useState("");
+
+  useEffect(() => {
+    setCompareAction("");
+  }, [selectedRepo.id]);
 
   function activateCompare(repo) {
     setSelectedRepo(repo);
@@ -32,6 +36,18 @@ export default function CompareComponent() {
       <CommitCompareComponent repoId={selectedRepo.id}></CommitCompareComponent>
     );
   }, [selectedRepo.id]);
+
+  const memoizedCompareActionButtons = useMemo(() => {
+    return (
+      <CompareActionButtons
+        selectedRepo={selectedRepo.id}
+        compareAction={compareAction}
+        setCompareAction={(action) => {
+          setCompareAction(action);
+        }}
+      ></CompareActionButtons>
+    );
+  }, [compareAction, selectedRepo.id]);
 
   function noSelectedRepobanner() {
     return (
@@ -55,11 +71,7 @@ export default function CompareComponent() {
           <CompareActiveRepoPane
             repoName={selectedRepo.repoName}
           ></CompareActiveRepoPane>
-          <CompareActionButtons
-            setCompareAction={(action) => {
-              setCompareAction(action);
-            }}
-          ></CompareActionButtons>
+          {memoizedCompareActionButtons}
           {compareAction ? (
             compareAction === "branch-compare" ? (
               memoizedBranchCompareComponent
