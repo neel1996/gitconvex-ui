@@ -17,7 +17,7 @@ export default function CompareActionButtons(props) {
             : "border-blue-200";
         return (
           <div
-            className={`w-1/3 rounded-lg p-3 shadow border text-center font-sans font-semibold cursor-pointer hover:shadow-lg ${btnStyle}`}
+            className={`compare--action-btn hover:shadow-lg ${btnStyle}`}
             key={`actionItem-${index}`}
             onClick={(event) => {
               if (event.currentTarget.innerText.includes("Branch")) {
