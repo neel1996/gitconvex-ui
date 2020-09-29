@@ -51,7 +51,7 @@ export default function CompareComponent() {
 
   function noSelectedRepobanner() {
     return (
-      <div className="w-full mx-auto my-auto text-center block">
+      <div className="compare--hint">
         <FontAwesomeIcon
           icon={["far", "object-group"]}
           className="font-sans text-center text-gray-300 my-20"

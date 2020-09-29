@@ -28,7 +28,7 @@ export default function RepoSearchBar(props) {
 
   return (
     <>
-      <div className="compare--searchbar flex w-11/12 rounded-md justify-between shadow mt-4 mx-auto items-center border">
+      <div className="compare--searchbar">
         <div className="w-11/12 rounded-r-md">
           <input
             type="text"
@@ -42,7 +42,7 @@ export default function RepoSearchBar(props) {
           />
         </div>
         <div
-          className="px-6 py-4 bg-gray-200 text-center rounded-r-lg hover:bg-gray-400 cursor-pointer"
+          className="compare--searchbar--icon"
           onClick={() => {
             debounceRef();
           }}
