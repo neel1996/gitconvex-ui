@@ -12,6 +12,7 @@ export default function CommitFileDifferenceComponent(props) {
 
   const [fileDifference, setFileDifference] = useState([]);
   const [error, setError] = useState(false);
+  const [warn, setWarn] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -63,6 +64,9 @@ export default function CommitFileDifferenceComponent(props) {
         if (message && message.includes("Error")) {
           setError(true);
           return;
+        } else if (message && message.includes("warning")) {
+          setWarn(message.split("\n"));
+          setError(true);
         }
 
         if (difference) {
@@ -84,8 +88,32 @@ export default function CommitFileDifferenceComponent(props) {
         </div>
       ) : null}
       {error ? (
-        <div className="p-3 w-3/4 rounded bg-red-100 border font-sans font-light text-xl">
+        <div className="p-3 w-full rounded bg-red-100 border font-sans font-light text-xl">
           Error occurred while fetching comparison results!
+          {warn ? (
+            <div className="p-2 my-4 mx-auto rounded shadow">
+              <div className="text-3xl my-2 font-sans font-light text-yellow-900">
+                Warning
+              </div>
+              {warn.map((msg) => {
+                const warnMsg = msg.replace("warning: ", "");
+                return (
+                  <div className="text-xl font-sans font-semibold text-yellow-800">
+                    {warnMsg}
+                    {warnMsg.includes("diff.renameLimit") ? (
+                      <div className="my-4 mx-2 p-3 rounded bg-white text-green-600 font-sans font-light">
+                        run
+                        <span className="font-semibold font-mono">
+                          `git config merge.renamelimit 99999`
+                        </span>
+                        from command line to fix this problem
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       ) : null}
       {!error && fileDifference.length > 0 && !loading ? (
