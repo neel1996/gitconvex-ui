@@ -103,8 +103,8 @@ export default function CommitFileDifferenceComponent(props) {
                     {warnMsg.includes("diff.renameLimit") ? (
                       <div className="my-4 mx-2 p-3 rounded bg-white text-green-600 font-sans font-light">
                         run
-                        <span className="font-semibold font-mono">
-                          `git config merge.renamelimit 99999`
+                        <span className="font-semibold font-mono mx-2">
+                          `git config diff.renamelimit 0`
                         </span>
                         from command line to fix this problem
                       </div>
