@@ -6,7 +6,8 @@
   top: 0;
   left: 0;
   right: 0;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.25);
   display: block;
   padding: 0.75rem;
 }
@@ -18,11 +19,11 @@
   --bg-opacity: 1;
   background-color: #ebf8ff;
   background-color: rgba(235, 248, 255, var(--bg-opacity));
-  cursor: pointer
+  cursor: pointer;
 }
 
 .dashboard-leftpane__logo {
-  background: url('../../assets/gitconvex.png');
+  background: url("../../assets/gitconvex.png");
   background-size: cover;
   width: 70px;
   height: 70px;
