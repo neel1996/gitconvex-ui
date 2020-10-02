@@ -1,5 +1,7 @@
 // Global ENV file for all environment variables
 
+export const CURRENT_VERSION = "1.1.5";
+
 //PORTS LIST
 
 export const PORT_GLOBAL_API =

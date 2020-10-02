@@ -55,7 +55,7 @@ export default function LeftPane(props) {
   ];
 
   return (
-    <div className="dashboard--leftpane xl:block lg:block md:flex md:justify-between xl:w-1/4 lg:w-1/3 md:w-full">
+    <div className="dashboard--leftpane block xl:w-1/3 lg:w-1/3 md:w-1/6 sm:w-1/6 w-1/6">
       <div
         className="leftpane--logo"
         onClick={(event) => {
@@ -64,24 +64,26 @@ export default function LeftPane(props) {
         }}
       >
         <div className="dashboard-leftpane__logo"></div>
-        <div className="font-mono xl:text-3xl lg:text-2xl md:text-3xl sm:text-2xl p-4">
+        <div className="font-mono xl:text-3xl lg:text-2xl md:text-3xl sm:text-2xl p-4 xl:block lg:block md:hidden sm:hidden hidden">
           <span className="font-bold mx-2 border-b-4 border-pink-400">Git</span>
           Convex
         </div>
       </div>
-      <div className="menu xl:mt-32 lg:mt-24 cursor-pointer xl:block lg:block md:flex sm:block items-center align-middle">
+      <div className="menu xl:mt-32 lg:mt-24 md:mt-48 sm:mt-56 mt-56 cursor-pointer block items-center align-middle">
         {menuItemParams.map((entry) => {
           return (
             <NavLink
               to={`${entry.link}`}
               exact
               activeClassName="bg-gray-300"
-              className="menu--link"
+              className="menu--link xl:justify-between lg:justify-between md:justify-center sm:justify-center justify-center xl:my-0 lg:my-0 md:my-6 sm:my-6 my-6"
               key={entry.label}
             >
-              <div className="menu--items">
-                <div className="menu--items__icon text-sm">{entry.icon}</div>
-                <div className="menu--items__label xl:text-2xl lg:text-2xl md:text-xl">
+              <div className="menu--items sm:text-center">
+                <div className="menu--items__icon text-sm w-1/6">
+                  {entry.icon}
+                </div>
+                <div className="menu--items__label w-5/6 xl:text-2xl lg:text-2xl md:text-xl block xl:block lg:block md:hidden sm:hidden hidden">
                   {entry.label}
                 </div>
               </div>
