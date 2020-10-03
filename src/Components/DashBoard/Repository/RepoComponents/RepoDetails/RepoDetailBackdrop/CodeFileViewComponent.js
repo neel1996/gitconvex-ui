@@ -88,8 +88,8 @@ export default function CodeFileViewComponent(props) {
   }, [repoId, fileItem]);
 
   function topPanePills(label, content, accent) {
-    const bg = `bg-${accent}-100`;
-    const textColor = `text-${accent}-500`;
+    const bg = accent.bg;
+    const textColor = accent.text;
 
     return (
       <div className="flex justify-between w-1/2 gap-10 items-center align-middle">
@@ -126,10 +126,16 @@ export default function CodeFileViewComponent(props) {
           <div className="codeview--toppane">
             <div className="codeview--language">
               {languageState
-                ? topPanePills("Language", languageState, "pink")
+                ? topPanePills("Language", languageState, {
+                    text: "text-pink-500",
+                    bg: "bg-pink-200",
+                  })
                 : null}
               {numberOfLines
-                ? topPanePills("Lines", numberOfLines, "orange")
+                ? topPanePills("Lines", numberOfLines, {
+                    text: "text-orange-500",
+                    bg: "bg-orange-200",
+                  })
                 : null}
             </div>
             {latestCommit ? (
