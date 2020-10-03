@@ -152,17 +152,23 @@ export default function GitOperationComponent(props) {
   const actionButtons = [
     {
       label: "Stage all changes",
-      color: "blue",
+      border: "border-blue-500",
+      text: "text-blue-700",
+      hoverBg: "bg-blue-500",
       key: "stage",
     },
     {
       label: "Commit Changes",
-      color: "green",
+      border: "border-green-500",
+      text: "text-green-700",
+      hoverBg: "bg-green-500",
       key: "commit",
     },
     {
       label: "Push to remote",
-      color: "pink",
+      border: "border-pink-500",
+      text: "text-pink-700",
+      hoverBg: "bg-pink-500",
       key: "push",
     },
   ];
@@ -485,10 +491,10 @@ export default function GitOperationComponent(props) {
       ) : null}
       <div className="git-ops--actions">
         {actionButtons.map((item) => {
-          const { label, color, key } = item;
+          const { label, border, text, hoverBg, key } = item;
           return (
             <div
-              className={`git-ops--actions--btn border-${color}-500 text-${color}-700 hover:bg-${color}-500`}
+              className={`git-ops--actions--btn ${border} ${text} hover:${hoverBg}`}
               key={key}
               onClick={() => setAction(key)}
             >

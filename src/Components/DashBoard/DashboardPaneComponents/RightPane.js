@@ -22,14 +22,11 @@ export default function RightPane(props) {
 
   return (
     <>
-      <div className="dashboard--rightpane xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none">
+      <div className="dashboard--rightpane overflow-auto">
         <div className="rightpane--toparea xl:flex lg:flex md:block sm:block">
           {hcParams.map((entry) => {
             return (
-              <div
-                key={entry.label}
-                className="rightpane--toparea--hc"
-              >
+              <div key={entry.label} className="rightpane--toparea--hc">
                 <div className="rightpane--toparea--hclabel xl:font-bold lg:font-semibold md:font-medium xl:text-2xl lg:text-xl md:text-md">
                   {entry.label}
                 </div>
