@@ -57,6 +57,7 @@ After completing the setup process, use `npm start` to start the react app
 ```
 ├── LICENSE
 ├── README.md
+├── package-lock.json
 ├── package.json
 ├── public
 │   ├── favicon.ico
@@ -74,6 +75,21 @@ After completing the setup process, use `npm start` to start the react app
     │   ├── Animations
     │   │   └── InfiniteLoader.js
     │   ├── DashBoard
+    │   │   ├── Compare
+    │   │   │   ├── BranchCompareComponent
+    │   │   │   │   ├── BranchCommitLogChanges.js
+    │   │   │   │   └── BranchCompareComponent.js
+    │   │   │   ├── CommitCompareComponent
+    │   │   │   │   ├── ChangedFilesComponent.js
+    │   │   │   │   ├── CommitCompareComponent.js
+    │   │   │   │   ├── CommitFileDifferenceComponent.js
+    │   │   │   │   └── CommitLogCardComponent.js
+    │   │   │   ├── CompareActionButtons.js
+    │   │   │   ├── CompareActiveRepoPane.js
+    │   │   │   ├── CompareComponent.js
+    │   │   │   ├── CompareSelectionHint.js
+    │   │   │   ├── RepoSearchBar.js
+    │   │   │   └── SearchRepoCards.js
     │   │   ├── Dashboard.js
     │   │   ├── DashboardPaneComponents
     │   │   │   ├── LeftPane.js
@@ -108,14 +124,27 @@ After completing the setup process, use `npm start` to start the react app
     │   │   │       │   ├── RepoLeftPaneComponent.js
     │   │   │       │   ├── RepoRightPaneComponent.js
     │   │   │       │   ├── RepositoryDetails.js
-    │   │   │       │   ├── TopPaneGridComponent.js
     │   │   │       │   └── backdropActionType.js
     │   │   │       └── RepositoryAction.js
     │   │   └── Settings
     │   │       └── Settings.js
     │   ├── LoadingHOC.js
     │   ├── SplashScreen.css
-    │   └── SplashScreen.js
+    │   ├── SplashScreen.js
+    │   └── styles
+    │       ├── AddRepoForm.css
+    │       ├── Compare.css
+    │       ├── FileExplorer.css
+    │       ├── GitDiffView.css
+    │       ├── GitOperations.css
+    │       ├── GitTrackedComponent.css
+    │       ├── LeftPane.css
+    │       ├── RepoCard.css
+    │       ├── RepoComponent.css
+    │       ├── RepositoryAction.css
+    │       ├── RepositoryDetails.css
+    │       ├── RepositoryDetailsBackdrop.css
+    │       └── RightPane.css
     ├── actionStore.js
     ├── assets
     │   └── gitconvex.png
@@ -123,16 +152,20 @@ After completing the setup process, use `npm start` to start the react app
     ├── index.css
     ├── index.js
     ├── logo.svg
+    ├── postcss.config.js
     ├── prism.css
     ├── reducer.js
     ├── serviceWorker.js
     ├── setupTests.js
+    ├── tailwind.config.js
     ├── tests
     │   ├── App.test.js
     │   └── Dashboard.test.js
     └── util
         ├── apiURLSupplier.js
         └── env_config.js
+
+21 directories, 88 files
 
 ```
 
