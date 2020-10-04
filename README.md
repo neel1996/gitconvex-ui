@@ -46,6 +46,7 @@ $ npm run build:tailwind
 ## This will generate a default tailwind css bundle
 
 ```
+> **Note:** The final production build stage is configured to purge unused CSS selectors from the tailwind css file. So make sure you follow the [tailwind purge guidelines](https://tailwindcss.com/docs/controlling-file-size#writing-purgeable-html:~:text=Don't%20use%20string%20concatenation%20to%20create%20class%20names) to make sure that the required styles are not getting purged from the [production bundle](https://github.com/neel1996/gitconvex)
 
 - **Starting the app**
 
