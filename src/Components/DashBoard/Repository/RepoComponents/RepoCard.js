@@ -36,23 +36,20 @@ export default function RepoCard(props) {
       cancelToken: source.token,
       data: {
         query: `
-    
-                query GitConvexApi
-                {
-                  gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-                    gitRepoStatus {
-                      gitTotalCommits
-                      gitTotalTrackedFiles  
-                      gitCurrentBranch  
-                    }
-                  }
-                }
-              `,
+          query 
+          {
+            gitRepoStatus(repoId:"${repoId}"){
+              gitCurrentBranch
+              gitTotalCommits
+              gitTotalTrackedFiles
+            }
+          }
+        `,
       },
     })
       .then((res) => {
         setLoading(false);
-        setRepoFooterData(res.data.data.gitConvexApi.gitRepoStatus);
+        setRepoFooterData(res.data.data.gitRepoStatus);
       })
       .catch((err) => {
         setLoading(false);

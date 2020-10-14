@@ -87,10 +87,10 @@ export default function AddRepoForm(props) {
         method: "POST",
         data: {
           query: `
-              mutation GitConvexMutation{
-                addRepo(repoName: "${repoName}", repoPath: "${repoPath}", initSwitch: ${initCheck}, cloneSwitch: ${cloneCheck}, cloneUrl: "${cloneUrl}"){
-                  message
+              mutation {
+                addRepo(repoName: "${repoName}", repoPath: "${repoPath}", initSwitch: ${initCheck}, cloneSwitch: ${cloneCheck}, repoURL: "${cloneUrl}"){
                   repoId
+                  status
                 }
               }
             `,
@@ -101,9 +101,9 @@ export default function AddRepoForm(props) {
           setInputInvalid(false);
 
           if (res.data.data && !res.data.error) {
-            const { message } = res.data.data.addRepo;
+            const { status } = res.data.data.addRepo;
 
-            if (message && !message.match(/FAIL/g)) {
+            if (status && !status.match(/Failed/g)) {
               setRepoAddSuccess(true);
               setRepoAddFailed(false);
               setCloneSwitch("");
