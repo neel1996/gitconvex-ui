@@ -1,16 +1,14 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_DETAILS,
-} from "../../../../../../util/env_config";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import {
+  globalAPIEndpoint
+} from "../../../../../../util/env_config";
 
 export default function BranchListComponent({ repoId, currentBranch }) {
   library.add(fas);
-  const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
 
   const [branchList, setBranchList] = useState([]);
   const [listError, setListError] = useState(false);
@@ -43,13 +41,10 @@ export default function BranchListComponent({ repoId, currentBranch }) {
       cancelToken: source.token,
       data: {
         query: `
-
-          query GitConvexApi
+          query
           {
-            gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-              gitRepoStatus {
+            gitRepoStatus(repoId:"${repoId}"){
                 gitAllBranchList  
-              }
             }
           }
         `,
@@ -57,7 +52,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
     })
       .then((res) => {
         if (res.data.data && !res.data.error) {
-          let { gitAllBranchList } = res.data.data.gitConvexApi.gitRepoStatus;
+          let { gitAllBranchList } = res.data.data.gitRepoStatus;
           setBranchList([...gitAllBranchList]);
         } else {
           setListError(true);
@@ -71,7 +66,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
       });
 
     return () => source.cancel;
-  }, [repoId, payload, switchedBranch]);
+  }, [repoId, switchedBranch]);
 
   function switchBranchHandler(branchName) {
     resetStates();

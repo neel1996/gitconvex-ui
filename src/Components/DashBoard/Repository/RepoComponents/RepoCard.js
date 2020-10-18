@@ -1,15 +1,14 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_DETAILS,
-} from "../../../../util/env_config";
-import InfiniteLoader from "../../../Animations/InfiniteLoader";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import {
+  globalAPIEndpoint
+} from "../../../../util/env_config";
+import InfiniteLoader from "../../../Animations/InfiniteLoader";
 import "../../../styles/RepoCard.css";
 
 export default function RepoCard(props) {
@@ -22,8 +21,6 @@ export default function RepoCard(props) {
   useEffect(() => {
     setLoading(true);
     let repoId = props.repoData.id;
-    const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
-
     const token = axios.CancelToken;
     const source = token.source();
 

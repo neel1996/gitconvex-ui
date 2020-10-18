@@ -4,8 +4,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  globalAPIEndpoint,
-  ROUTE_REPO_DETAILS
+  globalAPIEndpoint
 } from "../../../../../util/env_config";
 import LoadingHOC from "../../../../LoadingHOC";
 import "../../../../styles/RepositoryDetails.css";
@@ -113,8 +112,6 @@ export default function RepositoryDetails(props) {
 
       setRepoIdState(repoId);
 
-      const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
-
       axios({
         url: endpointURL,
         method: "POST",
@@ -126,8 +123,7 @@ export default function RepositoryDetails(props) {
 
             query GitConvexApi
             {
-              gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-                gitRepoStatus {
+                gitRepoStatus(repoId:"${repoId}"){
                   gitRemoteData
                   gitRepoName
                   gitBranchList
@@ -139,7 +135,6 @@ export default function RepositoryDetails(props) {
                   gitFileBasedCommit
                   gitTotalTrackedFiles    
                 }
-              }
             }
           `,
         },
@@ -148,7 +143,7 @@ export default function RepositoryDetails(props) {
           setLoading(false);
 
           if (res.data && res.data.data && !res.data.error) {
-            const localRepoStatus = res.data.data.gitConvexApi.gitRepoStatus;
+            const localRepoStatus = res.data.data.gitRepoStatus;
             let gitRemoteLocal = localRepoStatus.gitRemoteData;
             setCurrentBranch(localRepoStatus.gitCurrentBranch);
             if (gitRemoteLocal.includes("||")) {
@@ -275,7 +270,7 @@ export default function RepositoryDetails(props) {
       ) : null}
       <>
         {!loading && gitRepoStatus && !repoFetchFailed ? (
-          <div className="xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none repo-details">
+          <div className="overflow-auto repo-details">
             <div className="flex px-3 py-2">
               {gitRepoStatus ? (
                 <RepoInfoComponent
