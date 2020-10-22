@@ -3,9 +3,7 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  globalAPIEndpoint
-} from "../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
 import LoadingHOC from "../../../../LoadingHOC";
 import "../../../../styles/RepositoryDetails.css";
 import FileExplorerComponent from "./FileExplorerComponent";
@@ -31,8 +29,6 @@ export default function RepositoryDetails(props) {
   const [codeViewToggle, setCodeViewToggle] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [currentBranch, setCurrentBranch] = useState("");
-  const [gitRepoFiles, setGitRepoFiles] = useState([]);
-  const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [action, setAction] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +44,12 @@ export default function RepositoryDetails(props) {
     setAction(actionType);
     setBackdropToggle(true);
   };
+
+  const memoizedFolderExplorer = useMemo(() => {
+    return (
+      <FileExplorerComponent repoIdState={repoIdState}></FileExplorerComponent>
+    );
+  }, [repoIdState]);
 
   const memoizedCommitLogComponent = useMemo(() => {
     return (
@@ -131,8 +133,6 @@ export default function RepositoryDetails(props) {
                   gitRemoteHost
                   gitTotalCommits
                   gitLatestCommit
-                  gitTrackedFiles
-                  gitFileBasedCommit
                   gitTotalTrackedFiles    
                 }
             }
@@ -153,9 +153,6 @@ export default function RepositoryDetails(props) {
               setMultiRemoteCount(gitRemoteLocal.split("||").length);
             }
             setGitRepoStatus(localRepoStatus);
-
-            setGitRepoFiles([...localRepoStatus.gitTrackedFiles]);
-            setGitFileBasedCommits([...localRepoStatus.gitFileBasedCommit]);
           } else {
             setRepoFetchFailed(true);
           }
@@ -306,13 +303,9 @@ export default function RepositoryDetails(props) {
               </div>
             </div>
 
-            {!loading && gitRepoStatus && repoIdState && gitRepoFiles ? (
-              <FileExplorerComponent
-                repoIdState={repoIdState}
-                gitRepoFiles={gitRepoFiles}
-                gitFileBasedCommits={gitFileBasedCommits}
-              ></FileExplorerComponent>
-            ) : null}
+            {!loading && gitRepoStatus && repoIdState
+              ? memoizedFolderExplorer
+              : null}
           </div>
         ) : null}
       </>

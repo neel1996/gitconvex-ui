@@ -5,9 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import {
-  globalAPIEndpoint
-} from "../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../util/env_config";
 import InfiniteLoader from "../../../Animations/InfiniteLoader";
 import "../../../styles/RepoCard.css";
 
@@ -55,7 +53,7 @@ export default function RepoCard(props) {
     return () => {
       source.cancel();
     };
-  }, [props]);
+  }, [props.repoData.id]);
 
   const repoName = repoData.repoName;
   var avatar = "";

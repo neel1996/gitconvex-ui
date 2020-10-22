@@ -3,9 +3,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {
-  globalAPIEndpoint
-} from "../../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
 
 export default function BranchListComponent({ repoId, currentBranch }) {
   library.add(fas);
@@ -45,6 +43,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
           {
             gitRepoStatus(repoId:"${repoId}"){
                 gitAllBranchList  
+                gitCurrentBranch
             }
           }
         `,
@@ -52,7 +51,18 @@ export default function BranchListComponent({ repoId, currentBranch }) {
     })
       .then((res) => {
         if (res.data.data && !res.data.error) {
-          let { gitAllBranchList } = res.data.data.gitRepoStatus;
+          let {
+            gitAllBranchList,
+            gitCurrentBranch,
+          } = res.data.data.gitRepoStatus;
+
+          gitAllBranchList = gitAllBranchList.map((branch) => {
+            if (branch === gitCurrentBranch) {
+              return "*" + branch;
+            }
+            return branch;
+          });
+
           setBranchList([...gitAllBranchList]);
         } else {
           setListError(true);
@@ -77,7 +87,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
       data: {
         query: `
             mutation{
-              setBranch(repoId: "${repoId}", branch: "${branchName}")
+              checkoutBranch(repoId: "${repoId}", branchName: "${branchName}")
             }
           `,
       },
@@ -181,8 +191,6 @@ export default function BranchListComponent({ repoId, currentBranch }) {
         {!listError &&
           branchList &&
           branchList.map((branch) => {
-            branch = branch.replace(/\s/gi, "");
-
             const branchPickerComponent = (icon, branchType, branchName) => {
               let activeSwitchStyle = "";
               let activeBranchFlag = false;
@@ -272,10 +280,6 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                 </div>
               );
             };
-
-            if (branch.includes("->") || branch === currentBranch) {
-              return null;
-            }
 
             if (!branch.includes("remotes/")) {
               return branchPickerComponent(

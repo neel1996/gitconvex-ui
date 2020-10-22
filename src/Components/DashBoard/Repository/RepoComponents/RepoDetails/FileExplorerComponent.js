@@ -52,7 +52,37 @@ export default function FileExplorerComponent(props) {
   }
 
   useEffect(() => {
-    filterNullCommitEntries(props.gitRepoFiles, props.gitFileBasedCommits);
+    const repoId = props.repoIdState;
+    axios({
+      url: globalAPIEndpoint,
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      data: {
+        query: `
+          query
+          {
+            gitFolderContent(repoId:"${repoId}"){
+              trackedFiles
+              fileBasedCommits   
+            }
+          }
+        `,
+      },
+    })
+      .then((res) => {
+        const {
+          trackedFiles,
+          fileBasedCommits,
+        } = res.data.data.gitFolderContent;
+        if (trackedFiles && fileBasedCommits) {
+          filterNullCommitEntries(trackedFiles, fileBasedCommits);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [props]);
 
   function directorySepraratorRemover(directorypath) {
@@ -194,7 +224,7 @@ export default function FileExplorerComponent(props) {
                 <div className="w-1/6">
                   <FontAwesomeIcon
                     icon={["fas", "folder"]}
-                    className="font-sans text-xl text-blue-600"
+                    className="font-sans text-xl"
                   ></FontAwesomeIcon>
                 </div>
                 <div
@@ -207,14 +237,7 @@ export default function FileExplorerComponent(props) {
                 </div>
 
                 <div className="folder-view--content--commit bg-green-200 text-green-900">
-                  {gitFileBasedCommits[index]
-                    ? gitFileBasedCommits[index]
-                        .split(" ")
-                        .filter((entry, index) => {
-                          return index !== 0 ? entry : null;
-                        })
-                        .join(" ")
-                    : null}
+                  {gitFileBasedCommits[index]}
                 </div>
               </div>
             </div>
@@ -239,14 +262,7 @@ export default function FileExplorerComponent(props) {
                   {splitEntry[0]}
                 </div>
                 <div className="folder-view--content--commit bg-indigo-200 text-indigo-900">
-                  {gitFileBasedCommits[index]
-                    ? gitFileBasedCommits[index]
-                        .split(" ")
-                        .filter((entry, index) => {
-                          return index !== 0 ? entry : null;
-                        })
-                        .join(" ")
-                    : null}
+                  {gitFileBasedCommits[index]}
                 </div>
               </div>
             </div>
