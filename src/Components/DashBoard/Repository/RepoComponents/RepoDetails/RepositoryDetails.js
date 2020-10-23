@@ -123,7 +123,7 @@ export default function RepositoryDetails(props) {
         data: {
           query: `
 
-            query GitConvexApi
+            query
             {
                 gitRepoStatus(repoId:"${repoId}"){
                   gitRemoteData
