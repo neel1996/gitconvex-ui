@@ -289,6 +289,9 @@ export default function BranchListComponent({ repoId, currentBranch }) {
               );
             } else {
               const splitBranch = branch.split("/");
+              if (splitBranch.length <= 2) {
+                return null;
+              }
               const remoteName = splitBranch[1];
               const remoteBranch = splitBranch
                 .slice(2, splitBranch.length)

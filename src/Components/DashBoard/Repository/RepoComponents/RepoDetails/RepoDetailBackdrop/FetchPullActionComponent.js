@@ -275,7 +275,7 @@ export default function FetchFromRemoteComponent(props) {
               {result.map((result) => {
                 return (
                   <div
-                    className="my-1 mx-2 break-normal"
+                    className="my-1 mx-2 text-center text-xl font-sans shadow bg-gray-300"
                     key={result + `-${uuid()}`}
                   >
                     {result}

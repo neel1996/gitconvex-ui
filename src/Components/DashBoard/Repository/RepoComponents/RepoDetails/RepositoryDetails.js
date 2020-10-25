@@ -26,6 +26,7 @@ export default function RepositoryDetails(props) {
   const [isMultiRemote, setIsMultiRemote] = useState(false);
   const [multiRemoteCount, setMultiRemoteCount] = useState(0);
   const [backdropToggle, setBackdropToggle] = useState(false);
+  const [reloadView, setReloadView] = useState(false);
   const [codeViewToggle, setCodeViewToggle] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [currentBranch, setCurrentBranch] = useState("");
@@ -103,6 +104,7 @@ export default function RepositoryDetails(props) {
   }, [repoIdState]);
 
   useEffect(() => {
+    setReloadView(false);
     setCodeViewToggle(false);
     setLoading(true);
     const endpointURL = globalAPIEndpoint;
@@ -166,7 +168,7 @@ export default function RepositoryDetails(props) {
           }
         });
     }
-  }, [props.parentProps, backdropToggle]);
+  }, [props.parentProps, reloadView]);
 
   let {
     gitRemoteData,
@@ -182,6 +184,7 @@ export default function RepositoryDetails(props) {
     setBackdropToggle(true);
     setAction("switchbranch");
     setSelectedBranch(branchName);
+    setReloadView(true);
   };
 
   const actionComponentPicker = () => {
@@ -242,7 +245,7 @@ export default function RepositoryDetails(props) {
       ) : null}
       {backdropToggle || codeViewToggle ? (
         <div
-          className="backdrop-view"
+          className="backdrop-view z-40"
           id="repo-backdrop"
           style={{ background: "rgba(0,0,0,0.7)" }}
           onClick={(event) => {
@@ -258,6 +261,7 @@ export default function RepositoryDetails(props) {
             onClick={() => {
               setBackdropToggle(false);
               setCodeViewToggle(false);
+              setReloadView(true);
               setAction("");
             }}
           >
