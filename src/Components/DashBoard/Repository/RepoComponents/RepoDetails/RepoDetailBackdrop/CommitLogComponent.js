@@ -40,29 +40,23 @@ export default function RepositoryCommitLogComponent(props) {
   useEffect(() => {
     setIsLoading(true);
     setSearchWarning(false);
-    const payload = JSON.stringify(
-      JSON.stringify({ repoId: props.repoId, skipLimit: 0 })
-    );
 
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-          query GitConvexApi
-          {
-              gitConvexApi(route: "${ROUTE_REPO_COMMIT_LOGS}", payload: ${payload}){
-                  gitCommitLogs {
-                      totalCommits
-                      commits{
-                          commitTime
-                          hash
-                          author
-                          commitMessage
-                          commitRelativeTime
-                          commitFilesCount
-                      }  
-                  }
+            query {
+              gitCommitLogs(repoId: "${props.repoId}", skipLimit: 0) {
+                  totalCommits
+                  commits{
+                      commitTime
+                      hash
+                      author
+                      commitMessage
+                      commitRelativeTime
+                      commitFilesCount
+                  }  
               }
           }
           `,
@@ -75,7 +69,7 @@ export default function RepositoryCommitLogComponent(props) {
           const {
             commits,
             totalCommits,
-          } = res.data.data.gitConvexApi.gitCommitLogs;
+          } = res.data.data.gitCommitLogs;
 
           if (totalCommits <= 10) {
             setExcessCommit(false);
