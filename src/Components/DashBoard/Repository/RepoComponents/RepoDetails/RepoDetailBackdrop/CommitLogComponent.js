@@ -4,15 +4,12 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import moment from "moment";
-import React, { useEffect, useState, useRef } from "react";
-import ReactDOM from "react-dom";
-import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
 import debounce from "lodash.debounce";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_COMMIT_LOGS,
-} from "../../../../../../util/env_config";
+import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
+import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
 import CommitLogFileCard from "./CommitLogFileCard";
 
 export default function RepositoryCommitLogComponent(props) {
@@ -66,10 +63,7 @@ export default function RepositoryCommitLogComponent(props) {
         setIsLoading(false);
 
         if (res.data.data) {
-          const {
-            commits,
-            totalCommits,
-          } = res.data.data.gitCommitLogs;
+          const { commits, totalCommits } = res.data.data.gitCommitLogs;
 
           if (totalCommits <= 10) {
             setExcessCommit(false);
@@ -102,10 +96,6 @@ export default function RepositoryCommitLogComponent(props) {
     let localLimit = 0;
     localLimit = skipLimit + 10;
 
-    const payload = JSON.stringify(
-      JSON.stringify({ repoId: props.repoId, skipLimit: localLimit })
-    );
-
     setSkipLimit(localLimit);
 
     axios({
@@ -113,37 +103,31 @@ export default function RepositoryCommitLogComponent(props) {
       method: "POST",
       data: {
         query: `
-          query GitConvexApi
-          {
-              gitConvexApi(route: "${ROUTE_REPO_COMMIT_LOGS}", payload: ${payload}){
-                  gitCommitLogs {
-                      totalCommits
-                      commits{
-                          commitTime
-                          hash
-                          author
-                          commitMessage
-                          commitRelativeTime
-                          commitFilesCount
-                      }  
-                  }
-              }
-          }
+          query{
+            gitCommitLogs(repoId:"${props.repoId}", skipLimit: ${localLimit}){
+                totalCommits
+                commits{
+                    commitTime
+                    hash
+                    author
+                    commitMessage
+                    commitRelativeTime
+                    commitFilesCount
+                }  
+            }
+        }
           `,
       },
     })
       .then((res) => {
         setIsLoading(false);
 
-        if (totalCommitCount - localLimit < 10) {
+        if (totalCommitCount - localLimit <= 10) {
           setExcessCommit(false);
         }
 
         if (res.data.data) {
-          const {
-            commits,
-            totalCommits,
-          } = res.data.data.gitConvexApi.gitCommitLogs;
+          const { commits, totalCommits } = res.data.data.gitCommitLogs;
           setTotalCommitCount(totalCommits);
           if (commits && commits.length > 0) {
             setCommitLogs([...commitLogs, ...commits]);
