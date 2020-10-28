@@ -31,22 +31,20 @@ export default function CommitLogFileCard({
       cancelToken: source.token,
       data: {
         query: `
-                query GitConvexApi
-                {
-                    gitConvexApi(route: "${ROUTE_COMMIT_FILES}", payload: ${payload}){
-                        gitCommitFiles {
-                            type
-                            fileName
-                        }
-                    }
+            query
+            {
+              gitCommitFiles(repoId: "${repoId}", commitHash: "${commitHash}"){
+                    type
+                    fileName
                 }
-            `,
+              }
+          `,
       },
     })
       .then((res) => {
         setIsLoading(false);
         if (res.data.data && !res.data.err) {
-          setCommitFiles([...res.data.data.gitConvexApi.gitCommitFiles]);
+          setCommitFiles([...res.data.data.gitCommitFiles]);
         }
       })
       .catch((err) => {

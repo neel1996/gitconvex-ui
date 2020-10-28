@@ -376,7 +376,9 @@ export default function RepositoryCommitLogComponent(props) {
                   <FontAwesomeIcon
                     icon={["fab", "slack-hash"]}
                   ></FontAwesomeIcon>
-                  <span className="commitlogs--toppane--data">{hash}</span>
+                  <span className="commitlogs--toppane--data">
+                    {hash.substring(0, 7)}
+                  </span>
                 </div>
                 <div className="commitlogs--toppane--divider"></div>
                 <div className="commitlogs--toppane--label">
