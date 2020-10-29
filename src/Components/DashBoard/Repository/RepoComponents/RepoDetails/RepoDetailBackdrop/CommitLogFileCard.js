@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  ROUTE_COMMIT_FILES,
-  globalAPIEndpoint,
-} from "../../../../../../util/env_config";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import {
+  globalAPIEndpoint
+} from "../../../../../../util/env_config";
 export default function CommitLogFileCard({
   repoId,
   commitHash,
@@ -20,10 +19,6 @@ export default function CommitLogFileCard({
     setIsLoading(true);
     const token = axios.CancelToken;
     const source = token.source();
-
-    const payload = JSON.stringify(
-      JSON.stringify({ repoId: repoId, commitHash: commitHash })
-    );
 
     axios({
       url: globalAPIEndpoint,
