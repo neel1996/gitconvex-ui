@@ -220,7 +220,7 @@ export default function RepositoryCommitLogComponent(props) {
         method: "POST",
         data: {
           query: `
-            mutation{
+            query{
               searchCommitLogs(repoId:"${props.repoId}",searchType:"${searchOption}",searchKey:"${searchQuery}"){
                 hash
                 author
@@ -272,9 +272,8 @@ export default function RepositoryCommitLogComponent(props) {
             </div>
             {searchWarning ? (
               <div className="my-4 mx-auto rounded shadow p-4 text-center font-sans text-orange-900 font-light bg-orange-100 border-b-4  border-dashed border-orange-300 text-md">
-                If you are looking for some newly added commits or if this is a
-                freshly added repo, then please wait for a few minutes and
-                search again
+                Make sure if you are searching with the right category and the
+                right search query
               </div>
             ) : null}
             {isLoading ? (
