@@ -3,15 +3,12 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
-import CodeFileViewComponent from "./RepoDetailBackdrop/CodeFileViewComponent";
-import {
-  GIT_FOLDER_CONTENT,
-  globalAPIEndpoint,
-} from "../../../../../util/env_config";
 import "../../../../styles/FileExplorer.css";
+import CodeFileViewComponent from "./RepoDetailBackdrop/CodeFileViewComponent";
 
 export default function FileExplorerComponent(props) {
   library.add(fab, fas);
@@ -63,7 +60,7 @@ export default function FileExplorerComponent(props) {
         query: `
           query
           {
-            gitFolderContent(repoId:"${repoId}"){
+            gitFolderContent(repoId:"${repoId}", directoryName: ""){
               trackedFiles
               fileBasedCommits   
             }
@@ -85,22 +82,22 @@ export default function FileExplorerComponent(props) {
       });
   }, [props]);
 
-  function directorySepraratorRemover(directorypath) {
-    if (directorypath.match(/.\/./gi)) {
-      directorypath = directorypath.split("/")[
-        directorypath.split("/").length - 1
+  function directorySeparatorRemover(directoryPath) {
+    if (directoryPath.match(/.\/./gi)) {
+      directoryPath = directoryPath.split("/")[
+        directoryPath.split("/").length - 1
       ];
-    } else if (directorypath.match(/[^\\]\\[^\\]/gi)) {
-      directorypath = directorypath.split("\\")[
-        directorypath.split("\\").length - 1
+    } else if (directoryPath.match(/[^\\]\\[^\\]/gi)) {
+      directoryPath = directoryPath.split("\\")[
+        directoryPath.split("\\").length - 1
       ];
-    } else if (directorypath.match(/.\\\\./gi)) {
-      directorypath = directorypath.split("\\\\")[
-        directorypath.split("\\\\").length - 1
+    } else if (directoryPath.match(/.\\\\./gi)) {
+      directoryPath = directoryPath.split("\\\\")[
+        directoryPath.split("\\\\").length - 1
       ];
     }
 
-    return directorypath;
+    return directoryPath;
   }
 
   const fetchFolderContent = (
@@ -123,10 +120,6 @@ export default function FileExplorerComponent(props) {
 
       setCwd(directoryName);
 
-      const payload = JSON.stringify(
-        JSON.stringify({ repoId: repoIdState, directoryName })
-      );
-
       axios({
         url: globalAPIEndpoint,
         method: "POST",
@@ -135,30 +128,26 @@ export default function FileExplorerComponent(props) {
         },
         data: {
           query: `
-
-          query GitConvexApi
-          {
-            gitConvexApi(route: "${GIT_FOLDER_CONTENT}", payload: ${payload}){
-              gitFolderContent{
-                gitTrackedFiles
-                gitFileBasedCommit
+            query
+            {
+              gitFolderContent(repoId:"${repoIdState}", directoryName: "${directoryName}"){
+                trackedFiles
+                fileBasedCommits   
               }
             }
-          }
-        `,
+          `,
         },
       })
         .then((res) => {
           if (res.data.data && !res.data.error) {
-            const localFolderContent =
-              res.data.data.gitConvexApi.gitFolderContent;
+            const localFolderContent = res.data.data.gitFolderContent;
 
             filterNullCommitEntries(
-              localFolderContent.gitTrackedFiles,
-              localFolderContent.gitFileBasedCommit
+              localFolderContent.trackedFiles,
+              localFolderContent.fileBasedCommits
             );
 
-            directoryName = directorySepraratorRemover(directoryName);
+            directoryName = directorySeparatorRemover(directoryName);
 
             if (homeIndicator) {
               setDirectoryNavigator([]);
@@ -192,7 +181,8 @@ export default function FileExplorerComponent(props) {
         .catch((err) => {
           if (err) {
             console.log(
-              "ERROR: Error occurred while fetching the folder content!"
+              "ERROR: Error occurred while fetching the folder content!",
+              err
             );
           }
         });
@@ -213,7 +203,7 @@ export default function FileExplorerComponent(props) {
         const splitEntry = entry.split(":");
 
         if (splitEntry[1].includes("directory")) {
-          let directorypath = directorySepraratorRemover(splitEntry[0]);
+          let directorypath = directorySeparatorRemover(splitEntry[0]);
 
           directoryEntry.push(
             <div
@@ -289,7 +279,7 @@ export default function FileExplorerComponent(props) {
           <div>
             <FontAwesomeIcon icon={["fas", "unlink"]}></FontAwesomeIcon>
           </div>
-          <div>No Tracked Files in the repo!</div>
+          <div>No Tracked Files in the directory!</div>
         </div>
       );
     } else {
@@ -336,22 +326,20 @@ export default function FileExplorerComponent(props) {
         </div>
       ) : null}
       <div>
-        {directoryNavigator &&
-        gitRepoFiles &&
-        gitRepoFiles[0] !== "NO_TRACKED_FILES" ? (
+        <div
+          className="folder-view--homebtn"
+          onClick={() => {
+            fetchFolderContent("", 0, false, true);
+          }}
+        >
+          <div>
+            <FontAwesomeIcon icon={["fas", "home"]}></FontAwesomeIcon>
+          </div>
+          <div>Home</div>
+          <div className="text-2xl font-sans text-blue-400">./</div>
+        </div>
+        {directoryNavigator && gitRepoFiles && gitRepoFiles.length > 0 ? (
           <div className="folder-view">
-            <div
-              className="folder-view--homebtn"
-              onClick={() => {
-                fetchFolderContent("", 0, false, true);
-              }}
-            >
-              <div>
-                <FontAwesomeIcon icon={["fas", "home"]}></FontAwesomeIcon>
-              </div>
-              <div>Home</div>
-              <div className="text-2xl font-sans text-blue-400">./</div>
-            </div>
             <div className="folder-view--navigator" id="repoFolderNavigator">
               {directoryNavigator.map((item, index) => {
                 return (
