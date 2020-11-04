@@ -338,7 +338,7 @@ export default function AddRepoForm(props) {
                       ></input>
                       <label
                         htmlFor={item.key}
-                        className="font-sans font-light cursor-pointer"
+                        className="font-sans text-sm font-light cursor-pointer"
                       >
                         {item.label}
                       </label>
