@@ -257,7 +257,11 @@ export default function FileExplorerComponent(props) {
                 <div
                   className="folder-view--content--path"
                   onClick={() => {
-                    setCodeViewItem(cwd + "/" + splitEntry[0]);
+                    if (cwd === "" || cwd === "/") {
+                      setCodeViewItem(splitEntry[0]);
+                    } else {
+                      setCodeViewItem(cwd + "/" + splitEntry[0]);
+                    }
                     setCodeViewToggle(true);
                   }}
                 >
@@ -381,7 +385,7 @@ export default function FileExplorerComponent(props) {
           </div>
         ) : null}
         <div className="folder-view--tracked-content">
-          {gitRepoFiles.length > 0 ? gitTrackedFileComponent() : null}
+          {gitTrackedFileComponent()}
         </div>
       </div>
     </>

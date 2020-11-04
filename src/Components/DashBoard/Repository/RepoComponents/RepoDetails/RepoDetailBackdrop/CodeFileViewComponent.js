@@ -1,11 +1,9 @@
+import { LangLine } from "@itassistors/langline";
 import axios from "axios";
 import * as Prism from "prismjs";
 import React, { useEffect, useState } from "react";
 import "../../../../../../prism.css";
-import {
-  CODE_FILE_VIEW,
-  globalAPIEndpoint,
-} from "../../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
 
 export default function CodeFileViewComponent(props) {
   const [languageState, setLanguageState] = useState("");
@@ -20,12 +18,6 @@ export default function CodeFileViewComponent(props) {
   const fileItem = props.fileItem;
 
   useEffect(() => {
-    const payload = JSON.stringify(
-      JSON.stringify({
-        repoId: repoId,
-        fileItem: fileItem,
-      })
-    );
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -34,42 +26,44 @@ export default function CodeFileViewComponent(props) {
       },
       data: {
         query: `
-          query GitConvexApi{
-            gitConvexApi(route: "${CODE_FILE_VIEW}", payload:${payload})
-            {
-              codeFileDetails{
-                language
+          query {
+            codeFileDetails(repoId: "${repoId}", fileName: "${fileItem}"){
                 fileCommit
                 fileData
-                prism
               }
-            }
           }
         `,
       },
     })
       .then(async (res) => {
         if (res.data.data) {
-          const {
-            language,
-            fileCommit,
-            fileData,
-            prism,
-          } = res.data.data.gitConvexApi.codeFileDetails;
+          const { fileCommit, fileData } = res.data.data.codeFileDetails;
 
           if (fileData.length === 0) {
             setIsInvalidFile(true);
           }
 
-          setLanguageState(language);
+          let l = new LangLine();
+          let lang = l.withFileName(fileItem);
+          let prism;
+
+          console.log(lang);
+
+          if (lang.prismIndicator === "" || !lang.prismIndicator) {
+            prism = "go";
+          } else {
+            prism = lang.prismIndicator;
+          }
+
           setLatestCommit(fileCommit);
           setNumberOfLines(fileData.length);
           setFileDataState(fileData);
+          setLanguageState(lang.name);
+          setPrismIndicator(prism);
 
           if (prism) {
             await import("prismjs/components/prism-" + prism + ".js")
               .then(() => {
-                setPrismIndicator(prism);
                 const codeHighlight = fileData.map((line) => {
                   return Prism.highlight(line, Prism.languages[prism], prism);
                 });
@@ -77,12 +71,12 @@ export default function CodeFileViewComponent(props) {
               })
               .catch((err) => {
                 console.log(err);
-                setPrismIndicator("markdown");
               });
           }
         }
       })
       .catch((err) => {
+        console.log(err);
         setIsInvalidFile(true);
       });
   }, [repoId, fileItem]);
@@ -110,9 +104,7 @@ export default function CodeFileViewComponent(props) {
   function invalidFileAlert() {
     return (
       <div className="w-3/4 mx-auto my-auto p-6 rounded bg-red-200 text-red-600 font-sans text-2xl font-light text-center border-b-8 border-red-400 border-dashed">
-        {languageState || isInvalidFile
-          ? "File cannot be opened!"
-          : "Loading..."}
+        {isInvalidFile ? "File cannot be opened!" : "Loading..."}
       </div>
     );
   }
