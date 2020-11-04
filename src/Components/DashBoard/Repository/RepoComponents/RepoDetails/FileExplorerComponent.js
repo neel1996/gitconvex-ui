@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
+import { getIconForFile } from "vscode-icons-js";
 import { globalAPIEndpoint } from "../../../../../util/env_config";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
 import "../../../../styles/FileExplorer.css";
@@ -199,7 +200,7 @@ export default function FileExplorerComponent(props) {
       var directoryEntry = [];
       var fileEntry = [];
 
-      gitRepoFiles.forEach((entry, index) => {
+      gitRepoFiles.forEach(async (entry, index) => {
         const splitEntry = entry.split(":");
 
         if (splitEntry[1].includes("directory")) {
@@ -233,14 +234,25 @@ export default function FileExplorerComponent(props) {
             </div>
           );
         } else if (splitEntry[1].includes("File")) {
+          let fileIcon;
+          if (splitEntry[0] === "LICENSE") {
+            fileIcon = require("../../../../../assets/icons/file_type_license.svg");
+          } else {
+            fileIcon = require("../../../../../assets/icons/" +
+              getIconForFile(splitEntry[0]));
+          }
+
           fileEntry.push(
             <div className="folder-view--content" key={`file-key-${uuid()}`}>
-              <div className="flex">
+              <div className="flex items-center align-middle">
                 <div className="w-1/6">
-                  <FontAwesomeIcon
-                    icon={["fas", "file"]}
-                    className="font-sans text-xl text-gray-700"
-                  ></FontAwesomeIcon>
+                  <img
+                    src={fileIcon}
+                    style={{
+                      width: "26px",
+                    }}
+                    alt={fileIcon}
+                  ></img>
                 </div>
                 <div
                   className="folder-view--content--path"
@@ -369,7 +381,7 @@ export default function FileExplorerComponent(props) {
           </div>
         ) : null}
         <div className="folder-view--tracked-content">
-          {gitTrackedFileComponent()}
+          {gitRepoFiles.length > 0 ? gitTrackedFileComponent() : null}
         </div>
       </div>
     </>
