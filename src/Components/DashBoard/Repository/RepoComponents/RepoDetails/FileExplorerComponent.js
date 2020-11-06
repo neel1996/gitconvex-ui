@@ -250,6 +250,7 @@ export default function FileExplorerComponent(props) {
                     src={fileIcon}
                     style={{
                       width: "26px",
+                      filter: "grayscale(30%)",
                     }}
                     alt={fileIcon}
                   ></img>

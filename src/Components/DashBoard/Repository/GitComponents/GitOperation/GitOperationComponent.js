@@ -2,11 +2,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {
-  globalAPIEndpoint,
-  ROUTE_GIT_STAGED_FILES,
-  ROUTE_REPO_TRACKED_DIFF,
-} from "../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
 import "../../../../styles/GitOperations.css";
 import CommitComponent from "./CommitComponent";
 import PushComponent from "./PushComponent";
@@ -32,11 +28,6 @@ export default function GitOperationComponent(props) {
     setIsLoading(true);
     setStagedItems([]);
     setCurrensStageitem("");
-    const payload = JSON.stringify(
-      JSON.stringify({
-        repoId: props.repoId,
-      })
-    );
 
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
@@ -50,25 +41,23 @@ export default function GitOperationComponent(props) {
       cancelToken: source.token,
       data: {
         query: `
-            query GitConvexApi{
-              gitConvexApi(route: "${ROUTE_REPO_TRACKED_DIFF}", payload:${payload})
-              {
-                gitChanges{
+            query {
+                gitChanges(repoId: "${props.repoId}"){
                   gitUntrackedFiles
                   gitChangedFiles
                   gitStagedFiles
                 }
-              }
             }
         `,
       },
     })
       .then((res) => {
         if (res.data.data) {
-          var apiData = res.data.data.gitConvexApi.gitChanges;
+          var apiData = res.data.data.gitChanges;
 
           setGitTrackedFiles([...apiData.gitChangedFiles]);
           setGitUntrackedFiles([...apiData.gitUntrackedFiles]);
+          setStagedItems([...apiData.gitStagedFiles]);
 
           const apiTrackedFiles = [...apiData.gitChangedFiles];
           const apiUnTrackedFiles = [...apiData.gitUntrackedFiles];
@@ -105,49 +94,6 @@ export default function GitOperationComponent(props) {
       source.cancel();
     };
   }, [props, viewReload, currentStageItem]);
-
-  useEffect(() => {
-    const cancelToken = axios.CancelToken;
-    const source = cancelToken.source();
-
-    const payload = JSON.stringify(
-      JSON.stringify({
-        repoId: props.repoId,
-      })
-    );
-    axios({
-      url: globalAPIEndpoint,
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      cancelToken: source.token,
-      data: {
-        query: `
-            query GitConvexApi{
-              gitConvexApi(route: "${ROUTE_GIT_STAGED_FILES}", payload:${payload})
-              {
-                gitStagedFiles{
-                    stagedFiles
-                }
-              }
-            }
-          `,
-      },
-    })
-      .then((res) => {
-        const { stagedFiles } = res.data.data.gitConvexApi.gitStagedFiles;
-
-        if (stagedFiles && stagedFiles.length > 0) {
-          setStagedItems([...stagedFiles]);
-        }
-      })
-      .catch((err) => {});
-
-    return () => {
-      return source.cancel();
-    };
-  }, [list, props.repoId, viewReload]);
 
   const actionButtons = [
     {
@@ -187,7 +133,7 @@ export default function GitOperationComponent(props) {
       method: "POST",
       data: {
         query: `
-          mutation GitConvexMutation{
+          mutation {
             stageItem(repoId: "${repoId}", item: "${stageItem}")
           }
         `,
@@ -197,7 +143,7 @@ export default function GitOperationComponent(props) {
         setViewReload(localViewReload);
 
         if (res.data.data && !res.data.error) {
-          if (res.data.data.stageItem === "ADD_ITEM_SUCCES") {
+          if (res.data.data.stageItem === "ADD_ITEM_SUCCESS") {
             setCurrensStageitem(stageItem);
           }
         }
@@ -525,37 +471,45 @@ export default function GitOperationComponent(props) {
             style={{ height: "400px" }}
           >
             <div>
-              {getTableData() &&
-                getTableData().map((tableData, index) => {
-                  return (
-                    <div
-                      className="git-ops--file-table--items"
-                      key={`tableItem-${index}`}
-                    >
-                      {tableData.map((data, index) => {
-                        return (
-                          <div
-                            key={`${data}-${index}`}
-                            className={`break-all items-center align-middle my-auto ${
-                              index === 0
-                                ? "w-3/4 text-left"
-                                : "w-1/4 text-center"
-                            }`}
-                          >
-                            {data}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
+              {isLoading ? (
+                <div className="text-center font-sans font-light p-4 text-2xl text-gray-600">
+                  Loading modified file items...
+                </div>
+              ) : (
+                <>
+                  {getTableData() &&
+                    getTableData().map((tableData, index) => {
+                      return (
+                        <div
+                          className="git-ops--file-table--items"
+                          key={`tableItem-${index}`}
+                        >
+                          {tableData.map((data, index) => {
+                            return (
+                              <div
+                                key={`${data}-${index}`}
+                                className={`break-all items-center align-middle my-auto ${
+                                  index === 0
+                                    ? "w-3/4 text-left"
+                                    : "w-1/4 text-center"
+                                }`}
+                              >
+                                {data}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                </>
+              )}
             </div>
           </div>
         </div>
       ) : (
         <>{noChangesComponent()}</>
       )}
-      <>{stageItems ? getStagedFilesComponent() : null}</>
+      <>{stageItems && !isLoading ? getStagedFilesComponent() : null}</>
     </>
   );
 }

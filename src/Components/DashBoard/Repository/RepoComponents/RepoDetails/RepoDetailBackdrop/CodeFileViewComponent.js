@@ -3,6 +3,7 @@ import axios from "axios";
 import * as Prism from "prismjs";
 import React, { useEffect, useState } from "react";
 import "../../../../../../prism.css";
+import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
 import { globalAPIEndpoint } from "../../../../../../util/env_config";
 
 export default function CodeFileViewComponent(props) {
@@ -13,11 +14,13 @@ export default function CodeFileViewComponent(props) {
   const [highlightedCode, setHighlightedCode] = useState([]);
   const [fileDataState, setFileDataState] = useState([]);
   const [isInvalidFile, setIsInvalidFile] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const repoId = props.repoId;
   const fileItem = props.fileItem;
 
   useEffect(() => {
+    setLoading(true);
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -36,6 +39,7 @@ export default function CodeFileViewComponent(props) {
       },
     })
       .then(async (res) => {
+        setLoading(false);
         if (res.data.data) {
           const { fileCommit, fileData } = res.data.data.codeFileDetails;
 
@@ -110,53 +114,66 @@ export default function CodeFileViewComponent(props) {
   }
 
   return (
-    <div className="repo-backdrop--codeview">
-      {isInvalidFile ? (
-        invalidFileAlert()
-      ) : (
-        <div className="codeview">
-          <div className="codeview--toppane">
-            <div className="codeview--language">
-              {languageState
-                ? topPanePills("Language", languageState, {
-                    text: "text-pink-500",
-                    bg: "bg-pink-200",
-                  })
-                : null}
-              {numberOfLines
-                ? topPanePills("Lines", numberOfLines, {
-                    text: "text-orange-500",
-                    bg: "bg-orange-200",
-                  })
-                : null}
+    <>
+      {loading ? (
+        <div className="w-full h-full flex mx-auto my-auto justify-center items-center align-middle">
+          <div className="block w-3/4 rounded shadow bg-white p-6 text-center mx-auto font-sans text-2xl my-auto font-light">
+            <div>Loading file content...</div>
+            <div className="text-center mx-auto flex justify-center my-4">
+              <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
             </div>
-            {latestCommit ? (
-              <div className="codeview--commits">
-                <div className="codeview--commits--latest">
-                  <div className="codeview--commits--latest--label">
-                    Latest Commit
-                  </div>
-                  <div className="codeview--commits--latest--data">
-                    {latestCommit}
-                  </div>
-                </div>
-              </div>
-            ) : null}
           </div>
+        </div>
+      ) : (
+        <div className="repo-backdrop--codeview">
+          {isInvalidFile ? (
+            invalidFileAlert()
+          ) : (
+            <div className="codeview">
+              <div className="codeview--toppane">
+                <div className="codeview--language">
+                  {languageState
+                    ? topPanePills("Language", languageState, {
+                        text: "text-pink-500",
+                        bg: "bg-pink-200",
+                      })
+                    : null}
+                  {numberOfLines
+                    ? topPanePills("Lines", numberOfLines, {
+                        text: "text-orange-500",
+                        bg: "bg-orange-200",
+                      })
+                    : null}
+                </div>
+                {latestCommit ? (
+                  <div className="codeview--commits">
+                    <div className="codeview--commits--latest">
+                      <div className="codeview--commits--latest--label">
+                        Latest Commit
+                      </div>
+                      <div className="codeview--commits--latest--data">
+                        {latestCommit}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
 
-          {fileDataState && prismIndicator ? (
-            <div className="codeview--prismview">
-              <pre className="codeview--prismview--pre">
-                <code
-                  dangerouslySetInnerHTML={{
-                    __html: highlightedCode.join("\n"),
-                  }}
-                ></code>
-              </pre>
+              {fileDataState && prismIndicator ? (
+                <div className="codeview--prismview">
+                  <pre className="codeview--prismview--pre">
+                    <code
+                      dangerouslySetInnerHTML={{
+                        __html: highlightedCode.join("\n"),
+                      }}
+                    ></code>
+                  </pre>
+                </div>
+              ) : null}
             </div>
-          ) : null}
+          )}
         </div>
       )}
-    </div>
+    </>
   );
 }

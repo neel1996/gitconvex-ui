@@ -21,6 +21,10 @@ export default function Dashboard(props) {
     return <RepositoryDetails parentProps={props}></RepositoryDetails>;
   }, [props]);
 
+  const memoizedRepoAction = useMemo(() => {
+    return <RepositoryAction></RepositoryAction>;
+  }, []);
+
   const memoizedCompare = useMemo(() => {
     return <CompareComponent></CompareComponent>;
   }, []);
@@ -96,7 +100,7 @@ export default function Dashboard(props) {
       case "/dashboard":
         return <RightPane params={params}></RightPane>;
       case "/dashboard/repository":
-        return <RepositoryAction></RepositoryAction>;
+        return memoizedRepoAction;
       case "/dashboard/compare":
         return memoizedCompare;
       case "/dashboard/settings":

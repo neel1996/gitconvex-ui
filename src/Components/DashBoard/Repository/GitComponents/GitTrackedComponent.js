@@ -9,10 +9,7 @@ import {
   GIT_TRACKED_FILES,
 } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_TRACKED_DIFF,
-} from "../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../util/env_config";
 import "../../../styles/GitTrackedComponent.css";
 import GitDiffViewComponent from "./GitDiffViewComponent";
 import GitOperationComponent from "./GitOperation/GitOperationComponent";
@@ -35,7 +32,7 @@ export default function GitTrackedComponent(props) {
 
   const memoizedGitDiffView = useMemo(() => {
     return <GitDiffViewComponent repoId={props.repoId}></GitDiffViewComponent>;
-  }, [props]);
+  }, [props.repoId]);
 
   const memoizedGitOperationView = useMemo(() => {
     return (
@@ -44,19 +41,13 @@ export default function GitTrackedComponent(props) {
         stateChange={operationStateChangeHandler}
       ></GitOperationComponent>
     );
-  }, [props]);
+  }, [props.repoId]);
 
   useEffect(() => {
     let apiEndPoint = globalAPIEndpoint;
     setRequestChange(false);
     setIsLoading(true);
     setNoChangeMarker(false);
-
-    const payload = JSON.stringify(
-      JSON.stringify({
-        repoId: props.repoId,
-      })
-    );
 
     axios({
       url: apiEndPoint,
@@ -66,22 +57,19 @@ export default function GitTrackedComponent(props) {
       },
       data: {
         query: `
-            query GitConvexApi{
-              gitConvexApi(route: "${ROUTE_REPO_TRACKED_DIFF}", payload:${payload})
-              {
-                gitChanges{
+            query {
+                gitChanges(repoId: "${props.repoId}"){
                   gitUntrackedFiles
                   gitChangedFiles
                   gitStagedFiles
                 }
-              }
             }
         `,
       },
     })
       .then((res) => {
         if (res) {
-          var apiData = res.data.data.gitConvexApi.gitChanges;
+          var apiData = res.data.data.gitChanges;
           const {
             gitChangedFiles,
             gitUntrackedFiles,
@@ -123,7 +111,7 @@ export default function GitTrackedComponent(props) {
         console.log(err);
         setNoChangeMarker(true);
       });
-  }, [props, dispatch, topMenuItemState, requestStateChange]);
+  }, [props.repoId, dispatch, topMenuItemState, requestStateChange]);
 
   function diffPane() {
     var deletedArtifacts = [];
@@ -228,14 +216,14 @@ export default function GitTrackedComponent(props) {
         if (!noChangeMarker) {
           return (
             <div className="git-tracked--diff">
-              {gitDiffFilesState ? (
+              {gitDiffFilesState && !isLoading ? (
                 diffPane()
               ) : (
-                <div className="rounded-lg shadow-md text-center p-4 font-sans">
+                <div className="rounded-lg shadow-md text-center text-indigo-700 text-2xl border-b-4 border-dashed border-indigo-300 p-4 font-sans">
                   Getting file based status...
                 </div>
               )}
-              {gitUntrackedFilesState ? untrackedPane() : null}
+              {gitUntrackedFilesState && !isLoading ? untrackedPane() : null}
             </div>
           );
         } else {

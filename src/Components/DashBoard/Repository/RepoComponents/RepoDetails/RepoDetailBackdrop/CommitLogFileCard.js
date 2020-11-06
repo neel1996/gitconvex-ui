@@ -4,9 +4,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {
-  globalAPIEndpoint
-} from "../../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
 export default function CommitLogFileCard({
   repoId,
   commitHash,
@@ -102,7 +100,10 @@ export default function CommitLogFileCard({
                     icon={["far", iconSelector]}
                   ></FontAwesomeIcon>
                 </div>
-                <div className="commitlogs--files--list--filename">
+                <div
+                  className="commitlogs--files--list--filename"
+                  title={fileName}
+                >
                   {fileName}
                 </div>
               </div>
