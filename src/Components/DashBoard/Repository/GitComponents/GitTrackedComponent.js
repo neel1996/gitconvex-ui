@@ -173,22 +173,10 @@ export default function GitTrackedComponent(props) {
   }
 
   function untrackedPane() {
-    let untrackedDir = [];
     let untrackedFiles = [];
 
     untrackedFiles = gitUntrackedFilesState
-      .map((entry) => {
-        let splitEntry = entry.split(",");
-        let untrackedEntry = "";
-
-        if (splitEntry) {
-          untrackedDir = splitEntry[0] === "NO_DIR" ? "" : splitEntry[0];
-          untrackedEntry = untrackedDir + splitEntry[1];
-          return untrackedEntry;
-        } else {
-          return "";
-        }
-      })
+      .map((entry) => entry)
       .filter((item) => {
         if (item) {
           return true;

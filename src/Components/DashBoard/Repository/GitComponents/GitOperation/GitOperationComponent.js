@@ -236,7 +236,7 @@ export default function GitOperationComponent(props) {
         method: "POST",
         data: {
           query: `
-            mutation GitConvexMutation{
+            mutation{
               removeStagedItem(repoId: "${repoId}", item: "${item}")
             }
           `,
