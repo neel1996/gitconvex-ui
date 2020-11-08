@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   globalAPIEndpoint,
   ROUTE_GIT_UNPUSHED_COMMITS,
-  ROUTE_REPO_DETAILS,
 } from "../../../../../util/env_config";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
 import "../../../../styles/GitOperations.css";
@@ -25,8 +24,6 @@ export default function PushComponent(props) {
   const branchRef = useRef();
 
   useEffect(() => {
-    let payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
-
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -35,22 +32,20 @@ export default function PushComponent(props) {
       },
       data: {
         query: `
-                query GitConvexApi
-                {
-                  gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-                    gitRepoStatus {
-                      gitRemoteData
-                      gitCurrentBranch
-                      gitRemoteHost
-                      gitBranchList 
-                    }
-                  }
+            query GitConvexApi
+            {
+                gitRepoStatus(repoId:"${props.repoId}") {
+                  gitRemoteData
+                  gitCurrentBranch
+                  gitRemoteHost
+                  gitBranchList 
                 }
-              `,
+            }
+          `,
       },
     })
       .then((res) => {
-        const repoDetails = res.data.data.gitConvexApi.gitRepoStatus;
+        const repoDetails = res.data.data.gitRepoStatus;
         setRemoteData(repoDetails);
       })
       .catch((err) => {
