@@ -19,15 +19,15 @@ export default function GitOperationComponent(props) {
   const [action, setAction] = useState("");
   const [list, setList] = useState([]);
   const [viewReload, setViewReload] = useState(0);
-  const [currentStageItem, setCurrensStageitem] = useState("");
+  const [currentStageItem, setCurrentStageItem] = useState("");
   const [stageItems, setStagedItems] = useState([]);
-  const [unstageFailed, setUnstageFailed] = useState(false);
+  const [unStageFailed, setUnStageFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
     setStagedItems([]);
-    setCurrensStageitem("");
+    setCurrentStageItem("");
 
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
@@ -93,7 +93,7 @@ export default function GitOperationComponent(props) {
     return () => {
       source.cancel();
     };
-  }, [props, viewReload, currentStageItem]);
+  }, [props.repoId, viewReload, currentStageItem]);
 
   const actionButtons = [
     {
@@ -144,7 +144,7 @@ export default function GitOperationComponent(props) {
 
         if (res.data.data && !res.data.error) {
           if (res.data.data.stageItem === "ADD_ITEM_SUCCESS") {
-            setCurrensStageitem(stageItem);
+            setCurrentStageItem(stageItem);
           }
         }
       })
@@ -185,7 +185,7 @@ export default function GitOperationComponent(props) {
           className="git-ops--stageitem--add"
           onClick={(event) => {
             stageGitComponent(stageItem, event);
-            setUnstageFailed(false);
+            setUnStageFailed(false);
           }}
           key={`add-btn-${stageItem}`}
         >
@@ -257,14 +257,14 @@ export default function GitOperationComponent(props) {
 
               setStagedItems([...localStagedItems]);
             } else {
-              setUnstageFailed(true);
+              setUnStageFailed(true);
             }
           }
         })
         .catch((err) => {
           console.log(err);
           setViewReload(localViewReload);
-          setUnstageFailed(true);
+          setUnStageFailed(true);
         });
     }
 
@@ -315,13 +315,13 @@ export default function GitOperationComponent(props) {
               className="git-ops--unstage--btn"
               onClick={(event) => {
                 removeAllStagedItems(event);
-                setUnstageFailed(false);
+                setUnStageFailed(false);
               }}
             >
               Remove All Items
             </div>
           </div>
-          {unstageFailed ? (
+          {unStageFailed ? (
             <div className="my-4 mx-auto text-center shadow-md rounded p-4 border border-red-200 text-red-400 font-sans font-semibold">
               Remove item failed. Note that deleted files cannot be removed as a
               single entity. Use
@@ -346,7 +346,7 @@ export default function GitOperationComponent(props) {
                         className="git-ops--unstage--remove--btn"
                         onClick={(event) => {
                           removeStagedItem(item, event);
-                          setUnstageFailed(false);
+                          setUnStageFailed(false);
                         }}
                         key={`remove-btn-${item}`}
                       >
@@ -410,7 +410,7 @@ export default function GitOperationComponent(props) {
         <div
           className="git-ops--backdrop"
           id="operation-backdrop"
-          style={{ background: "rgba(0,0,0,0.6)" }}
+          style={{ background: "rgba(0,0,0,0.6)", zIndex: "99" }}
           onClick={(event) => {
             if (event.target.id === "operation-backdrop") {
               setAction("");

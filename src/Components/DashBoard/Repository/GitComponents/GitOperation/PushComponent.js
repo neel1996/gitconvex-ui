@@ -1,9 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  globalAPIEndpoint,
-  ROUTE_GIT_UNPUSHED_COMMITS,
-} from "../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
 import "../../../../styles/GitOperations.css";
 
@@ -32,7 +29,7 @@ export default function PushComponent(props) {
       },
       data: {
         query: `
-            query GitConvexApi
+            query 
             {
                 gitRepoStatus(repoId:"${props.repoId}") {
                   gitRemoteData
@@ -54,27 +51,24 @@ export default function PushComponent(props) {
   }, [props]);
 
   function getUnpushedCommits() {
-    let payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
+    const remoteHost = remoteRef.current.value.trim();
+    const branchName = branchRef.current.value.trim();
 
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-          query GitConvexApi
+          query 
           {
-            gitConvexApi(route: "${ROUTE_GIT_UNPUSHED_COMMITS}", payload: ${payload}){
-              gitUnpushedCommits{
-                commits
-              }
-            }
+            gitUnPushedCommits(repoId: "${props.repoId}", remoteURL: "${remoteHost}", remoteBranch: "${branchName}")
           }
         `,
       },
     })
       .then((res) => {
         if (res.data.data && !res.data.error) {
-          const { commits } = res.data.data.gitConvexApi.gitUnpushedCommits;
+          const commits = res.data.data.gitUnPushedCommits;
           if (commits.length === 0) {
             setIsCommitEmpty(true);
           }
@@ -153,12 +147,13 @@ export default function PushComponent(props) {
 
   function pushHandler(remote, branch) {
     setLoading(true);
+    setPushFailed(false);
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-          mutation GitConvexMutation{
+          mutation {
             pushToRemote(repoId: "${repoId}", remoteHost: "${remote}", branch: "${branch}")
           }
         `,

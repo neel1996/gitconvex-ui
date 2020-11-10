@@ -247,7 +247,7 @@ export default function RepositoryDetails(props) {
         <div
           className="backdrop-view z-40"
           id="repo-backdrop"
-          style={{ background: "rgba(0,0,0,0.7)" }}
+          style={{ background: "rgba(0,0,0,0.7)", zIndex: "99" }}
           onClick={(event) => {
             if (event.target.id === "repo-backdrop") {
               setBackdropToggle(false);
