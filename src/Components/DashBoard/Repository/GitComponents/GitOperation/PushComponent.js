@@ -8,8 +8,8 @@ export default function PushComponent(props) {
   const { repoId } = props;
 
   const [remoteData, setRemoteData] = useState();
+  const [currentBranch, setCurrentBranch] = useState("");
   const [isRemoteSet, setIsRemoteSet] = useState(false);
-  const [isBranchSet, setIsBranchSet] = useState(false);
   const [unpushedCommits, setUnpushedCommits] = useState([]);
   const [isCommitEmpty, setIsCommitEmpty] = useState(false);
 
@@ -35,7 +35,6 @@ export default function PushComponent(props) {
                   gitRemoteData
                   gitCurrentBranch
                   gitRemoteHost
-                  gitBranchList 
                 }
             }
           `,
@@ -43,6 +42,7 @@ export default function PushComponent(props) {
     })
       .then((res) => {
         const repoDetails = res.data.data.gitRepoStatus;
+        setCurrentBranch(repoDetails.gitCurrentBranch);
         setRemoteData(repoDetails);
       })
       .catch((err) => {
@@ -52,7 +52,7 @@ export default function PushComponent(props) {
 
   function getUnpushedCommits() {
     const remoteHost = remoteRef.current.value.trim();
-    const branchName = branchRef.current.value.trim();
+    const branchName = currentBranch;
 
     axios({
       url: globalAPIEndpoint,
@@ -99,18 +99,21 @@ export default function PushComponent(props) {
 
   function branchListGenerator() {
     if (remoteData) {
-      const { gitBranchList } = remoteData;
+      const { gitCurrentBranch } = remoteData;
 
-      return gitBranchList.map((branch) => {
-        if (branch !== "NO_BRANCH") {
-          return (
-            <option value={branch} key={branch}>
-              {branch}
-            </option>
-          );
-        }
-        return null;
-      });
+      if (gitCurrentBranch) {
+        return (
+          <option
+            disabled
+            hidden
+            value={gitCurrentBranch}
+            key={gitCurrentBranch}
+          >
+            {gitCurrentBranch}
+          </option>
+        );
+      }
+      return null;
     }
   }
 
@@ -145,7 +148,7 @@ export default function PushComponent(props) {
     );
   }
 
-  function pushHandler(remote, branch) {
+  function pushHandler(remote) {
     setLoading(true);
     setPushFailed(false);
     axios({
@@ -154,7 +157,7 @@ export default function PushComponent(props) {
       data: {
         query: `
           mutation {
-            pushToRemote(repoId: "${repoId}", remoteHost: "${remote}", branch: "${branch}")
+            pushToRemote(repoId: "${repoId}", remoteHost: "${remote}", branch: "${currentBranch}")
           }
         `,
       },
@@ -185,42 +188,49 @@ export default function PushComponent(props) {
       {!pushDone ? (
         <>
           <div className="git-ops--push">
-            <div className="git-ops--push--header">Available remote repos</div>
-            <div>
-              <select
-                className="git-ops--push--select"
-                defaultValue="checked"
-                onChange={() => {
-                  setIsRemoteSet(true);
-                }}
-                ref={remoteRef}
-                disabled={remoteData ? false : true}
-              >
-                <option disabled hidden value="checked">
-                  {remoteData
-                    ? "Select the remote repo"
-                    : "Loading available remotes..."}
-                </option>
-                {remoteData ? remoteHostGenerator() : null}
-              </select>
-            </div>
-
-            {isRemoteSet ? (
-              <div>
+            <div className="flex mx-auto justify-around items-center align-middle gap-4">
+              <div className="w-2/3 font-sans text-xl font-semibold text-gray-600">
+                Available remotes
+              </div>
+              <div className="w-3/4">
                 <select
                   className="git-ops--push--select"
                   defaultValue="checked"
                   onChange={() => {
-                    setIsBranchSet(true);
+                    setIsRemoteSet(true);
                     getUnpushedCommits();
                   }}
-                  ref={branchRef}
+                  ref={remoteRef}
+                  disabled={remoteData ? false : true}
                 >
                   <option disabled hidden value="checked">
-                    Select upstream branch
+                    {remoteData
+                      ? "Select the remote repo"
+                      : "Loading available remotes..."}
                   </option>
-                  {remoteData ? branchListGenerator() : null}
+                  {remoteData ? remoteHostGenerator() : null}
                 </select>
+              </div>
+            </div>
+
+            {isRemoteSet ? (
+              <div className="flex mx-auto justify-around items-center align-middle gap-4">
+                <div className="w-2/3 font-sans text-xl font-semibold text-gray-600">
+                  Commits will be pushed
+                </div>
+                <div className="w-3/4">
+                  <select
+                    disabled
+                    className="git-ops--push--select"
+                    defaultValue={remoteData.gitCurrentBranch}
+                    onChange={() => {
+                      getUnpushedCommits();
+                    }}
+                    ref={branchRef}
+                  >
+                    {remoteData ? branchListGenerator() : null}
+                  </select>
+                </div>
               </div>
             ) : null}
 
@@ -254,18 +264,14 @@ export default function PushComponent(props) {
               </>
             ) : null}
 
-            {isRemoteSet &&
-            isBranchSet &&
-            unpushedCommits.length > 0 &&
-            !loading ? (
+            {isRemoteSet && unpushedCommits.length > 0 && !loading ? (
               <div
                 className="git-ops--push--btn"
                 onClick={() => {
                   const remoteHost = remoteRef.current.value.trim();
-                  const branchName = branchRef.current.value.trim();
 
-                  if (remoteHost && branchName) {
-                    pushHandler(remoteHost, branchName);
+                  if (remoteHost) {
+                    pushHandler(remoteHost);
                   }
                 }}
               >
