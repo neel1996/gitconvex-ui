@@ -19,7 +19,7 @@ export default function Settings(props) {
   const [dbPath, setDbPath] = useState("");
   const [port, setPort] = useState(0);
   const [repoDetails, setRepoDetails] = useState([]);
-  const [backdropToggle, setBacldropToggle] = useState(false);
+  const [backdropToggle, setBackdropToggle] = useState(false);
   const [deleteRepo, setDeleteRepo] = useState({});
   const [deleteRepoStatus, setDeleteRepoStatus] = useState("");
   const [viewReload, setViewReload] = useState(0);
@@ -206,6 +206,7 @@ export default function Settings(props) {
             className="cursor-pointer mx-auto my-4 text-center p-3 rounded shadow bg-red-400 hover:bg-red-500 text-white text-xl"
             onClick={() => {
               deleteRepoApiHandler();
+              setDeleteRepoStatus("");
             }}
           >
             Confirm Delete
@@ -233,14 +234,14 @@ export default function Settings(props) {
 
   function deleteRepoApiHandler() {
     setDeleteRepoStatus("loading");
-    const { id } = deleteRepo;
+    const { repoId } = deleteRepo;
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-          mutation GitConvexMutation{
-            deleteRepo(repoId: "${id}"){
+          mutation {
+            deleteRepo(repoId: "${repoId}"){
               status
               repoId
             }
@@ -319,8 +320,13 @@ export default function Settings(props) {
                       <div
                         className="bg-red-600 p-2 mx-auto my-auto rounded shadow text-center w-1/2 hover:bg-red-400 cursor-pointer"
                         onClick={(event) => {
-                          setBacldropToggle(true);
-                          setDeleteRepo(repoDetails);
+                          setBackdropToggle(true);
+                          setDeleteRepo({
+                            repoId: repoId,
+                            repoName: repoDetails.repoName[idx],
+                            repoPath: repoDetails.repoPath[idx],
+                            timeStamp: repoDetails.timeStamp[idx],
+                          });
                         }}
                       >
                         <FontAwesomeIcon
@@ -420,7 +426,7 @@ export default function Settings(props) {
           onClick={(event) => {
             if (event.target.id === "settings-backdrop") {
               setDeleteRepoStatus("");
-              setBacldropToggle(false);
+              setBackdropToggle(false);
               let localViewReload = viewReload + 1;
               setViewReload(localViewReload);
             }
@@ -431,7 +437,7 @@ export default function Settings(props) {
             className="top-0 right-0 fixed float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
             onClick={() => {
               setDeleteRepoStatus("");
-              setBacldropToggle(false);
+              setBackdropToggle(false);
               let localViewReload = viewReload + 1;
               setViewReload(localViewReload);
             }}

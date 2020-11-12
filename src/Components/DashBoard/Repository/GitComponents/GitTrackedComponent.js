@@ -215,8 +215,12 @@ export default function GitTrackedComponent(props) {
             </div>
           );
         } else {
+          return (
+            <div className="rounded-lg shadow-md text-center text-red-700 text-2xl border-b-4 border-dashed border-red-300 p-4 font-sans">
+              No changes available in the repo
+            </div>
+          );
         }
-        break;
       case GIT_DIFFERENCE:
         if (!noChangeMarker) {
           return memoizedGitDiffView;
