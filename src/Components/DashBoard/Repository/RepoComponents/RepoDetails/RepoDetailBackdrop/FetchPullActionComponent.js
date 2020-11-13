@@ -157,7 +157,11 @@ export default function FetchFromRemoteComponent(props) {
             } else {
               resArray = actionResponse.pulledItems;
             }
-            setResult([...resArray]);
+            setResult([
+              <div className="text-xl text-center border-2 border-dashed border-green-600 p-2 text-green-700 bg-green-300 font-semibold">
+                {resArray[0]}
+              </div>,
+            ]);
           }
         }
       })
