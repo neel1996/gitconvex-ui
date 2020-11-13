@@ -4,6 +4,7 @@ import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import GoLogo from "../../../assets/Go-Logo_White.svg";
 import { CURRENT_VERSION } from "../../../util/env_config";
 
 export default function Help() {
@@ -55,12 +56,14 @@ export default function Help() {
       link: "https://github.com/neel1996/gitconvex-ui",
       icon: ["fab", "react"],
       color: ["bg-blue-500"],
+      ind: "",
     },
     {
-      label: "Gitconvex Node project",
+      label: "Gitconvex Go project",
       link: "https://github.com/neel1996/gitconvex-server",
-      icon: ["fab", "node-js"],
-      color: ["bg-green-500"],
+      icon: GoLogo,
+      color: ["bg-gray-700"],
+      ind: "go",
     },
   ];
 
@@ -164,8 +167,23 @@ export default function Help() {
               <a href={data.link} target="_blank" rel="noopener noreferrer">
                 <div
                   className={`block mx-auto p-6 rounded-lg shadow-md ${data.color[0]} text-white text-center hover:shadow-xl`}
+                  style={{
+                    width: "250px",
+                    height: "150px",
+                  }}
                 >
-                  <FontAwesomeIcon size="4x" icon={data.icon}></FontAwesomeIcon>
+                  {data.ind !== "go" ? (
+                    <FontAwesomeIcon
+                      size="4x"
+                      icon={data.icon}
+                    ></FontAwesomeIcon>
+                  ) : (
+                    <img
+                      src={GoLogo}
+                      alt="go-logo"
+                      className="text-center mx-auto items-center flex w-20"
+                    ></img>
+                  )}
                   <div className="mx-3 font-sans font-semibold">
                     {data.label}
                   </div>
