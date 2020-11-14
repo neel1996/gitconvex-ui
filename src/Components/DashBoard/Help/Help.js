@@ -2,12 +2,11 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from "axios";
+import firebase from "firebase/app";
+import "firebase/database";
 import React, { useEffect, useState } from "react";
 import GoLogo from "../../../assets/Go-Logo_White.svg";
 import { CURRENT_VERSION } from "../../../util/env_config";
-import firebase from "firebase/app";
-import "firebase/database";
 
 export default function Help() {
   library.add(fas, fab);
