@@ -302,7 +302,7 @@ export default function PushComponent(props) {
         </>
       ) : (
         <div className="git-ops--push--success">
-          <div className="git-ops--push--alert--success">
+          <div className="git-ops--commit--alert--success">
             Changes have been pushed to remote
           </div>
         </div>

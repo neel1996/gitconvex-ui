@@ -6,6 +6,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import GoLogo from "../../../assets/Go-Logo_White.svg";
 import { CURRENT_VERSION } from "../../../util/env_config";
+import firebase from "firebase/app";
+import "firebase/database";
 
 export default function Help() {
   library.add(fas, fab);
@@ -72,31 +74,33 @@ export default function Help() {
     setShowUpdatePane(true);
     setLoading(true);
 
-    axios({
-      url: "https://api.npms.io/v2/search?q=itassistors+gitconvex",
-      method: "GET",
-    })
-      .then((res) => {
-        setLoading(false);
-        const version = res.data.results[0].package.version;
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyB8KGsL5Fom0EvM3bsZYj4m08Dp7sqiLCY",
+      authDomain: "gitconvex.firebaseapp.com",
+      databaseURL: "https://gitconvex.firebaseio.com",
+      projectId: "gitconvex",
+      storageBucket: "gitconvex.appspot.com",
+      messagingSenderId: "719815446646",
+      appId: "1:719815446646:web:53d2d2627eb549b7120f57",
+      measurementId: "G-ZJ3KLZT0EF",
+    };
 
-        if (typeof version === undefined || version == null) {
-          setError(true);
-          return;
-        }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const ref = db.ref("/");
 
-        if (currentVersion === version) {
-          setIsLatest(true);
-          setAvailableUpdate("");
-        } else {
-          setAvailableUpdate(version);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-        setError(true);
-      });
+    ref.on("value", (val) => {
+      const { version } = val.val();
+      setLoading(false);
+
+      if (currentVersion === version) {
+        setIsLatest(true);
+        setAvailableUpdate("");
+      } else {
+        setAvailableUpdate(version);
+      }
+    });
   }
 
   return (
@@ -131,7 +135,7 @@ export default function Help() {
         <div className="my-20 flex justify-center gap-10">
           {supportData.map((data) => {
             return (
-              <div>
+              <div key={data.label}>
                 <a href={data.link} target="_blank" rel="noopener noreferrer">
                   <div
                     className={`block mx-auto p-6 rounded-lg shadow-md ${data.color[0]} text-white text-center hover:${data.color[1]} hover:shadow-lg`}
@@ -163,7 +167,7 @@ export default function Help() {
       <div className="my-10 flex justify-center gap-10">
         {contributionData.map((data) => {
           return (
-            <div>
+            <div key={data.label}>
               <a href={data.link} target="_blank" rel="noopener noreferrer">
                 <div
                   className={`block mx-auto p-6 rounded-lg shadow-md ${data.color[0]} text-white text-center hover:shadow-xl`}

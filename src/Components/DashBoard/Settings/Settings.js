@@ -434,7 +434,7 @@ export default function Settings(props) {
         >
           {deleteRepo ? deleteRepoHandler() : null}
           <div
-            className="top-0 right-0 fixed float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="top-0 right-0 fixed float-right font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white align-middle rounded-full w-12 h-12 items-center shadow-md mr-5"
             onClick={() => {
               setDeleteRepoStatus("");
               setBackdropToggle(false);
