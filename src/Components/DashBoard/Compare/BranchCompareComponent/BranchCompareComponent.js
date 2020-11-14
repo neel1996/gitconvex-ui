@@ -148,7 +148,7 @@ export default function BranchCompareComponent(props) {
       {branchList.length === 1 ? (
         noBranchToCompare()
       ) : branchList.length === 0 ? (
-        <div className="mx-auto my-20 text-center flex justify-center text-4xl font-sans text-center text-gray-300">
+        <div className="mx-auto my-20 text-center flex justify-center text-4xl font-sans text-gray-300">
           Loading Branch Info...
         </div>
       ) : (

@@ -158,7 +158,7 @@ export default function FetchFromRemoteComponent(props) {
               resArray = actionResponse.pulledItems;
             }
             setResult([
-              <div className="text-xl text-center border-2 border-dashed border-green-600 p-2 text-green-700 bg-green-300 font-semibold">
+              <div className="text-xl text-center border-2 border-dashed border-green-600 p-2 text-green-700 bg-green-200 font-semibold rounded shadow">
                 {resArray[0]}
               </div>,
             ]);
