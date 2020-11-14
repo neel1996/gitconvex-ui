@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npm install tailwindcss 
+      - run: npm install tailwindcss
       - run: npm i -g create-react-app tailwindcss@1.6.0
       - run: npm run build:tailwind
       - run: npm test && npm run build
@@ -30,4 +30,4 @@ jobs:
           key: ${{ secrets.DROPLET_PRIVATE_KEY }}
           port: ${{ secrets.DROPLET_PORT }}
           script: |
-            /opt/workroom/github-deploy.sh gitconvex-ui
+            /opt/workroom/gitconvex-deploy.sh gitconvex-ui
