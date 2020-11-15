@@ -31,7 +31,6 @@ export default function CodeFileViewComponent(props) {
         query: `
           query {
             codeFileDetails(repoId: "${repoId}", fileName: "${fileItem}"){
-                fileCommit
                 fileData
               }
           }
@@ -41,7 +40,7 @@ export default function CodeFileViewComponent(props) {
       .then(async (res) => {
         setLoading(false);
         if (res.data.data) {
-          const { fileCommit, fileData } = res.data.data.codeFileDetails;
+          const { fileData } = res.data.data.codeFileDetails;
 
           if (fileData.length === 0) {
             setIsInvalidFile(true);
@@ -59,7 +58,7 @@ export default function CodeFileViewComponent(props) {
             prism = lang.prismIndicator;
           }
 
-          setLatestCommit(fileCommit);
+          setLatestCommit(props.commitMessage);
           setNumberOfLines(fileData.length);
           setFileDataState(fileData);
           setLanguageState(lang.name);
@@ -83,7 +82,7 @@ export default function CodeFileViewComponent(props) {
         console.log(err);
         setIsInvalidFile(true);
       });
-  }, [repoId, fileItem]);
+  }, [repoId, fileItem, props.commitMessage]);
 
   function topPanePills(label, content, accent) {
     const bg = accent.bg;

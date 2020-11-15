@@ -19,6 +19,7 @@ export default function FileExplorerComponent(props) {
   const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [directoryNavigator, setDirectoryNavigator] = useState([]);
   const [codeViewItem, setCodeViewItem] = useState("");
+  const [selectionIndex, setSelectionIndex] = useState(0);
   const [cwd, setCwd] = useState("");
 
   const { repoIdState } = props;
@@ -28,9 +29,10 @@ export default function FileExplorerComponent(props) {
       <CodeFileViewComponent
         repoId={repoIdState}
         fileItem={codeViewItem}
+        commitMessage={gitFileBasedCommits[selectionIndex]}
       ></CodeFileViewComponent>
     );
-  }, [repoIdState, codeViewItem]);
+  }, [repoIdState, codeViewItem, gitFileBasedCommits, selectionIndex]);
 
   function filterNullCommitEntries(gitTrackedFiles, gitFileBasedCommit) {
     let localGitCommits = gitFileBasedCommit;
@@ -204,7 +206,7 @@ export default function FileExplorerComponent(props) {
         const splitEntry = entry.split(":");
 
         if (splitEntry[1].includes("directory")) {
-          let directorypath = directorySeparatorRemover(splitEntry[0]);
+          let directoryPath = directorySeparatorRemover(splitEntry[0]);
 
           directoryEntry.push(
             <div
@@ -224,7 +226,7 @@ export default function FileExplorerComponent(props) {
                     fetchFolderContent(splitEntry[0], 0, false);
                   }}
                 >
-                  {directorypath}
+                  {directoryPath}
                 </div>
 
                 <div className="folder-view--content--commit bg-green-200 text-green-900">
@@ -258,6 +260,7 @@ export default function FileExplorerComponent(props) {
                 <div
                   className="folder-view--content--path"
                   onClick={() => {
+                    setSelectionIndex(index);
                     if (cwd === "" || cwd === "/") {
                       setCodeViewItem(splitEntry[0]);
                     } else {
