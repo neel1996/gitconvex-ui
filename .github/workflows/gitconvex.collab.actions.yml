@@ -18,6 +18,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npm i -g create-react-app tailwindcss@2.0.1
+      - run: npm i -g create-react-app tailwindcss@latest postcss@latest autoprefixer@latest
       - run: npm run build:tailwind
       - run: npm test && npm run build
