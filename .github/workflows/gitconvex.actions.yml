@@ -18,10 +18,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npm uninstall tailwindcss postcss autoprefixer
-      - run: npm install tailwindcss@npm:@tailwindcss/postcss7-compat postcss@^7 autoprefixer@^9
-      - run: npm uninstall tailwindcss @tailwindcss/postcss7-compat
-      - run: npm i -g create-react-app tailwindcss@latest postcss@latest autoprefixer@latest
+        - run: npm install tailwindcss
+        - run: npm i -g create-react-app
       - run: npm run build:tailwind
       - run: npm test && npm run build
       - name: Droplet commands
