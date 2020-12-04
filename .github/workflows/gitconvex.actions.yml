@@ -18,8 +18,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-        - run: npm install tailwindcss
-        - run: npm i -g create-react-app
+      - run: npm install tailwindcss
+      - run: npm i -g create-react-app
       - run: npm run build:tailwind
       - run: npm test && npm run build
       - name: Droplet commands
