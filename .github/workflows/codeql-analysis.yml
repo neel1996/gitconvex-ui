@@ -3,14 +3,14 @@
 #
 # You may wish to alter this file to override the set of languages analyzed,
 # or to provide custom queries or build logic.
-name: "Github Code Scanning Workflow"
+name: "Gitconvex Code Scanning Workflow"
 
 on:
   push:
     branches: [master]
   pull_request:
     # The branches below must be a subset of the branches above
-    branches: [master]
+    branches: [master, development]
   schedule:
     - cron: '0 21 * * 6'
 
