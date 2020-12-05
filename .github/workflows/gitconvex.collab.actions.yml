@@ -20,5 +20,5 @@ jobs:
       - run: npm install
       - run: npm install tailwindcss
       - run: npm i -g create-react-app
-      - run: export NODE_ENV=production && npx tailwindcss build -o src/index.css -c src/tailwind.config.js
+      - run: npx tailwindcss build -o src/index.css
       - run: npm test && npm run build
