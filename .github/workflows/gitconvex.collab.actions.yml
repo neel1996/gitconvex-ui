@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
-      - run: npm install tailwindcss
+      - run: npm install tailwindcss@latest postcss@latest
       - run: npm i -g create-react-app
       - run: npx tailwindcss build -o src/index.css
       - run: npm test && npm run build
