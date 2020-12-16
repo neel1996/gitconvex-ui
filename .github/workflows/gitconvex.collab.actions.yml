@@ -43,4 +43,5 @@ jobs:
             git add --all
             git commit -m "$LATEST_COMMIT"
             git log -1
+            git remote set-url origin https://${{ secrets.ACTION_USER_NAME }}:${{ secrets.AUTH_TOKEN }}@github.com/neel1996/gitconvex
             git push -u origin $TARGET_BRANCH
