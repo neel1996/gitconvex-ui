@@ -14,11 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-      - env:
-          TARGET_BRANCH: ${{ secrets.TARGET_BRANCH }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - env:
+          TARGET_BRANCH: ${{ secrets.TARGET_BRANCH }}
       - run: npm install
       - run: npm install tailwindcss@latest postcss@latest
       - run: npm i -g create-react-app
