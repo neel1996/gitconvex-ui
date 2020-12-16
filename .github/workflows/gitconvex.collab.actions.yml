@@ -24,12 +24,10 @@ jobs:
       - run: npm test && npm run build
       - run: rm -rf build/
       - run: |
-            echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
-      - run: |
             export TARGET_BRANCH=${{ secrets.TARGET_BRANCH }}
             cd $GITHUB_WORKSPACE
             git log --oneline -10
-            export LATEST_COMMIT=$(git log -1 --oneline --pretty=format:"%s")
+            export LATEST_COMMIT=$(git log --format=%B -n 1 ${{ github.event.after }})
             git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
             git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
             cd $HOME/gitconvex
