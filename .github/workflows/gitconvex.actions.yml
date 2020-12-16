@@ -38,9 +38,8 @@ jobs:
           rm -rf $HOME/gitconvex/ui/*
           mv * $HOME/gitconvex/ui/
           cd $HOME/gitconvex/
-          cd ui/ && rm -rf node_modules/ .git/ .github/ .gitignore
+          cd ui/ && rm -rf node_modules/ .git/ .github/ .gitignore src/index.css
           echo "Commit Message --> $LATEST_COMMIT"
-          rm ./ui/src/index.css
           git add --all
           git commit -m "$LATEST_COMMIT"
           git log -1
