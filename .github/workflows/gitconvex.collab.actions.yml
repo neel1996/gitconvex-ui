@@ -27,7 +27,8 @@ jobs:
       - run: export LATEST_COMMIT=`git log -1 --oneline --pretty=format:"%s"`
       - run: git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
       - run: git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
-      - run: git -c $HOME/gitconvex checkout $TARGET_BRANCH
+      - run: cd $HOME/gitconvex && git checkout $TARGET_BRANCH
+      - run: cd $GITHUB_WORKSPACE
       - run: rm -rf $HOME/gitconvex/ui/*
       - run: mv * $HOME/gitconvex/ui/
       - run: cd $HOME/gitconvex/ui/
