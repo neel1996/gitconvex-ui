@@ -25,9 +25,11 @@ jobs:
       - run: rm -rf build/
       - run: |
             export TARGET_BRANCH=${{ secrets.TARGET_BRANCH }}
+            git clone https://github.com/neel1996/gitconvex-ui.git $HOME/gitconvex-ui
+            cd $HOME/gitconvex-ui
+            git checkout $GITHUB_REF
+            export LATEST_COMMIT=$(git log --oneline -1)
             cd $GITHUB_WORKSPACE
-            git log --oneline -10
-            export LATEST_COMMIT=$(git log --format=%B -n 1 ${{ github.event.after }})
             git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
             git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
             cd $HOME/gitconvex
