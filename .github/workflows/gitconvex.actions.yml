@@ -40,6 +40,7 @@ jobs:
           cd $HOME/gitconvex/
           cd ui/ && rm -rf node_modules/ .git/ .github/ .gitignore
           echo "Commit Message --> $LATEST_COMMIT"
+          rm ./ui/src/index.css
           git add --all
           git commit -m "$LATEST_COMMIT"
           git log -1
