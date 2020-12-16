@@ -22,3 +22,24 @@ jobs:
       - run: npm i -g create-react-app
       - run: export NODE_ENV=production && npx tailwindcss build -o src/index.css -c src/tailwind.config.js
       - run: npm test && npm run build
+      - run: rm -rf build/
+      - run: |
+          export TARGET_BRANCH=${{ secrets.TARGET_BRANCH }}
+          git clone https://github.com/neel1996/gitconvex-ui.git $HOME/gitconvex-ui
+          cd $HOME/gitconvex-ui
+          git checkout ${{ github.head_ref }}
+          export LATEST_COMMIT=$(git log --oneline -1 --pretty=format:%s)
+          cd $GITHUB_WORKSPACE
+          git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
+          git config --global user.name "${{ secrets.ACTION_USER_NAME }}" && git config --global user.email "${{ secrets.ACTION_USER_EMAIL }}"
+          cd $HOME/gitconvex
+          git checkout $TARGET_BRANCH
+          cd $GITHUB_WORKSPACE
+          rm -rf $HOME/gitconvex/ui/*
+          mv * $HOME/gitconvex/ui/
+          cd $HOME/gitconvex/
+          cd ui/ && rm -rf node_modules/ .git/ .github/ .gitignore
+          echo "Commit Message --> $LATEST_COMMIT"
+          git add --all
+          git commit -m "$LATEST_COMMIT"
+          git log -1
