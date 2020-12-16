@@ -14,6 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
+      - env:
+          TARGET_BRANCH: ${{ secrets.TARGET_BRANCH }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
@@ -22,3 +24,14 @@ jobs:
       - run: npm i -g create-react-app
       - run: export NODE_ENV=production && npx tailwindcss build -o src/index.css -c src/tailwind.config.js
       - run: npm test && npm run build
+      - run: rm -rf build/
+      - run: export LATEST_COMMIT=`git log -1 --oneline --pretty=format:"%s"`
+      - run: git clone git@github.com:neel1996/gitconvex.git $HOME/gitconvex
+      - run: git -c /home/gitconvex checkout $TARGET_BRANCH
+      - run: rm -rf $HOME/gitconvex/ui/*
+      - run: mv * $HOME/gitconvex/ui/
+      - run: cd $HOME/gitconvex/ui/
+      - run: rm -rf node_modules/ .git/ .github/ .gitignore
+      - run: cd $HOME/gitconvex/
+      - run: git add --all && git commit -m $LATEST_COMMIT
+      - run: git log -1
