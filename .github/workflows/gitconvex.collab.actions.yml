@@ -24,6 +24,8 @@ jobs:
       - run: npm test && npm run build
       - run: rm -rf build/
       - run: |
+            echo ::set-env name=commitmsg::$(git log --format=%B -n 1 ${{ github.event.after }})
+      - run: |
             export TARGET_BRANCH=${{ secrets.TARGET_BRANCH }}
             cd $GITHUB_WORKSPACE
             git log --oneline -10
