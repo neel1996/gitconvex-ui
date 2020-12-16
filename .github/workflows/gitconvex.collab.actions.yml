@@ -25,7 +25,7 @@ jobs:
       - run: rm -rf build/
       - run: export TARGET_BRANCH=v2.0.1
       - run: export LATEST_COMMIT=`git log -1 --oneline --pretty=format:"%s"`
-      - run: git clone git@github.com:neel1996/gitconvex.git $HOME/gitconvex
+      - run: git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
       - run: git -c /home/gitconvex checkout $TARGET_BRANCH
       - run: rm -rf $HOME/gitconvex/ui/*
       - run: mv * $HOME/gitconvex/ui/
