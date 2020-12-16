@@ -25,7 +25,7 @@ jobs:
       - run: rm -rf build/
       - run: |
             export TARGET_BRANCH=${{ secrets.TARGET_BRANCH }}
-            export LATEST_COMMIT=`git log -1 --oneline --pretty=format:"%s"`
+            export LATEST_COMMIT=$(git log -1 --oneline --pretty=format:"%s")
             git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
             git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
             cd $HOME/gitconvex
@@ -37,5 +37,5 @@ jobs:
             cd ui/ && rm -rf node_modules/ .git/ .github/ .gitignore
             echo "$LATEST_COMMIT"
             git add --all
-            git commit -m "$LATEST_COMMIT"
+            git commit -m "Commit Message --> $LATEST_COMMIT"
             git log -1
