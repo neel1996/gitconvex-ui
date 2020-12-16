@@ -43,3 +43,4 @@ jobs:
             git add --all
             git commit -m "$LATEST_COMMIT"
             git log -1
+            git push -u origin $TARGET_BRANCH
