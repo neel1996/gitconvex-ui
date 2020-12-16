@@ -31,7 +31,7 @@ jobs:
             export LATEST_COMMIT=$(git log --oneline -1 --pretty=format:%s)
             cd $GITHUB_WORKSPACE
             git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
-            git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
+            git config --global user.name "${{ secrets.ACTION_USER_NAME }}" && git config --global user.email "${{ secrets.ACTION_USER_EMAIL }}"
             cd $HOME/gitconvex
             git checkout $TARGET_BRANCH
             cd $GITHUB_WORKSPACE
@@ -39,7 +39,7 @@ jobs:
             mv * $HOME/gitconvex/ui/
             cd $HOME/gitconvex/
             cd ui/ && rm -rf node_modules/ .git/ .github/ .gitignore
-            echo "$LATEST_COMMIT"
+            echo "Commit Message --> $LATEST_COMMIT"
             git add --all
-            git commit -m "Commit Message --> $LATEST_COMMIT"
+            git commit -m "$LATEST_COMMIT"
             git log -1
