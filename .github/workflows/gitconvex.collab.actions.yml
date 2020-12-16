@@ -27,7 +27,7 @@ jobs:
             export TARGET_BRANCH=${{ secrets.TARGET_BRANCH }}
             git clone https://github.com/neel1996/gitconvex-ui.git $HOME/gitconvex-ui
             cd $HOME/gitconvex-ui
-            echo ${{ github.repository }}
+            echo ${{ toJson(github) }}
             git checkout build-tweak
             export LATEST_COMMIT=$(git log --oneline -1)
             cd $GITHUB_WORKSPACE
