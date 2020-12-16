@@ -23,7 +23,7 @@ jobs:
       - run: export NODE_ENV=production && npx tailwindcss build -o src/index.css -c src/tailwind.config.js
       - run: npm test && npm run build
       - run: rm -rf build/
-      - run: export TARGET_BRANCH=v2.0.1
+      - run: export TARGET_BRANCH="v2.0.1"
       - run: export LATEST_COMMIT=`git log -1 --oneline --pretty=format:"%s"`
       - run: git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
       - run: git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
@@ -34,5 +34,6 @@ jobs:
       - run: cd $HOME/gitconvex/ui/
       - run: rm -rf node_modules/ .git/ .github/ .gitignore
       - run: cd $HOME/gitconvex/
+      - run: pwd; echo $TARGET_BRANCH;echo $LATEST_COMMIT;
       - run: git add --all && git commit -m $LATEST_COMMIT
       - run: git log -1
