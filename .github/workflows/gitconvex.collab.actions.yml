@@ -23,17 +23,16 @@ jobs:
       - run: export NODE_ENV=production && npx tailwindcss build -o src/index.css -c src/tailwind.config.js
       - run: npm test && npm run build
       - run: rm -rf build/
-      - run: export TARGET_BRANCH="v2.0.1"
-      - run: export LATEST_COMMIT=`git log -1 --oneline --pretty=format:"%s"`
-      - run: git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
-      - run: git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
-      - run: cd $HOME/gitconvex && git checkout $TARGET_BRANCH
-      - run: cd $GITHUB_WORKSPACE
-      - run: rm -rf $HOME/gitconvex/ui/*
-      - run: mv * $HOME/gitconvex/ui/
-      - run: cd $HOME/gitconvex/ui/
-      - run: rm -rf node_modules/ .git/ .github/ .gitignore
-      - run: cd $HOME/gitconvex/
-      - run: pwd; echo $TARGET_BRANCH;echo $LATEST_COMMIT;
-      - run: git add --all && git commit -m $LATEST_COMMIT
-      - run: git log -1
+      - run: |
+            echo ${{ secrets.TARGET_BRANCH }}
+            export TARGET_BRANCH="v2.0.1"
+            export LATEST_COMMIT=`git log -1 --oneline --pretty=format:"%s"`
+            git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
+            git config --global user.name "Neel" && git config --global user.email "helpitassistors@gmail.com"
+            cd $HOME/gitconvex && git checkout $TARGET_BRANCH
+            cd $GITHUB_WORKSPACE
+            rm -rf $HOME/gitconvex/ui/*
+            mv * $HOME/gitconvex/ui/
+            cd $HOME/gitconvex/ui/ && rm -rf node_modules/ .git/ .github/ .gitignore
+            cd $HOME/gitconvex/ && git add --all && git commit -m $LATEST_COMMIT
+            git log -1
