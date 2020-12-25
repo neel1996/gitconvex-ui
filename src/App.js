@@ -19,7 +19,7 @@ export default function App(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
-    <div className="App w-full h-full">
+    <div className="App w-full h-full overflow-hidden">
       <ContextProvider.Provider value={{ state, dispatch }}>
         <BrowserRouter>
           <Switch>

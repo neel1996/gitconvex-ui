@@ -6,6 +6,7 @@ export default function SwitchBranchComponent({
   repoId,
   branchName,
   closeBackdrop,
+  switchReloadView,
 }) {
   const [branchError, setBranchError] = useState(false);
 
@@ -16,14 +17,23 @@ export default function SwitchBranchComponent({
       data: {
         query: `
             mutation{
-              setBranch(repoId: "${repoId}", branch: "${branchName}")
+              checkoutBranch(repoId: "${repoId}", branchName: "${branchName}")
             }
           `,
       },
     })
       .then((res) => {
         if (res.data.data && !res.data.error) {
-          closeBackdrop(true);
+          const status = res.data.data.checkoutBranch;
+          console.log(status);
+          if (status === "CHECKOUT_FAILED") {
+            setBranchError(true);
+          } else {
+            switchReloadView();
+            closeBackdrop(true);
+          }
+        } else {
+          setBranchError(true);
         }
       })
       .catch((err) => {
@@ -31,19 +41,18 @@ export default function SwitchBranchComponent({
           setBranchError(true);
         }
       });
-  }, [branchName, closeBackdrop, repoId]);
+  }, [branchName, closeBackdrop, repoId, switchReloadView]);
 
   return (
-    <div className="xl:w-3/4 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 mx-auto my-auto bg-gray-200 p-6 rounded-md">
-      <div className="bg-indigo-200 p-2 border-indigo-600 rounded shadow-md">
-        Switching to branch -{" "}
-        <span className="font-sans font-semibold text-xl">{branchName}</span>...
+    <div className="xl:w-3/4 lg:w-3/4 md:w-11/12 sm:w-11/12 repo-backdrop--switchbranch">
+      <div className="switchbranch--alert--success">
+        Switching to branch -
+        <span className="switchbranch--name">{branchName}</span>...
       </div>
       {branchError ? (
-        <div className="bg-red-200 p-2 border-red-600 rounded shadow-md">
-          Switching to branch -{" "}
-          <span className="font-sans font-semibold text-xl">{branchName}</span>{" "}
-          Failed!
+        <div className="switchbranch--alert--failed">
+          Switching to branch -
+          <span className="switchbranch--name">{branchName}</span> Failed!
         </div>
       ) : null}
     </div>

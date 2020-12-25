@@ -3,22 +3,38 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { v4 as uuid } from "uuid";
+import { getIconForFile } from "vscode-icons-js";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
-import {
-  GIT_FOLDER_CONTENT,
-  globalAPIEndpoint,
-} from "../../../../../util/env_config";
+import "../../../../styles/FileExplorer.css";
+import CodeFileViewComponent from "./RepoDetailBackdrop/CodeFileViewComponent";
 
 export default function FileExplorerComponent(props) {
   library.add(fab, fas);
 
   const [gitRepoFiles, setGitRepoFiles] = useState([]);
+  const [codeViewToggle, setCodeViewToggle] = useState(false);
   const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [directoryNavigator, setDirectoryNavigator] = useState([]);
+  const [codeViewItem, setCodeViewItem] = useState("");
+  const [selectionIndex, setSelectionIndex] = useState(0);
+  const [isEmpty, setIsEmpty] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [cwd, setCwd] = useState("");
 
   const { repoIdState } = props;
+
+  const memoizedCodeFileViewComponent = useMemo(() => {
+    return (
+      <CodeFileViewComponent
+        repoId={repoIdState}
+        fileItem={codeViewItem}
+        commitMessage={gitFileBasedCommits[selectionIndex]}
+      ></CodeFileViewComponent>
+    );
+  }, [repoIdState, codeViewItem, gitFileBasedCommits, selectionIndex]);
 
   function filterNullCommitEntries(gitTrackedFiles, gitFileBasedCommit) {
     let localGitCommits = gitFileBasedCommit;
@@ -31,38 +47,72 @@ export default function FileExplorerComponent(props) {
       }
     });
 
-    localGitCommits = localGitCommits.filter((commit) => {
-      if (commit) {
-        return true;
-      } else {
-        return false;
-      }
-    });
+    localGitCommits = localGitCommits.filter((commit) => commit);
 
     setGitRepoFiles([...localTrackedFiles]);
     setGitFileBasedCommits([...localGitCommits]);
   }
 
   useEffect(() => {
-    filterNullCommitEntries(props.gitRepoFiles, props.gitFileBasedCommits);
+    const repoId = props.repoIdState;
+    setIsEmpty(false);
+    setIsLoading(true);
+    axios({
+      url: globalAPIEndpoint,
+      method: "POST",
+      headers: {
+        "Content-type": "application/json",
+      },
+      data: {
+        query: `
+          query
+          {
+            gitFolderContent(repoId:"${repoId}", directoryName: ""){
+              trackedFiles
+              fileBasedCommits   
+            }
+          }
+        `,
+      },
+    })
+      .then((res) => {
+        setIsLoading(false);
+        const {
+          trackedFiles,
+          fileBasedCommits,
+        } = res.data.data.gitFolderContent;
+
+        if (trackedFiles.length === 0 || fileBasedCommits.length === 0) {
+          setIsEmpty(true);
+          return;
+        }
+
+        if (trackedFiles && fileBasedCommits) {
+          filterNullCommitEntries(trackedFiles, fileBasedCommits);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setIsLoading(false);
+      });
   }, [props]);
 
-  function directorySepraratorRemover(directorypath) {
-    if (directorypath.match(/.\/./gi)) {
-      directorypath = directorypath.split("/")[
-        directorypath.split("/").length - 1
+  function directorySeparatorRemover(directoryPath) {
+    if (directoryPath.match(/.\/./gi)) {
+      directoryPath = directoryPath.split("/")[
+        directoryPath.split("/").length - 1
       ];
-    } else if (directorypath.match(/[^\\]\\[^\\]/gi)) {
-      directorypath = directorypath.split("\\")[
-        directorypath.split("\\").length - 1
+    } else if (directoryPath.match(/[^\\]\\[^\\]/gi)) {
+      directoryPath = directoryPath.split("\\")[
+        directoryPath.split("\\").length - 1
       ];
-    } else if (directorypath.match(/.\\\\./gi)) {
-      directorypath = directorypath.split("\\\\")[
-        directorypath.split("\\\\").length - 1
+    } else if (directoryPath.match(/.\\\\./gi)) {
+      directoryPath = directoryPath.split("\\\\")[
+        directoryPath.split("\\\\").length - 1
       ];
     }
 
-    return directorypath;
+    return directoryPath;
   }
 
   const fetchFolderContent = (
@@ -83,9 +133,8 @@ export default function FileExplorerComponent(props) {
         }
       }
 
-      const payload = JSON.stringify(
-        JSON.stringify({ repoId: repoIdState, directoryName })
-      );
+      setCwd(directoryName);
+      setIsLoading(true);
 
       axios({
         url: globalAPIEndpoint,
@@ -95,30 +144,27 @@ export default function FileExplorerComponent(props) {
         },
         data: {
           query: `
-
-          query GitConvexApi
-          {
-            gitConvexApi(route: "${GIT_FOLDER_CONTENT}", payload: ${payload}){
-              gitFolderContent{
-                gitTrackedFiles
-                gitFileBasedCommit
+            query
+            {
+              gitFolderContent(repoId:"${repoIdState}", directoryName: "${directoryName}"){
+                trackedFiles
+                fileBasedCommits   
               }
             }
-          }
-        `,
+          `,
         },
       })
         .then((res) => {
+          setIsLoading(false);
           if (res.data.data && !res.data.error) {
-            const localFolderContent =
-              res.data.data.gitConvexApi.gitFolderContent;
+            const localFolderContent = res.data.data.gitFolderContent;
 
             filterNullCommitEntries(
-              localFolderContent.gitTrackedFiles,
-              localFolderContent.gitFileBasedCommit
+              localFolderContent.trackedFiles,
+              localFolderContent.fileBasedCommits
             );
 
-            directoryName = directorySepraratorRemover(directoryName);
+            directoryName = directorySeparatorRemover(directoryName);
 
             if (homeIndicator) {
               setDirectoryNavigator([]);
@@ -144,15 +190,18 @@ export default function FileExplorerComponent(props) {
               }
             }
           } else {
+            setIsLoading(false);
             console.log(
               "ERROR: Error occurred while fetching the folder content!"
             );
           }
         })
         .catch((err) => {
+          setIsLoading(false);
           if (err) {
             console.log(
-              "ERROR: Error occurred while fetching the folder content!"
+              "ERROR: Error occurred while fetching the folder content!",
+              err
             );
           }
         });
@@ -160,80 +209,82 @@ export default function FileExplorerComponent(props) {
   };
 
   const gitTrackedFileComponent = () => {
-    if (
-      gitRepoFiles &&
-      gitRepoFiles.length > 0 &&
-      gitRepoFiles[0] !== "NO_TRACKED_FILES"
-    ) {
+    if (gitRepoFiles && gitRepoFiles.length > 0) {
       var formattedFiles = [];
       var directoryEntry = [];
       var fileEntry = [];
 
-      gitRepoFiles.forEach((entry, index) => {
+      gitRepoFiles.forEach(async (entry, index) => {
         const splitEntry = entry.split(":");
 
         if (splitEntry[1].includes("directory")) {
-          let directorypath = directorySepraratorRemover(splitEntry[0]);
+          let directoryPath = directorySeparatorRemover(splitEntry[0]);
 
           directoryEntry.push(
             <div
-              className="block w-full p-2 border-b border-gray-300"
+              className="folder-view--content"
               key={`directory-key-${uuid()}`}
             >
               <div className="flex cursor-pointer">
                 <div className="w-1/6">
                   <FontAwesomeIcon
                     icon={["fas", "folder"]}
-                    className="font-sans text-xl text-blue-600"
+                    className="font-sans text-xl"
                   ></FontAwesomeIcon>
                 </div>
                 <div
-                  className="w-2/4 text-gray-800 text-lg mx-3 font-sans hover:text-indigo-400 hover:font-semibold"
+                  className="folder-view--content--path"
                   onClick={(event) => {
                     fetchFolderContent(splitEntry[0], 0, false);
                   }}
                 >
-                  {directorypath}
+                  {directoryPath}
                 </div>
 
-                <div className="w-2/4 p-2 bg-green-200 text-green-900 truncate rounded-lg text-left mx-auto w-3/5">
-                  {gitFileBasedCommits[index]
-                    ? gitFileBasedCommits[index]
-                        .split(" ")
-                        .filter((entry, index) => {
-                          return index !== 0 ? entry : null;
-                        })
-                        .join(" ")
-                    : null}
+                <div className="folder-view--content--commit bg-green-200 text-green-900">
+                  {gitFileBasedCommits[index]}
                 </div>
               </div>
             </div>
           );
         } else if (splitEntry[1].includes("File")) {
+          let fileIcon;
+          if (splitEntry[0] === "LICENSE") {
+            fileIcon = require("../../../../../assets/icons/file_type_license.svg");
+          } else {
+            fileIcon = require("../../../../../assets/icons/" +
+              getIconForFile(splitEntry[0]));
+          }
+
           fileEntry.push(
-            <div
-              className="block w-full p-2 border-b border-gray-300"
-              key={`file-key-${uuid()}`}
-            >
-              <div className="flex">
+            <div className="folder-view--content" key={`file-key-${uuid()}`}>
+              <div className="flex items-center align-middle">
                 <div className="w-1/6">
-                  <FontAwesomeIcon
-                    icon={["fas", "file"]}
-                    className="font-sans text-xl text-gray-700"
-                  ></FontAwesomeIcon>
+                  <img
+                    src={fileIcon}
+                    style={{
+                      width: "26px",
+                      filter: "grayscale(30%)",
+                    }}
+                    alt={fileIcon}
+                  ></img>
                 </div>
-                <div className="w-2/4 text-gray-800 text-lg mx-3 font-sans">
+                <div
+                  className="folder-view--content--path"
+                  onClick={() => {
+                    setSelectionIndex(index);
+                    if (cwd === "" || cwd === "/") {
+                      setCodeViewItem(splitEntry[0]);
+                    } else {
+                      setCodeViewItem(cwd + "/" + splitEntry[0]);
+                    }
+                    setCodeViewToggle(true);
+                  }}
+                >
                   {splitEntry[0]}
                 </div>
-                <div className="w-2/4 p-2 bg-indigo-200 truncate ... text-indigo-900 rounded-lg text-left mx-auto w-3/5">
-                  {gitFileBasedCommits[index]
-                    ? gitFileBasedCommits[index]
-                        .split(" ")
-                        .filter((entry, index) => {
-                          return index !== 0 ? entry : null;
-                        })
-                        .join(" ")
-                    : null}
+                <div className="folder-view--content--commit bg-indigo-200 text-indigo-900">
+                  {gitFileBasedCommits[index]}
                 </div>
               </div>
             </div>
@@ -245,11 +296,8 @@ export default function FileExplorerComponent(props) {
       formattedFiles.push(fileEntry);
 
       return (
-        <div
-          className="block mx-auto justify-center p-2 text-blue-600 hover:text-blue-700"
-          key="repo-key"
-        >
-          <div className="flex justify-around w-full p-2 mx-auto pb-6 border-b border-blue-400">
+        <div className="folder-view--tracked--entries" key="repo-key">
+          <div className="tracked--entries--header">
             <div className="w-1/6"></div>
             <div className="w-2/4">File / Directory</div>
             <div className="w-2/4">Latest commit</div>
@@ -257,20 +305,15 @@ export default function FileExplorerComponent(props) {
           {formattedFiles}
         </div>
       );
-    } else if (gitRepoFiles && gitRepoFiles[0] === "NO_TRACKED_FILES") {
-      return (
-        <div className="flex gap-4 w-3/4 mx-auto items-center justify-center rounded-lg text-gray-600 text-2xl text-center border-b-4 border-dashed border-gray-400 p-1">
-          <div>
-            <FontAwesomeIcon icon={["fas", "unlink"]}></FontAwesomeIcon>
-          </div>
-          <div>No Tracked Files in the repo!</div>
-        </div>
-      );
-    } else {
-      return (
+    }
+  };
+
+  return (
+    <>
+      {isLoading ? (
         <>
-          <div className="flex justify-center mx-auto my-2 w-3/4">
-            <div className="w-full mx-auto text-2xl text-center font-sans font-semibold text-gray-800 border-b-2 border-dashed border-gray-500 p-1">
+          <div className="folder-view--loader">
+            <div className="folder-view--loader--label">
               Loading tracked files...
             </div>
           </div>
@@ -280,62 +323,96 @@ export default function FileExplorerComponent(props) {
             ></InfiniteLoader>
           </div>
         </>
-      );
-    }
-  };
+      ) : (
+        <>
+          {codeViewToggle ? (
+            <div
+              className="code-view"
+              id="code-view__backdrop"
+              style={{ background: "rgba(0,0,0,0.5)", zIndex: 99 }}
+              onClick={(event) => {
+                if (event.target.id === "code-view__backdrop") {
+                  setCodeViewToggle(false);
+                }
+              }}
+            >
+              <div
+                className="close-btn-round"
+                onClick={() => {
+                  setCodeViewToggle(false);
+                }}
+              >
+                X
+              </div>
 
-  return (
-    <div>
-      {directoryNavigator &&
-      gitRepoFiles &&
-      gitRepoFiles[0] !== "NO_TRACKED_FILES" ? (
-        <div className="mx-6 p-3 font-sans flex gap-4 items-center justify-start">
-          <div
-            className="w-1/6 text-gray-700 border-b-2 border-dashed cursor-pointer justify-center p-3 text-center rounded flex gap-4 my-auto items-center mx-6 text-xl hover:text-black hover:border-black hover:scale-110 transition duration-500 ease-in-out"
-            onClick={() => {
-              fetchFolderContent("", 0, false, true);
-            }}
-          >
-            <div>
-              <FontAwesomeIcon icon={["fas", "home"]}></FontAwesomeIcon>
+              <div className="code-view-area">
+                {memoizedCodeFileViewComponent}
+              </div>
             </div>
-            <div>Home</div>
-            <div className="text-2xl font-sans text-blue-400">./</div>
-          </div>
-          <div
-            className="flex p-4 gap-4 items-center w-3/4 break-words overflow-x-auto"
-            id="repoFolderNavigator"
-          >
-            {directoryNavigator.map((item, index) => {
-              return (
+          ) : null}
+
+          <div>
+            <div
+              className="folder-view--homebtn"
+              onClick={() => {
+                fetchFolderContent("", 0, false, true);
+              }}
+            >
+              <div>
+                <FontAwesomeIcon icon={["fas", "home"]}></FontAwesomeIcon>
+              </div>
+              <div>Home</div>
+              <div className="text-2xl font-sans text-blue-400">./</div>
+            </div>
+            {directoryNavigator && gitRepoFiles && gitRepoFiles.length > 0 ? (
+              <div className="folder-view">
                 <div
-                  className="flex gap-2 justify-start items-center"
-                  key={item + "-" + index}
+                  className="folder-view--navigator"
+                  id="repoFolderNavigator"
                 >
-                  <div
-                    className={`${
-                      index !== directoryNavigator.length - 1
-                        ? "text-blue-600 font-semibold hover:underline hover:text-blue-700 cursor-pointer"
-                        : ""
-                    } text-xl`}
-                    onClick={() => {
-                      if (index !== directoryNavigator.length - 1) {
-                        fetchFolderContent(item, index, true);
-                      }
-                    }}
-                  >
-                    {item}
-                  </div>
-                  <div>/</div>
+                  {directoryNavigator.map((item, index) => {
+                    return (
+                      <div
+                        className="folder-view--navigator--label"
+                        key={item + "-" + index}
+                      >
+                        <div
+                          className={`${
+                            index !== directoryNavigator.length - 1
+                              ? "folder-view--navigator--label__active"
+                              : ""
+                          } text-xl`}
+                          onClick={() => {
+                            if (index !== directoryNavigator.length - 1) {
+                              fetchFolderContent(item, index, true);
+                            }
+                          }}
+                        >
+                          {item}
+                        </div>
+                        <div>/</div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
+              </div>
+            ) : null}
+
+            <div className="folder-view--tracked-content">
+              {!isEmpty ? (
+                gitTrackedFileComponent()
+              ) : (
+                <div className="folder-view--nofiles">
+                  <div>
+                    <FontAwesomeIcon icon={["fas", "unlink"]}></FontAwesomeIcon>
+                  </div>
+                  <div>No Tracked Files in the directory!</div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      ) : null}
-      <div className="block w-11/12 my-6 mx-auto justify-center p-6 rounded-lg bg-white p-2 shadow-md overflow-auto border">
-        {gitTrackedFileComponent()}
-      </div>
-    </div>
+        </>
+      )}
+    </>
   );
 }

@@ -1,18 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_DETAILS,
-  ROUTE_GIT_UNPUSHED_COMMITS,
-} from "../../../../../util/env_config";
+import React, { useEffect, useRef, useState } from "react";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
 import InfiniteLoader from "../../../../Animations/InfiniteLoader";
+import "../../../../styles/GitOperations.css";
 
 export default function PushComponent(props) {
   const { repoId } = props;
 
   const [remoteData, setRemoteData] = useState();
+  const [currentBranch, setCurrentBranch] = useState("");
   const [isRemoteSet, setIsRemoteSet] = useState(false);
-  const [isBranchSet, setIsBranchSet] = useState(false);
   const [unpushedCommits, setUnpushedCommits] = useState([]);
   const [isCommitEmpty, setIsCommitEmpty] = useState(false);
 
@@ -24,8 +21,6 @@ export default function PushComponent(props) {
   const branchRef = useRef();
 
   useEffect(() => {
-    let payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
-
     axios({
       url: globalAPIEndpoint,
       method: "POST",
@@ -34,22 +29,20 @@ export default function PushComponent(props) {
       },
       data: {
         query: `
-                query GitConvexApi
-                {
-                  gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-                    gitRepoStatus {
-                      gitRemoteData
-                      gitCurrentBranch
-                      gitRemoteHost
-                      gitBranchList 
-                    }
-                  }
+            query 
+            {
+                gitRepoStatus(repoId:"${props.repoId}") {
+                  gitRemoteData
+                  gitCurrentBranch
+                  gitRemoteHost
                 }
-              `,
+            }
+          `,
       },
     })
       .then((res) => {
-        const repoDetails = res.data.data.gitConvexApi.gitRepoStatus;
+        const repoDetails = res.data.data.gitRepoStatus;
+        setCurrentBranch(repoDetails.gitCurrentBranch);
         setRemoteData(repoDetails);
       })
       .catch((err) => {
@@ -58,27 +51,24 @@ export default function PushComponent(props) {
   }, [props]);
 
   function getUnpushedCommits() {
-    let payload = JSON.stringify(JSON.stringify({ repoId: props.repoId }));
+    const remoteHost = remoteRef.current.value.trim();
+    const branchName = currentBranch;
 
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-          query GitConvexApi
+          query 
           {
-            gitConvexApi(route: "${ROUTE_GIT_UNPUSHED_COMMITS}", payload: ${payload}){
-              gitUnpushedCommits{
-                commits
-              }
-            }
+            gitUnPushedCommits(repoId: "${props.repoId}", remoteURL: "${remoteHost}", remoteBranch: "${branchName}")
           }
         `,
       },
     })
       .then((res) => {
         if (res.data.data && !res.data.error) {
-          const { commits } = res.data.data.gitConvexApi.gitUnpushedCommits;
+          const commits = res.data.data.gitUnPushedCommits;
           if (commits.length === 0) {
             setIsCommitEmpty(true);
           }
@@ -109,18 +99,21 @@ export default function PushComponent(props) {
 
   function branchListGenerator() {
     if (remoteData) {
-      const { gitBranchList } = remoteData;
+      const { gitCurrentBranch } = remoteData;
 
-      return gitBranchList.map((branch) => {
-        if (branch !== "NO_BRANCH") {
-          return (
-            <option value={branch} key={branch}>
-              {branch}
-            </option>
-          );
-        }
-        return null;
-      });
+      if (gitCurrentBranch) {
+        return (
+          <option
+            disabled
+            hidden
+            value={gitCurrentBranch}
+            key={gitCurrentBranch}
+          >
+            {gitCurrentBranch}
+          </option>
+        );
+      }
+      return null;
     }
   }
 
@@ -155,15 +148,16 @@ export default function PushComponent(props) {
     );
   }
 
-  function pushHandler(remote, branch) {
+  function pushHandler(remote) {
     setLoading(true);
+    setPushFailed(false);
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-          mutation GitConvexMutation{
-            pushToRemote(repoId: "${repoId}", remoteHost: "${remote}", branch: "${branch}")
+          mutation {
+            pushToRemote(repoId: "${repoId}", remoteHost: "${remote}", branch: "${currentBranch}")
           }
         `,
       },
@@ -193,59 +187,73 @@ export default function PushComponent(props) {
     <>
       {!pushDone ? (
         <>
-          <div className="w-3/4 mx-auto my-auto p-6 rounded shadow bg-white block">
-            <div className="m-3 text-2xl font-sans text-ghray-800">
-              Available remote repos
+          <div className="git-ops--push">
+            <div className="text-center font-sans font-semibold mx-auto w-full p-3 text-2xl border-b-2 border-dashed text-gray-800">
+              Push To Remote
             </div>
-            <div>
-              <select
-                className="border p-3 my-4 text-xl rounded shadow"
-                defaultValue="checked"
-                onChange={() => {
-                  setIsRemoteSet(true);
-                }}
-                ref={remoteRef}
-                disabled={remoteData ? false : true}
-              >
-                <option disabled hidden value="checked">
-                  {remoteData
-                    ? "Select the remote repo"
-                    : "Loading available remotes..."}
-                </option>
-                {remoteData ? remoteHostGenerator() : null}
-              </select>
+            <div className="flex mx-auto justify-around items-center align-middle gap-4">
+              <div className="w-2/3 font-sans text-xl font-semibold text-gray-600">
+                Available remotes
+              </div>
+              <div className="w-3/4">
+                <select
+                  className="git-ops--push--select"
+                  defaultValue="checked"
+                  onChange={() => {
+                    setIsRemoteSet(true);
+                    getUnpushedCommits();
+                  }}
+                  ref={remoteRef}
+                  disabled={remoteData ? false : true}
+                >
+                  <option disabled hidden value="checked">
+                    {remoteData
+                      ? "Select the remote repo"
+                      : "Loading available remotes..."}
+                  </option>
+                  {remoteData ? remoteHostGenerator() : null}
+                </select>
+              </div>
             </div>
 
             {isRemoteSet ? (
-              <div>
-                <select
-                  className="border p-3 my-4 text-xl rounded shadow"
-                  defaultValue="checked"
-                  onChange={() => {
-                    setIsBranchSet(true);
-                    getUnpushedCommits();
-                  }}
-                  ref={branchRef}
-                >
-                  <option disabled hidden value="checked">
-                    Select upstream branch
-                  </option>
-                  {remoteData ? branchListGenerator() : null}
-                </select>
+              <div className="flex mx-auto justify-around items-center align-middle gap-4">
+                <div className="w-2/3 font-sans text-xl font-semibold text-gray-600">
+                  Commits will be pushed
+                </div>
+                <div className="w-3/4">
+                  <select
+                    disabled
+                    className="git-ops--push--select"
+                    defaultValue={remoteData.gitCurrentBranch}
+                    onChange={() => {
+                      getUnpushedCommits();
+                    }}
+                    ref={branchRef}
+                  >
+                    {remoteData ? branchListGenerator() : null}
+                  </select>
+                </div>
               </div>
             ) : null}
 
             {unpushedCommits && unpushedCommits.length > 0 ? (
-              <div className="my-2 p-3 rounded bg-gray-300 shadow-md border-gray-100">
-                <div className="my-2 font-sans text-2xl font-semibold">
-                  Commits to be pushed
+              <div className="git-ops--push--unpushed">
+                <div className="git-ops--push--unpushed--label">
+                  {unpushedCommits.length !== 0 ? (
+                    <span className="mx-1 border-b border-dashed border-gray-600">
+                      {unpushedCommits.length}
+                    </span>
+                  ) : null}
+                  {unpushedCommits.length === 1 ? "Commit " : "Commits "}
+                  to be pushed
                 </div>
                 <div className="overflow-auto" style={{ height: "200px" }}>
                   {unpushedCommits.map((commits, index) => {
                     return (
                       <div
                         key={`unpushed-commit-${index}`}
-                        className="my-2 border-b-2 block justify-evenly mx-auto"
+                        className="git-ops--push--commits"
                       >
                         {commitModel(commits)}
                       </div>
@@ -259,24 +267,20 @@ export default function PushComponent(props) {
 
             {pushFailed ? (
               <>
-                <div className="my-2 mx-auto my-2 p-3 bg-red-200 text-red-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-red-300">
+                <div className="git-ops--push--nochange">
                   Failed to push changes!
                 </div>
               </>
             ) : null}
 
-            {isRemoteSet &&
-            isBranchSet &&
-            unpushedCommits.length > 0 &&
-            !loading ? (
+            {isRemoteSet && unpushedCommits.length > 0 && !loading ? (
               <div
-                className="my-4 text-center bg-indigo-400 rounded shadow text-white text-xl font-sans p-2 mx-auto hover:bg-indigo-600 cursor-pointer"
+                className="git-ops--push--btn"
                 onClick={() => {
                   const remoteHost = remoteRef.current.value.trim();
-                  const branchName = branchRef.current.value.trim();
 
-                  if (remoteHost && branchName) {
-                    pushHandler(remoteHost, branchName);
+                  if (remoteHost) {
+                    pushHandler(remoteHost);
                   }
                 }}
               >
@@ -285,7 +289,7 @@ export default function PushComponent(props) {
             ) : (
               <>
                 {isCommitEmpty ? (
-                  <div className="my-4 text-center bg-gray-500 rounded shadow text-white text-xl font-sans p-2 mx-auto hover:bg-gray-600 cursor-pointer">
+                  <div className="git-ops--push--nocommits">
                     No Commits to Push
                   </div>
                 ) : null}
@@ -293,8 +297,10 @@ export default function PushComponent(props) {
             )}
             <>
               {loading ? (
-                <div className="my-4 text-center border-2 border-dashed border-green-600 rounded shadow text-green-700 bg-green-100 rounded shadow text-white text-xl font-light font-sans p-2 mx-auto cursor-pointer">
-                  <div>Pushing to remote...</div>
+                <div className="git-ops--push--loader">
+                  <div className="text-green-500 text-2xl">
+                    Pushing to remote...
+                  </div>
                   <div className="flex mx-auto my-6 text-center justify-center">
                     <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
                   </div>
@@ -304,8 +310,8 @@ export default function PushComponent(props) {
           </div>
         </>
       ) : (
-        <div className="w-1/2 mx-auto my-auto p-6 rounded shadow bg-white block">
-          <div className="mx-auto my-2 p-3 bg-green-200 text-green-800 rounded-md shadow text-xl font-sans font-semibold text-center border-b-4 border-dashed border-green-300">
+        <div className="w-11/12 mx-auto my-auto p-6 bg-white rounded">
+          <div className="p-6 border-b-4 border-dashed bg-green-100 border-green-500 text-center rounded-lg shadow font-sans text-green-500 text-2xl font-semibold">
             Changes have been pushed to remote
           </div>
         </div>

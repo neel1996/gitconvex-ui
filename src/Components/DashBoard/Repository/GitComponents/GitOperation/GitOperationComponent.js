@@ -2,11 +2,8 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_TRACKED_DIFF,
-  ROUTE_GIT_STAGED_FILES,
-} from "../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
+import "../../../../styles/GitOperations.css";
 import CommitComponent from "./CommitComponent";
 import PushComponent from "./PushComponent";
 import StageComponent from "./StageComponent";
@@ -22,20 +19,15 @@ export default function GitOperationComponent(props) {
   const [action, setAction] = useState("");
   const [list, setList] = useState([]);
   const [viewReload, setViewReload] = useState(0);
-  const [currentStageItem, setCurrensStageitem] = useState("");
+  const [currentStageItem, setCurrentStageItem] = useState("");
   const [stageItems, setStagedItems] = useState([]);
-  const [unstageFailed, setUnstageFailed] = useState(false);
+  const [unStageFailed, setUnStageFailed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
     setStagedItems([]);
-    setCurrensStageitem("");
-    const payload = JSON.stringify(
-      JSON.stringify({
-        repoId: props.repoId,
-      })
-    );
+    setCurrentStageItem("");
 
     const cancelToken = axios.CancelToken;
     const source = cancelToken.source();
@@ -49,25 +41,23 @@ export default function GitOperationComponent(props) {
       cancelToken: source.token,
       data: {
         query: `
-            query GitConvexApi{
-              gitConvexApi(route: "${ROUTE_REPO_TRACKED_DIFF}", payload:${payload})
-              {
-                gitChanges{
+            query {
+                gitChanges(repoId: "${props.repoId}"){
                   gitUntrackedFiles
                   gitChangedFiles
                   gitStagedFiles
                 }
-              }
             }
         `,
       },
     })
       .then((res) => {
         if (res.data.data) {
-          var apiData = res.data.data.gitConvexApi.gitChanges;
+          var apiData = res.data.data.gitChanges;
 
           setGitTrackedFiles([...apiData.gitChangedFiles]);
           setGitUntrackedFiles([...apiData.gitUntrackedFiles]);
+          setStagedItems([...apiData.gitStagedFiles]);
 
           const apiTrackedFiles = [...apiData.gitChangedFiles];
           const apiUnTrackedFiles = [...apiData.gitUntrackedFiles];
@@ -103,65 +93,28 @@ export default function GitOperationComponent(props) {
     return () => {
       source.cancel();
     };
-  }, [props, viewReload, currentStageItem]);
-
-  useEffect(() => {
-    const cancelToken = axios.CancelToken;
-    const source = cancelToken.source();
-
-    const payload = JSON.stringify(
-      JSON.stringify({
-        repoId: props.repoId,
-      })
-    );
-    axios({
-      url: globalAPIEndpoint,
-      method: "POST",
-      headers: {
-        "Content-type": "application/json",
-      },
-      cancelToken: source.token,
-      data: {
-        query: `
-            query GitConvexApi{
-              gitConvexApi(route: "${ROUTE_GIT_STAGED_FILES}", payload:${payload})
-              {
-                gitStagedFiles{
-                    stagedFiles
-                }
-              }
-            }
-          `,
-      },
-    })
-      .then((res) => {
-        const { stagedFiles } = res.data.data.gitConvexApi.gitStagedFiles;
-
-        if (stagedFiles && stagedFiles.length > 0) {
-          setStagedItems([...stagedFiles]);
-        }
-      })
-      .catch((err) => {});
-
-    return () => {
-      return source.cancel();
-    };
-  }, [list, props.repoId, viewReload]);
+  }, [props.repoId, viewReload, currentStageItem]);
 
   const actionButtons = [
     {
       label: "Stage all changes",
-      color: "blue",
+      border: "border-blue-500",
+      text: "text-blue-700",
+      hoverBg: "bg-blue-500",
       key: "stage",
     },
     {
       label: "Commit Changes",
-      color: "green",
+      border: "border-green-500",
+      text: "text-green-700",
+      hoverBg: "bg-green-500",
       key: "commit",
     },
     {
       label: "Push to remote",
-      color: "pink",
+      border: "border-pink-500",
+      text: "text-pink-700",
+      hoverBg: "bg-pink-500",
       key: "push",
     },
   ];
@@ -180,7 +133,7 @@ export default function GitOperationComponent(props) {
       method: "POST",
       data: {
         query: `
-          mutation GitConvexMutation{
+          mutation {
             stageItem(repoId: "${repoId}", item: "${stageItem}")
           }
         `,
@@ -190,8 +143,8 @@ export default function GitOperationComponent(props) {
         setViewReload(localViewReload);
 
         if (res.data.data && !res.data.error) {
-          if (res.data.data.stageItem === "ADD_ITEM_SUCCES") {
-            setCurrensStageitem(stageItem);
+          if (res.data.data.stageItem === "ADD_ITEM_SUCCESS") {
+            setCurrentStageItem(stageItem);
           }
         }
       })
@@ -207,19 +160,19 @@ export default function GitOperationComponent(props) {
     let statusPill = (status) => {
       if (status === "M") {
         return (
-          <div className="p-1 mx-auto text-center w-2/3 text-yellow-700 border border-yellow-500 rounded-md shadow-sm">
+          <div className="git-ops--file--status text-yellow-400 border-yellow-400 ">
             Modified
           </div>
         );
       } else if (status === "D") {
         return (
-          <div className="p-1 mx-auto text-center w-2/3 text-red-700 border bg-red-200 border-red-500 rounded-md shadow-sm">
+          <div className="git-ops--file--status text-red-700 bg-red-200 border-red-500 ">
             Removed
           </div>
         );
       } else {
         return (
-          <div className="p-1 mx-auto text-center w-2/3 text-indigo-700 border border-indigo-500 rounded-md shadow-sm">
+          <div className="git-ops--file--status text-indigo-700 border-indigo-500 ">
             Untracked
           </div>
         );
@@ -229,10 +182,10 @@ export default function GitOperationComponent(props) {
     let actionButton = (stageItem) => {
       return (
         <div
-          className="p-1 mx-auto cursor-pointer bg-green-300 text-white w-2/3 rounded-md shadow-sm hover:shadow-md hover:bg-green-600"
+          className="git-ops--stageitem--add"
           onClick={(event) => {
             stageGitComponent(stageItem, event);
-            setUnstageFailed(false);
+            setUnStageFailed(false);
           }}
           key={`add-btn-${stageItem}`}
         >
@@ -283,7 +236,7 @@ export default function GitOperationComponent(props) {
         method: "POST",
         data: {
           query: `
-            mutation GitConvexMutation{
+            mutation{
               removeStagedItem(repoId: "${repoId}", item: "${item}")
             }
           `,
@@ -304,14 +257,14 @@ export default function GitOperationComponent(props) {
 
               setStagedItems([...localStagedItems]);
             } else {
-              setUnstageFailed(true);
+              setUnStageFailed(true);
             }
           }
         })
         .catch((err) => {
           console.log(err);
           setViewReload(localViewReload);
-          setUnstageFailed(true);
+          setUnStageFailed(true);
         });
     }
 
@@ -329,7 +282,7 @@ export default function GitOperationComponent(props) {
         method: "POST",
         data: {
           query: `
-            mutation GitConvexMutation{
+            mutation {
               removeAllStagedItem(repoId: "${repoId}")
             }
           `,
@@ -353,22 +306,22 @@ export default function GitOperationComponent(props) {
 
     if (stageItems && stageItems.length > 0) {
       return (
-        <div className="w-full mx-auto my-20 p-2 border border-gray-200 rounded">
-          <div className="flex items-center align-middle my-4">
+        <div className="git-ops--stagearea">
+          <div className="git-ops--stagearea--top">
             <div className="text-5xl font-sans text-gray-800 mx-4">
               Staged Files
             </div>
             <div
-              className="p-2 rounded text-white bg-red-700 text-xl rounded shadow cursor-pointer hover:bg-red-800"
+              className="git-ops--unstage--btn"
               onClick={(event) => {
                 removeAllStagedItems(event);
-                setUnstageFailed(false);
+                setUnStageFailed(false);
               }}
             >
               Remove All Items
             </div>
           </div>
-          {unstageFailed ? (
+          {unStageFailed ? (
             <div className="my-4 mx-auto text-center shadow-md rounded p-4 border border-red-200 text-red-400 font-sans font-semibold">
               Remove item failed. Note that deleted files cannot be removed as a
               single entity. Use
@@ -378,30 +331,22 @@ export default function GitOperationComponent(props) {
               to perform a complete git reset
             </div>
           ) : null}
-          <div className="flex mx-auto p-2 text-center font-sans text-lg text-white bg-indigo-400 rounded">
+          <div className="git-ops--unstage--header">
             <div className="w-3/4">Staged File</div>
             <div className="w-1/2">Action</div>
           </div>
-          <div
-            className="block mx-auto overflow-auto"
-            style={{ height: "450px" }}
-          >
+          <div className="git-ops--unstage--table" style={{ height: "450px" }}>
             {stageItems.map((item) => {
               if (item) {
                 return (
-                  <div
-                    className="flex mx-auto my-4 border-b my-auto items-center align-middle py-4"
-                    key={item}
-                  >
-                    <div className="w-3/4 break-all mx-4 text-xl text-gray-800 font-sans">
-                      {item}
-                    </div>
+                  <div className="git-ops--unstage--table--data" key={item}>
+                    <div className="git-ops--unstage--table--item">{item}</div>
                     <div className="w-1/2 mx-auto">
                       <div
-                        className="mx-auto w-1/2 text-white cursor-pointer break-all text-center p-2 rounded bg-red-500 shadow hover:bg-red-600 hover:shadow-md"
+                        className="git-ops--unstage--remove--btn"
                         onClick={(event) => {
                           removeStagedItem(item, event);
-                          setUnstageFailed(false);
+                          setUnStageFailed(false);
                         }}
                         key={`remove-btn-${item}`}
                       >
@@ -449,7 +394,7 @@ export default function GitOperationComponent(props) {
 
   function noChangesComponent() {
     return (
-      <div className="p-4 mx-auto my-10 bg-white text-3xl text-red-500 font-sans font-light text-center rounded shadow-lg border-b-4 border-red-300 border-dashed">
+      <div className="git-ops--nochange">
         {!isLoading ? (
           <span>No files changes found in the repo.</span>
         ) : (
@@ -463,9 +408,9 @@ export default function GitOperationComponent(props) {
     <>
       {action ? (
         <div
-          className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
+          className="git-ops--backdrop"
           id="operation-backdrop"
-          style={{ background: "rgba(0,0,0,0.6)" }}
+          style={{ background: "rgba(0,0,0,0.6)", zIndex: "99" }}
           onClick={(event) => {
             if (event.target.id === "operation-backdrop") {
               setAction("");
@@ -481,21 +426,23 @@ export default function GitOperationComponent(props) {
           {actionComponent(action)}
 
           <div
-            className="float-right fixed right-0 top-0 font-semibold my-2 bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="git-ops--backdrop--close"
             onClick={() => {
               setAction("");
+              const localReload = viewReload + 1;
+              setViewReload(localReload);
             }}
           >
             X
           </div>
         </div>
       ) : null}
-      <div className="my-2 flex mx-auto p-3 justify-around">
+      <div className="git-ops--actions">
         {actionButtons.map((item) => {
-          const { label, color, key } = item;
+          const { label, border, text, hoverBg, key } = item;
           return (
             <div
-              className={`my-auto align-middle item-center w-1/4 text-center p-2 rounded-md bg-0 border border-${color}-500 text-${color}-700 font-sans cursor-pointer hover:bg-${color}-500 hover:text-white`}
+              className={`git-ops--actions--btn ${border} ${text} hover:${hoverBg}`}
               key={key}
               onClick={() => setAction(key)}
             >
@@ -505,13 +452,13 @@ export default function GitOperationComponent(props) {
         })}
       </div>
       {getTableData() && getTableData().length > 0 ? (
-        <div className="p-2 mx-auto rounded shadow border">
-          <div className="table-header flex justify-between w-full bg-orange-300 p-3 text-xl font-sans">
+        <div className="git-ops--file-table">
+          <div className="git-ops--file-table--header">
             {tableColumns.map((column, index) => {
               return (
                 <div
                   key={column}
-                  className={`font-bold text-center border-r border-gray-200 ${
+                  className={`git-ops--file-table--cols ${
                     index === 0 ? "w-3/4" : "w-1/4"
                   }`}
                 >
@@ -522,41 +469,49 @@ export default function GitOperationComponent(props) {
           </div>
 
           <div
-            className="block table-rows w-full overflow-auto"
+            className="git-ops--file-table--data"
             style={{ height: "400px" }}
           >
             <div>
-              {getTableData() &&
-                getTableData().map((tableData, index) => {
-                  return (
-                    <div
-                      className="flex font-sans p-3 border-b-2 border-b border-gray-300"
-                      key={`tableItem-${index}`}
-                    >
-                      {tableData.map((data, index) => {
-                        return (
-                          <div
-                            key={`${data}-${index}`}
-                            className={`break-all items-center align-middle my-auto ${
-                              index === 0
-                                ? "w-3/4 text-left"
-                                : "w-1/4 text-center"
-                            }`}
-                          >
-                            {data}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  );
-                })}
+              {isLoading ? (
+                <div className="text-center font-sans font-light p-4 text-2xl text-gray-600">
+                  Loading modified file items...
+                </div>
+              ) : (
+                <>
+                  {getTableData() &&
+                    getTableData().map((tableData, index) => {
+                      return (
+                        <div
+                          className="git-ops--file-table--items"
+                          key={`tableItem-${index}`}
+                        >
+                          {tableData.map((data, index) => {
+                            return (
+                              <div
+                                key={`${data}-${index}`}
+                                className={`break-all items-center align-middle my-auto ${
+                                  index === 0
+                                    ? "w-3/4 text-left"
+                                    : "w-1/4 text-center"
+                                }`}
+                              >
+                                {data}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                </>
+              )}
             </div>
           </div>
         </div>
       ) : (
         <>{noChangesComponent()}</>
       )}
-      <>{stageItems ? getStagedFilesComponent() : null}</>
+      <>{stageItems && !isLoading ? getStagedFilesComponent() : null}</>
     </>
   );
 }

@@ -1,16 +1,13 @@
+import { LangLine } from "@itassistors/langline";
 import axios from "axios";
 import * as Prism from "prismjs";
 import React, { useContext, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { GIT_TRACKED_FILES } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_FILE_DIFF,
-  ROUTE_REPO_TRACKED_DIFF,
-} from "../../../../util/env_config";
 import "../../../../prism.css";
-
-import { v4 as uuidv4 } from "uuid";
+import { globalAPIEndpoint } from "../../../../util/env_config";
+import "../../../styles/GitDiffView.css";
 
 export default function GitDiffViewComponent() {
   const { state, dispatch } = useContext(ContextProvider);
@@ -23,47 +20,20 @@ export default function GitDiffViewComponent() {
   const [fileLineDiffState, setFileLineDiffState] = useState([]);
   const [activeFileName, setActiveFileName] = useState("");
   const [isApiCalled, setIsApiCalled] = useState(false);
-  const [isLangSelected, setIsLangSelected] = useState(false);
   const [warnStatus, setWarnStatus] = useState("");
   const [lang, setLang] = useState("");
-
-  const langEnum = {
-    js: "javascript",
-    java: "java",
-    py: "python",
-    c: "c",
-    cpp: "cpp",
-    go: "go",
-    rust: "rust",
-    ts: "typescript",
-    dart: "dart",
-    php: "php",
-    html: "markup",
-    json: "json",
-    xml: "markup",
-    yaml: "yaml",
-    yml: "yaml",
-    rb: "ruby",
-    jsx: "jsx",
-    kt: "kotlin",
-    ktm: "kotlin",
-    kts: "kotlin",
-    cs: "csharp",
-    vb: "visual-basic",
-    css: "css",
-  };
 
   useEffect(() => {
     let repoId = state.globalRepoId;
 
-    setIsLangSelected(false);
     setActiveFileName("");
     setFileLineDiffState("Click on a file item to see the difference");
     setDiffStatState("Click on a file item to see the difference");
+    setWarnStatus("");
+    setChangedFiles([]);
+
     let apiEndPoint = globalAPIEndpoint;
     if (repoId) {
-      const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
-
       axios({
         url: apiEndPoint,
         method: "POST",
@@ -72,12 +42,9 @@ export default function GitDiffViewComponent() {
         },
         data: {
           query: `
-            query GitConvexApi{
-              gitConvexApi(route: "${ROUTE_REPO_TRACKED_DIFF}", payload:${payload})
-              {
-                gitChanges{
-                  gitChangedFiles
-                }
+            query {
+              gitChanges(repoId: "${repoId}"){
+                gitChangedFiles
               }
             }
           `,
@@ -86,7 +53,7 @@ export default function GitDiffViewComponent() {
         .then((res) => {
           if (res) {
             if (res.data.data && !res.data.error) {
-              var apiData = res.data.data.gitConvexApi.gitChanges;
+              var apiData = res.data.data.gitChanges;
               let { gitChangedFiles } = apiData;
 
               gitChangedFiles = gitChangedFiles.filter((fileEntry) => {
@@ -131,23 +98,18 @@ export default function GitDiffViewComponent() {
         let fileName = splitEntry[splitEntry.length - 1];
 
         return (
-          <div
-            className="my-4 border border-dashed border-gray-800 cursor-pointer block items-center"
-            title={fileEntry}
-          >
+          <div className="git-diff--files--list" title={fileEntry}>
             <div className="bg-gray-100 p-1 rounded">
-              <div className="font-sans font-semibold text-gray-700 border-b">
-                Directory:
-              </div>
-              <div className="font-sans font-light text-gray-900 truncate">
-                {dirSplit}
-              </div>
+              <div className="git-diff--files--label">Directory:</div>
+              <div className="git-diff--files--directory">{dirSplit}</div>
             </div>
-            <div className="text-md font my-2 mx-2">{fileName}</div>
+            <div className="git-diff--files--filename_sm">{fileName}</div>
           </div>
         );
       } else {
-        return <span className="text-xl mx-2 border-b">{fileEntry}</span>;
+        return (
+          <span className="git-diff--files--filename_lg">{fileEntry}</span>
+        );
       }
     };
 
@@ -157,10 +119,10 @@ export default function GitDiffViewComponent() {
           changedFiles.map((entry) => {
             if (entry && entry.split(",")[0] === "M") {
               let fileEntry = entry.split(",")[1];
-              const styleSelector = " bg-indigo-100 border-b border-indigo-400";
+              const styleSelector = " bg-indigo-50 border-b border-indigo-300";
               return (
                 <div
-                  className={`p-2 text-sm break-words hover:bg-indigo-100 cursor-pointer ${
+                  className={`p-2 text-sm break-words hover:bg-indigo-50 cursor-pointer ${
                     fileEntry === activeFileName ? styleSelector : ""
                   }`}
                   onClick={() => {
@@ -180,27 +142,9 @@ export default function GitDiffViewComponent() {
     );
   }
 
-  const languageDetector = (fileName) => {
-    const fileType = fileName.split(".")[fileName.split(".").length - 1];
-
-    if (fileType) {
-      setIsLangSelected(true);
-      if (fileType in langEnum) {
-        return langEnum[fileType];
-      } else {
-        return "markup";
-      }
-    }
-  };
-
   function fileDiffStatComponent(repoId, fileName) {
     const apiEndPoint = globalAPIEndpoint;
-    setIsLangSelected(false);
-    setWarnStatus("");
-
-    const payload = JSON.stringify(
-      JSON.stringify({ repoId: repoId, fileName: fileName })
-    );
+    setWarnStatus("Loading file difference...");
 
     axios({
       url: apiEndPoint,
@@ -210,42 +154,56 @@ export default function GitDiffViewComponent() {
       },
       data: {
         query: `
-          query GitConvexApi{
-            gitConvexApi(route: "${ROUTE_REPO_FILE_DIFF}", payload:${payload})
-            {
-              gitFileLineChanges{
+          query{
+              gitFileLineChanges(repoId: "${repoId}", fileName: "${fileName}"){
                 diffStat
                 fileDiff
               }
-            }
           }
         `,
       },
     })
       .then(async (res) => {
         if (res.data.data && !res.data.error) {
-          const {
-            diffStat,
-            fileDiff,
-          } = res.data.data.gitConvexApi.gitFileLineChanges;
+          const { diffStat, fileDiff } = res.data.data.gitFileLineChanges;
 
-          if (diffStat[0] === "NO_STAT" || fileDiff[0] === "NO_DIFF") {
+          if (diffStat === "NO_STAT" || fileDiff[0] === "NO_DIFF") {
             setWarnStatus(
-              "No difference could be found. Please check if the file is present in the repo!"
+              <>
+                <div>
+                  No difference could be found. Please check if the file is
+                  present.
+                </div>
+                <div className="font-sans text-sm font-light text-yellow-700">
+                  Note : Space based changes will not be displayed here even if
+                  it is considered as a change!
+                </div>
+              </>
             );
           } else {
-            setDiffStatState(diffStat[1]);
+            setWarnStatus("");
+            setDiffStatState(diffStat);
             setFileLineDiffState(fileDiff);
 
-            var selectedLang = languageDetector(fileName);
+            let language;
+            let langName = new LangLine().withFileName(fileName).prismIndicator;
 
-            await import("prismjs/components/prism-" + selectedLang + ".js")
-              .then(() => {})
-              .catch((err) => {
-                console.log(err);
-              });
+            if (langName && typeof langName != undefined) {
+              language = langName;
+            } else {
+              language = "markdown";
+            }
 
-            setLang(selectedLang);
+            if (language) {
+              await import("prismjs/components/prism-" + language + ".js")
+                .then(() => {})
+                .catch((err) => {
+                  console.log(err);
+                  setLang("markdown");
+                });
+
+              setLang(language);
+            }
           }
         } else {
           setWarnStatus(
@@ -262,17 +220,16 @@ export default function GitDiffViewComponent() {
   }
 
   function statFormat() {
-    if (diffStatState && diffStatState.includes(",")) {
+    if (diffStatState) {
       let splitStat = diffStatState.split(",");
 
       return (
         <div className="text-xl text-center w-3/4 mx-auto block p-2 border border-gray-500 rounded-md shadow-md border-dotted">
-          <span className="font-sans font-bold px-1">{splitStat[0]}</span>
-          {splitStat.slice(1, splitStat.length).map((parts) => {
+          {splitStat.map((parts) => {
             if (parts.match(/insert/i)) {
               return (
                 <span key={`${parts}-${new Date().getTime()}`}>
-                  <span className="px-2">{parts.toString().split(" ")[1]}</span>
+                  <span className="px-2">{parts.toString().split(" ")[0]}</span>
                   <span className="text-green-700 font-sans font-semibold">
                     insertions (+)
                   </span>
@@ -281,7 +238,7 @@ export default function GitDiffViewComponent() {
             } else {
               return (
                 <span key={`${parts}-${new Date().getTime()}`}>
-                  <span className="px-2">{parts.toString().split(" ")[1]}</span>
+                  <span className="px-2">{parts.toString().split(" ")[0]}</span>
                   <span className="text-red-700 font-sans font-semibold">
                     deletions (-)
                   </span>
@@ -297,31 +254,21 @@ export default function GitDiffViewComponent() {
   function fileLineDiffComponent() {
     let splitLines = [];
     let lineCounter = 0;
-    if (
-      fileLineDiffState &&
-      fileLineDiffState.join("").split(/@@.*@@/gi) &&
-      isLangSelected &&
-      lang
-    ) {
-      let partFile = fileLineDiffState
-        .join("|__HASH_SEPARATOR__|")
-        .split(/@@.*@@/gi)[1]
-        .split("|__HASH_SEPARATOR__|");
-
-      splitLines = partFile.map((line) => {
+    if (fileLineDiffState && lang) {
+      splitLines = fileLineDiffState.map((line) => {
         if (line.match(/\\ No newline at end of file/gi)) {
           return "";
         }
         if (line[0] && line[0] === "+") {
           return (
             <div
-              className="flex items-center gap-4 bg-green-200 w-screen"
+              className="git-diff--codeview--change bg-green-100"
               key={`${line}-${uuidv4()}`}
             >
-              <div className="w-1/8 text-green-500 border-b-2 font-mono mx-1">
+              <div className="git-diff--codeview--linenumber border-green-400 text-green-500">
                 {++lineCounter}
               </div>
-              <pre className="w-5/6">
+              <pre className="w-5/6 mx-2">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
@@ -337,13 +284,13 @@ export default function GitDiffViewComponent() {
         } else if (line[0] && line[0] === "-") {
           return (
             <div
-              className="flex gap-4 items-center bg-red-200 w-screen"
+              className="git-diff--codeview--change bg-red-100"
               key={`${line}-${uuidv4()}`}
             >
-              <div className="w-1/8 text-red-500 border-b-2 font-mono mx-1">
-                --
+              <div className="git-diff--codeview--linenumber border-red-400 text-red-400">
+                -
               </div>
-              <pre className="w-5/6">
+              <pre className="w-5/6 mx-2">
                 <code
                   dangerouslySetInnerHTML={{
                     __html: Prism.highlight(
@@ -360,10 +307,10 @@ export default function GitDiffViewComponent() {
           if (line[0]) {
             return (
               <div
-                className="flex items-center gap-4 bg-white-200 w-screen"
+                className="git-diff--codeview--change bg-white-200 "
                 key={`${line}-${uuidv4()}`}
               >
-                <div className="w-1/8 text-gray-300 font-mono mx-1">
+                <div className="git-diff--codeview--linenumber">
                   {++lineCounter}
                 </div>
                 <pre className="w-5/6">
@@ -397,16 +344,13 @@ export default function GitDiffViewComponent() {
     <>
       {changedFiles && changedFiles.length > 0 ? (
         <>
-          <div className="flex mx-auto w-full justify-center">
-            <div
-              className="break-words p-2 py-2 bg-white border-2 border-dashed border-gray-400 text-indigo-800 w-1/4 rounded-md shadow-md overflow-auto"
-              style={{ height: "880px" }}
-            >
+          <div className="git-diff--wrapper">
+            <div className="git-diff--files" style={{ height: "880px" }}>
               {getDiffFiles()}
             </div>
 
             {!activeFileName ? (
-              <div className="p-6 rounded-md bg-gray-300 shadow-md rounded-sm text-center mx-auto my-auto mt-3 block text-xl items-center text-gray-500 border-2 border-dashed font-sans">
+              <div className="git-diff--msg">
                 Click on a file to see difference information
               </div>
             ) : (
@@ -414,21 +358,19 @@ export default function GitDiffViewComponent() {
             )}
 
             {warnStatus ? (
-              <div className="text-center mx-auto my-4 p-4 rounded bg-yellow-300 border-yellow-800 font-sans font-medium my-auto">
-                {warnStatus}
-              </div>
+              <div className="git-diff--warn">{warnStatus}</div>
             ) : null}
 
             {diffStatState &&
             diffStatState !== "Click on a file item to see the difference" &&
             !warnStatus ? (
-              <div className="p-2 break-all w-3/4 mx-auto">
+              <div className="git-diff--codeview">
                 {diffStatState ? statFormat() : ""}
                 {fileLineDiffState &&
                 fileLineDiffState !==
                   "Click on a file item to see the difference" ? (
                   <div
-                    className="p-2 py-6 mt-6 text-left break-words overflow-scroll w-full"
+                    className="git-diff--codeview--content"
                     style={{ height: "800px" }}
                   >
                     {fileLineDiffComponent()}
@@ -445,11 +387,9 @@ export default function GitDiffViewComponent() {
       ) : (
         <>
           {isApiCalled ? (
-            <div className="shadow-md mx-auto w-3/4 my-4 p-2 border-b-4 border-dashed border-pink-300 rounded-md mx-auto text-center font-sans font-semibold text-xl">
-              No File changes in the repo
-            </div>
+            <div className="git-diff--error">No File changes in the repo</div>
           ) : (
-            <div className="mx-auto w-3/4 my-4 p-2 border-b-4 border-dashed border-pink-300 rounded-md mx-auto text-center font-sans font-semibold text-xl">
+            <div className="git-diff--loader">
               <span className="text-gray-400">
                 Fetching changed files from the server...
               </span>

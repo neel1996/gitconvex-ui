@@ -8,6 +8,7 @@ import { DELETE_PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
 import { globalAPIEndpoint } from "../../../../util/env_config";
 import InfiniteLoader from "../../../Animations/InfiniteLoader";
+import "../../../styles/AddRepoForm.css";
 
 export default function AddRepoForm(props) {
   library.add(fas);
@@ -19,6 +20,11 @@ export default function AddRepoForm(props) {
   const [repoAddSuccess, setRepoAddSuccess] = useState(false);
   const [inputInvalid, setInputInvalid] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [authOption, setAuthOption] = useState("noauth");
+  const [authInputs, setAuthInputs] = useState({
+    userName: "",
+    password: "",
+  });
 
   const [cloneSwitch, setCloneSwitch] = useState(false);
   const [initSwitch, setInitSwitch] = useState(false);
@@ -43,7 +49,24 @@ export default function AddRepoForm(props) {
     },
   });
 
+  const authRadio = [
+    {
+      key: "noauth",
+      label: "No Authentication",
+    },
+    {
+      key: "ssh",
+      label: "SSH Authentication",
+    },
+    {
+      key: "https",
+      label: "HTTPS Authentication",
+    },
+  ];
+
   useEffect(() => {
+    setAuthOption("noauth");
+    setAuthInputs({ userName: "", password: "" });
     if (state.shouldAddFormClose) {
       props.formEnable(false);
     }
@@ -73,10 +96,17 @@ export default function AddRepoForm(props) {
         return;
       }
 
+      let userName = "";
+      let password = "";
+
       if (initSwitch) {
         initCheck = true;
       } else if (cloneSwitch && cloneUrl) {
         cloneCheck = true;
+        if (authOption === "https") {
+          userName = authInputs.userName;
+          password = authInputs.password;
+        }
       }
 
       setLoading(true);
@@ -86,10 +116,10 @@ export default function AddRepoForm(props) {
         method: "POST",
         data: {
           query: `
-              mutation GitConvexMutation{
-                addRepo(repoName: "${repoName}", repoPath: "${repoPath}", initSwitch: ${initCheck}, cloneSwitch: ${cloneCheck}, cloneUrl: "${cloneUrl}"){
-                  message
+              mutation {
+                addRepo(repoName: "${repoName}", repoPath: "${repoPath}", initSwitch: ${initCheck}, cloneSwitch: ${cloneCheck}, repoURL: "${cloneUrl}", authOption: "${authOption}", userName: "${userName}", password: "${password}"){
                   repoId
+                  status
                 }
               }
             `,
@@ -100,9 +130,9 @@ export default function AddRepoForm(props) {
           setInputInvalid(false);
 
           if (res.data.data && !res.data.error) {
-            const { message } = res.data.data.addRepo;
+            const { status } = res.data.data.addRepo;
 
-            if (message && !message.match(/FAIL/g)) {
+            if (status && !status.match(/Failed/g)) {
               setRepoAddSuccess(true);
               setRepoAddFailed(false);
               setCloneSwitch("");
@@ -116,8 +146,6 @@ export default function AddRepoForm(props) {
                 action: DELETE_PRESENT_REPO,
                 payload: [],
               });
-
-              console.log(state.presentRepo);
             } else {
               setRepoAddFailed(true);
               setRepoAddSuccess(false);
@@ -147,14 +175,10 @@ export default function AddRepoForm(props) {
 
   function repoAddStatusBanner() {
     if (repoAddSuccess) {
-      return (
-        <div className="my-6 mx-auto block p-2 w-3/4 rounded-lg shadow-sm border-4 border-dotted border-green-300 bg-green-100 text-lg font-sans font-light text-green-700 text-center">
-          New repo added
-        </div>
-      );
+      return <div className="alert-success">New repo added</div>;
     } else if (repoAddFailed) {
       return (
-        <div className="my-6 mx-auto block p-2 w-3/4 rounded-lg shadow-sm border-4 border-dotted border-red-300 bg-red-100 text-lg font-sans font-light text-red-700 text-center">
+        <div className="alert-failure">
           Process failed! Please try again
           {inputInvalid ? (
             <div className="font-semibold">Invalid input paremeters!</div>
@@ -170,7 +194,7 @@ export default function AddRepoForm(props) {
     return (
       <div
         key={`switch-${operation}`}
-        className={`flex rounded-full h-8 w-16 py-2 shadow-inner items-center align-middle pl-1 cursor-pointer ${
+        className={`toggle-switch ${
           operation === "clone" && cloneSwitch ? "bg-green-400" : "bg-gray-200"
         }
         ${operation === "init" && initSwitch ? "bg-blue-400" : "bg-gray-200"}`}
@@ -194,13 +218,13 @@ export default function AddRepoForm(props) {
       >
         {operation === "clone" ? (
           <animated.div
-            className="rounded-full h-6 w-6 shadow-md bg-white"
+            className="toggle-switch--pill"
             id={`${operation}-switch`}
             style={cloneSwitch ? switchAnimationEnter : switchAnimationExit}
           ></animated.div>
         ) : (
           <animated.div
-            className="rounded-full h-6 w-6 shadow-md bg-white"
+            className="toggle-switch--pill"
             id={`${operation}-switch`}
             style={initSwitch ? switchAnimationEnter : switchAnimationExit}
           ></animated.div>
@@ -213,15 +237,13 @@ export default function AddRepoForm(props) {
     return (
       <div className="repo-form block">
         {repoAddStatusBanner()}
-        <div className="my-3 text-center block text-3xl font-sans text-gray-800">
-          Enter Repo Details
-        </div>
+        <div className="repo-form--header">Enter Repo Details</div>
         <div>
           <input
             id="repoNameText"
             type="text"
             placeholder="Enter a Repository Name"
-            className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
+            className="repo-form--input"
             onChange={(event) => {
               setRepoName(event.target.value);
             }}
@@ -240,7 +262,7 @@ export default function AddRepoForm(props) {
                 ? "Enter base directory path"
                 : "Enter repository path"
             }
-            className="w-11/12 p-3 my-3 rounded-md outline-none border-blue-100 border-2 shadow-md"
+            className="repo-form--input"
             onChange={(event) => {
               setRepoPath(event.target.value);
             }}
@@ -251,7 +273,7 @@ export default function AddRepoForm(props) {
           ></input>
         </div>
         {cloneSwitch && repoPathState && repoNameState ? (
-          <div className="my-4 mx-auto text-center font-sans font-light text-gray-600 text-sm items-center">
+          <div className="repo-form--clone">
             The repo will be cloned to
             <span className="mx-3 text-center font-sans font-semibold border-b-2 border-dashed">
               {repoPathState}
@@ -260,42 +282,116 @@ export default function AddRepoForm(props) {
             </span>
           </div>
         ) : null}
-        <div className="flex mx-auto my-10 items-center justify-center">
-          <div className="flex justify-around items-center">
+        <div className="repo-form--options">
+          <div className="options--switch">
             <div>{switchComponent("clone")}</div>
-            <div className="mx-2 font-sans font-light">Clone from remote</div>
+            <div className="options--label">Clone from remote</div>
           </div>
 
-          <div className="flex justify-around items-center">
+          <div className="options--switch">
             <div>{switchComponent("init")}</div>
-            <div className="mx-2 font-sans font-light">
-              Initialize a new repo
-            </div>
+            <div className="options--label">Initialize a new repo</div>
           </div>
         </div>
         {cloneSwitch ? (
-          <div className="flex mx-auto w-11/12 justify-between shadow-md border items-center rounded-md text-indigo-800">
-            <div className="w-1/8 text-center border p-3 px-6">
-              <FontAwesomeIcon icon={["fas", "link"]}></FontAwesomeIcon>
+          <>
+            <div className="option--clone">
+              <div className="option--clone--icon">
+                <FontAwesomeIcon icon={["fas", "link"]}></FontAwesomeIcon>
+              </div>
+              <div className="w-5/6">
+                <input
+                  value={cloneUrlState}
+                  className="border-0 outline-none w-full p-2"
+                  placeholder="Enter the remote repo URL"
+                  onClick={() => {
+                    setRepoAddFailed(false);
+                  }}
+                  onChange={(event) => {
+                    setCloneUrlState(event.target.value);
+                  }}
+                ></input>
+              </div>
             </div>
-            <div className="w-5/6">
-              <input
-                value={cloneUrlState}
-                className="border-0 outline-none w-full p-2"
-                placeholder="Enter the remote repo URL"
-                onClick={() => {
-                  setRepoAddFailed(false);
-                }}
-                onChange={(event) => {
-                  setCloneUrlState(event.target.value);
-                }}
-              ></input>
+            <div className="my-3 mx-auto text-center">
+              <div className="font-sans font-light my-4 mx-auto w-11/12 text-gray-600">
+                If the repo is secured / private then choose the appropriate
+                authentication option
+              </div>
+              <div className="flex gap-4 justify-center mx-auto items-center align-middle">
+                {authRadio.map((item) => {
+                  return (
+                    <div
+                      className="flex gap-4 items-center align-middle"
+                      key={item.key}
+                    >
+                      <input
+                        type="radio"
+                        name="authRadio"
+                        id={item.key}
+                        value={item.key}
+                        onChange={(e) => {
+                          setAuthOption(e.target.value);
+                        }}
+                      ></input>
+                      <label
+                        htmlFor={item.key}
+                        className="font-sans text-sm font-light cursor-pointer"
+                      >
+                        {item.label}
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+              {authOption === "https" ? (
+                <div className="my-4 mx-auto">
+                  <div className="text-sm font-sans font-light my-1 text-center mx-auto text-pink-500">
+                    Basic Authentication will not work if 2-Factor
+                    Authentication is enabled
+                  </div>
+                  <div className="my-2">
+                    <input
+                      id="repoNameText"
+                      type="text"
+                      placeholder="User Name"
+                      className="repo-form--input"
+                      onChange={(event) => {
+                        setAuthInputs({
+                          userName: event.currentTarget.value,
+                          password: authInputs.password,
+                        });
+                      }}
+                      onClick={() => {
+                        resetAlertBanner();
+                      }}
+                    ></input>
+                  </div>
+                  <div className="my-2">
+                    <input
+                      id="repoNameText"
+                      type="password"
+                      placeholder="Password"
+                      className="repo-form--input"
+                      onChange={(event) => {
+                        setAuthInputs({
+                          userName: authInputs.userName,
+                          password: event.currentTarget.value,
+                        });
+                      }}
+                      onClick={() => {
+                        resetAlertBanner();
+                      }}
+                    ></input>
+                  </div>
+                </div>
+              ) : null}
             </div>
-          </div>
+          </>
         ) : null}
-        <div className="flex w-11/12 justify-start mx-auto my-5 cursor-pointer">
+        <div className="repo-form--action">
           <div
-            className="my-2 w-1/2 block mx-3 p-3 bg-red-400 rounded-md shadow-md hover:bg-red-500"
+            className="btn btn-danger"
             id="addRepoClose"
             onClick={() => {
               props.formEnable(false);
@@ -304,7 +400,7 @@ export default function AddRepoForm(props) {
             Close
           </div>
           <div
-            className="block w-1/2 mx-3 p-3 my-2 bg-green-400 rounded-md shadow-md hover:bg-green-500"
+            className="btn btn-success"
             id="addRepoSubmit"
             onClick={() => {
               storeRepoAPI(repoNameState, repoPathState);
@@ -319,16 +415,14 @@ export default function AddRepoForm(props) {
 
   return (
     <div
-      className={`block text-center justify-center my-20 p-6 rounded-lg shadow-md border-2 border-gray-200 xl:w-1/2 lg:w-2/3 md:w-3/4 sm:w-11/12 w-11/12 mx-auto ${
+      className={`repo-form--status xl:w-1/2 lg:w-2/3 md:w-3/4 sm:w-11/12 w-11/12 ${
         loading ? "border-dashed border-2" : ""
       }`}
     >
       {loading ? (
         <>
-          <div className="text-center font-sand font-semibold text-xl text-gray-600">
-            Repo setup in progress...
-          </div>
-          <div className="flex mx-auto my-6 text-center justify-center">
+          <div className="status--label">Repo setup in progress...</div>
+          <div className="animation-loader">
             <InfiniteLoader loadAnimation={loading}></InfiniteLoader>
           </div>
         </>

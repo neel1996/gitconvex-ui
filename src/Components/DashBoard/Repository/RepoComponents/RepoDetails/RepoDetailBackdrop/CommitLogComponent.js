@@ -4,15 +4,13 @@ import { far } from "@fortawesome/free-regular-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
-import moment from "moment";
-import React, { useEffect, useState, useRef } from "react";
-import ReactDOM from "react-dom";
-import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
 import debounce from "lodash.debounce";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_COMMIT_LOGS,
-} from "../../../../../../util/env_config";
+import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
+import { relativeCommitTimeCalculator } from "../../../../../../util/relativeCommitTimeCalculator";
+import InfiniteLoader from "../../../../../Animations/InfiniteLoader";
 import CommitLogFileCard from "./CommitLogFileCard";
 
 export default function RepositoryCommitLogComponent(props) {
@@ -27,6 +25,7 @@ export default function RepositoryCommitLogComponent(props) {
   const [searchKey, setSearchKey] = useState("");
   const [viewReload, setViewReload] = useState(0);
   const [searchWarning, setSearchWarning] = useState(false);
+  const [referenceCommitHash, setReferenceCommitHash] = useState("");
 
   const searchRef = useRef();
   const searchOptionRef = useRef();
@@ -40,29 +39,22 @@ export default function RepositoryCommitLogComponent(props) {
   useEffect(() => {
     setIsLoading(true);
     setSearchWarning(false);
-    const payload = JSON.stringify(
-      JSON.stringify({ repoId: props.repoId, skipLimit: 0 })
-    );
 
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
-          query GitConvexApi
-          {
-              gitConvexApi(route: "${ROUTE_REPO_COMMIT_LOGS}", payload: ${payload}){
-                  gitCommitLogs {
-                      totalCommits
-                      commits{
-                          commitTime
-                          hash
-                          author
-                          commitMessage
-                          commitRelativeTime
-                          commitFilesCount
-                      }  
-                  }
+            query {
+              gitCommitLogs(repoId: "${props.repoId}", referenceCommit: "") {
+                  totalCommits
+                  commits{
+                      commitTime
+                      hash
+                      author
+                      commitMessage
+                      commitFilesCount
+                  }  
               }
           }
           `,
@@ -72,10 +64,7 @@ export default function RepositoryCommitLogComponent(props) {
         setIsLoading(false);
 
         if (res.data.data) {
-          const {
-            commits,
-            totalCommits,
-          } = res.data.data.gitConvexApi.gitCommitLogs;
+          const { commits, totalCommits } = res.data.data.gitCommitLogs;
 
           if (totalCommits <= 10) {
             setExcessCommit(false);
@@ -86,6 +75,8 @@ export default function RepositoryCommitLogComponent(props) {
           setTotalCommitCount(totalCommits);
           if (commits && commits.length > 0) {
             setCommitLogs([...commits]);
+            const len = commits.length;
+            setReferenceCommitHash(commits[len - 1].hash);
           } else {
             setIsCommitEmpty(true);
           }
@@ -108,10 +99,6 @@ export default function RepositoryCommitLogComponent(props) {
     let localLimit = 0;
     localLimit = skipLimit + 10;
 
-    const payload = JSON.stringify(
-      JSON.stringify({ repoId: props.repoId, skipLimit: localLimit })
-    );
-
     setSkipLimit(localLimit);
 
     axios({
@@ -119,40 +106,36 @@ export default function RepositoryCommitLogComponent(props) {
       method: "POST",
       data: {
         query: `
-          query GitConvexApi
-          {
-              gitConvexApi(route: "${ROUTE_REPO_COMMIT_LOGS}", payload: ${payload}){
-                  gitCommitLogs {
-                      totalCommits
-                      commits{
-                          commitTime
-                          hash
-                          author
-                          commitMessage
-                          commitRelativeTime
-                          commitFilesCount
-                      }  
-                  }
-              }
-          }
+          query{
+            gitCommitLogs(repoId:"${props.repoId}", referenceCommit: "${referenceCommitHash}"){
+                totalCommits
+                commits{
+                    commitTime
+                    hash
+                    author
+                    commitMessage
+                    commitFilesCount
+                }  
+            }
+        }
           `,
       },
     })
       .then((res) => {
         setIsLoading(false);
 
-        if (totalCommitCount - localLimit < 10) {
+        if (totalCommitCount - localLimit <= 10) {
           setExcessCommit(false);
         }
 
         if (res.data.data) {
-          const {
-            commits,
-            totalCommits,
-          } = res.data.data.gitConvexApi.gitCommitLogs;
+          const { commits, totalCommits } = res.data.data.gitCommitLogs;
           setTotalCommitCount(totalCommits);
           if (commits && commits.length > 0) {
             setCommitLogs([...commitLogs, ...commits]);
+
+            const len = commits.length;
+            setReferenceCommitHash(commits[len - 1].hash);
           } else {
             setIsCommitEmpty(true);
           }
@@ -242,13 +225,12 @@ export default function RepositoryCommitLogComponent(props) {
         method: "POST",
         data: {
           query: `
-            mutation{
+            query{
               searchCommitLogs(repoId:"${props.repoId}",searchType:"${searchOption}",searchKey:"${searchQuery}"){
                 hash
                 author
                 commitTime
                 commitMessage
-                commitRelativeTime
                 commitFilesCount
               }
             }
@@ -293,10 +275,9 @@ export default function RepositoryCommitLogComponent(props) {
               {message}
             </div>
             {searchWarning ? (
-              <div className="my-4 mx-auto rounded shadow p-4 text-center font-sans text-orange-900 font-light bg-orange-100 border-b-4  border-dashed border-orange-300 text-md">
-                If you are looking for some newly added commits or if this is a
-                freshly added repo, then please wait for a few minutes and
-                search again
+              <div className="my-4 mx-auto rounded shadow p-4 text-center font-sans text-yellow-800 font-light bg-yellow-50 border-b-4  border-dashed border-yellow-200 text-md">
+                Make sure if you are searching with the right category and the
+                right search query
               </div>
             ) : null}
             {isLoading ? (
@@ -317,7 +298,7 @@ export default function RepositoryCommitLogComponent(props) {
           defaultValue="default-search"
           id="searchOption"
           ref={searchOptionRef}
-          className="w-1/4 flex p-4 items-center bg-indigo-500 text-white cursor-pointer rounded-l-md text-lg font-sans font-semibold outline-none"
+          className="w-1/4 flex p-4 items-center bg-indigo-400 text-white cursor-pointer rounded-l-md text-lg font-sans font-semibold outline-none"
         >
           <option value="default-search" hidden disabled>
             Search for...
@@ -372,46 +353,50 @@ export default function RepositoryCommitLogComponent(props) {
             author,
             commitTime,
             commitMessage,
-            commitRelativeTime,
             commitFilesCount,
           } = commit;
+
+          let commitRelativeTime = relativeCommitTimeCalculator(commitTime);
           const formattedCommitTime = moment(new Date(commitTime)).format(
             "MMM DD, YYYY"
           );
+
           return (
             <div
               id={`commitLogCard-${hash}`}
-              className="p-6 pb-6 rounded-lg shadow-sm block justify-center mx-auto my-4 bg-white w-full border-b-8 border-indigo-400"
+              className="repo-backdrop--commitlogs"
               key={hash}
             >
-              <div className="flex justify-between text-indigo-500">
-                <div className="text-2xl font-sans mx-auto">
+              <div className="commitlogs--toppane">
+                <div className="commitlogs--toppane--label">
                   <FontAwesomeIcon
                     icon={["fas", "calendar-alt"]}
                   ></FontAwesomeIcon>
-                  <span className="mx-2 border-b-2 border-dashed">
+                  <span className="commitlogs--toppane--data">
                     {formattedCommitTime}
                   </span>
                 </div>
-                <div className="p-1 h-auto border-r"></div>
-                <div className="text-2xl font-sans mx-auto">
+                <div className="commitlogs--toppane--divider"></div>
+                <div className="commitlogs--toppane--label">
                   <FontAwesomeIcon
                     icon={["fab", "slack-hash"]}
                   ></FontAwesomeIcon>
-                  <span className="mx-2 border-b-2 border-dashed">{hash}</span>
+                  <span className="commitlogs--toppane--data">
+                    {hash.substring(0, 7)}
+                  </span>
                 </div>
-                <div className="p-1 h-auto border-r"></div>
-                <div className="text-2xl font-sans mx-auto">
+                <div className="commitlogs--toppane--divider"></div>
+                <div className="commitlogs--toppane--label">
                   <FontAwesomeIcon
                     icon={["fas", "user-ninja"]}
                   ></FontAwesomeIcon>
-                  <span className="mx-2 border-b-2 border-dashed truncate">
+                  <span className="commitlogs--toppane--data truncate">
                     {author}
                   </span>
                 </div>
               </div>
 
-              <div className="p-3 my-4 text-2xl font-semibold text-gray-600 font-sans flex justify-evenly items-center">
+              <div className="commitlogs--message">
                 <div className="w-1/8">
                   <FontAwesomeIcon
                     icon={["fas", "code"]}
@@ -421,17 +406,17 @@ export default function RepositoryCommitLogComponent(props) {
                 <div className="w-5/6 mx-3">{commitMessage}</div>
               </div>
 
-              <div className="w-11/12 flex justify-between mx-auto mt-4 text-xl text-gray-600">
-                <div className="w-1/3 flex justify-center my-auto items-center align-middle">
+              <div className="commitlogs--bottompane">
+                <div className="commitlogs--bottompane--label">
                   <div>
                     <FontAwesomeIcon icon={["far", "clock"]}></FontAwesomeIcon>
                   </div>
-                  <div className="mx-2 border-dashed border-b-4">
+                  <div className="commitlogs--bottompane--data">
                     {commitRelativeTime}
                   </div>
                 </div>
                 <div
-                  className="w-1/3 flex justify-around my-auto text-3xl font-sans font-light text-gray-600 items-center align-middle cursor-pointer pt-10"
+                  className="commitlogs--expand"
                   onClick={(event) => {
                     if (commitFilesCount) {
                       event.currentTarget.classList.add("hidden");
@@ -450,13 +435,13 @@ export default function RepositoryCommitLogComponent(props) {
                     ></FontAwesomeIcon>
                   )}
                 </div>
-                <div className="w-1/3 flex justify-center my-auto items-center align-middle">
+                <div className="commitlogs--bottompane--label">
                   <div>
                     <FontAwesomeIcon
                       icon={["far", "plus-square"]}
                     ></FontAwesomeIcon>
                   </div>
-                  <div className="mx-2 border-dashed border-b-4">
+                  <div className="commitlogs--bottompane--data">
                     {commitFilesCount ? (
                       `${commitFilesCount} Files`
                     ) : (
@@ -470,10 +455,10 @@ export default function RepositoryCommitLogComponent(props) {
         })}
       {excessCommit ? (
         <div
-          className="flex fixed bottom-0 right-0 w-16 h-16 mx-auto p-6 rounded-full shadow text-center bg-indigo-500 text-white text-2xl my-6 mr-6 cursor-pointer"
+          className="commitlogs--load-btn"
           title="Click to load commits"
           onClick={() => {
-            if (totalCommitCount - skipLimit >= 10) {
+            if (commitLogs.length > skipLimit) {
               fetchCommitLogs();
             }
           }}
@@ -484,7 +469,7 @@ export default function RepositoryCommitLogComponent(props) {
         </div>
       ) : null}
       {isLoading && totalCommitCount ? (
-        <div className="my-4 rounded p-3 bg-gray-100 text-lf font-semibold text-gray-800 text-center mx-auto">
+        <div className="commitlogs--loading">
           Loading {totalCommitCount - skipLimit} more commits...
           <div className="flex mx-auto my-6 text-center justify-center">
             <InfiniteLoader loadAnimation={isLoading}></InfiniteLoader>

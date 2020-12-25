@@ -11,11 +11,8 @@ export default function AddRemoteRepoComponent({ repoId }) {
 
   const remoteFormTextComponent = (formId, label, placeholder) => {
     return (
-      <div className="flex justify-between around my-4 align-middle items-center">
-        <label
-          htmlFor={formId}
-          className="text-gray-700 text-lg font-sans w-1/3"
-        >
+      <div className="addremote--form">
+        <label htmlFor={formId} className="addremote--form--label">
           {label}
         </label>
         <div className="w-5/6">
@@ -25,7 +22,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
               setParamMissing(false);
               setAddRemoteStatus("");
             }}
-            className="w-3/4 p-3 rounded shadow-md bg-white text-gray-900 text-lg font-sans outline-none"
+            className="backdrop--input"
             placeholder={placeholder}
             ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
             onChange={(event) => {
@@ -56,15 +53,15 @@ export default function AddRemoteRepoComponent({ repoId }) {
         method: "POST",
         data: {
           query: `
-              mutation GitConvexMutation{
-                addRemoteRepo(repoId: "${repoId}", remoteName: "${repoName}", remoteUrl: "${repoUrl}")
+              mutation {
+                addRemote(repoId: "${repoId}", remoteName: "${repoName}", remoteUrl: "${repoUrl}")
               }
             `,
         },
       })
         .then((res) => {
           if (res.data.data && !res.data.error) {
-            const remoteAddStatus = res.data.data.addRemoteRepo;
+            const remoteAddStatus = res.data.data.addRemote;
 
             if (remoteAddStatus === "REMOTE_ADD_SUCCESS") {
               setAddRemoteStatus("success");
@@ -88,19 +85,15 @@ export default function AddRemoteRepoComponent({ repoId }) {
 
   const statusPillComponent = (color, message) => {
     return (
-      <div
-        className={`my-6 w-1/2 text-center mx-auto p-2 rounded-lg border-${color}-900 bg-${color}-200 font-sans text-xl font-semibold border`}
-      >
+      <div className={`addremote--alert border-${color}-900 bg-${color}-200`}>
         {message}
       </div>
     );
   };
 
   return (
-    <div className="xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 mx-auto my-auto bg-gray-200 pt-6 rounded-md rounded-b-lg">
-      <div className="mx-6 my-6 text-4xl font-semibold font-sans text-gray-800">
-        Enter new remote details
-      </div>
+    <div className="xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 repo-backdrop--addremote">
+      <div className="addremote--header">Enter new remote details</div>
       <div className="my-4 mx-6">
         {remoteFormTextComponent(
           "remoteName",
@@ -115,7 +108,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
       </div>
       {paramMissing
         ? statusPillComponent(
-            "orange",
+            "yellow",
             "One or more required parameters are empty!"
           )
         : null}
@@ -129,7 +122,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
         ? statusPillComponent("red", "Failed to add new repo!")
         : null}
       <div
-        className="w-full mt-10 p-3 text-center rounded-b-lg text-xl cursor-pointer shadow bg-green-200 border border-green-700 hover:bg-green-600 hover:text-white"
+        className="addremote--btn"
         onClick={() => {
           addRemoteClickHandler();
         }}

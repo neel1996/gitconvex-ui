@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
 import { far } from "@fortawesome/free-regular-svg-icons";
+import { fas } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  ROUTE_COMMIT_FILES,
-  globalAPIEndpoint,
-} from "../../../../../../util/env_config";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { globalAPIEndpoint } from "../../../../../../util/env_config";
 export default function CommitLogFileCard({
   repoId,
   commitHash,
@@ -21,32 +18,26 @@ export default function CommitLogFileCard({
     const token = axios.CancelToken;
     const source = token.source();
 
-    const payload = JSON.stringify(
-      JSON.stringify({ repoId: repoId, commitHash: commitHash })
-    );
-
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       cancelToken: source.token,
       data: {
         query: `
-                query GitConvexApi
-                {
-                    gitConvexApi(route: "${ROUTE_COMMIT_FILES}", payload: ${payload}){
-                        gitCommitFiles {
-                            type
-                            fileName
-                        }
-                    }
+            query
+            {
+              gitCommitFiles(repoId: "${repoId}", commitHash: "${commitHash}"){
+                    type
+                    fileName
                 }
-            `,
+              }
+          `,
       },
     })
       .then((res) => {
         setIsLoading(false);
         if (res.data.data && !res.data.err) {
-          setCommitFiles([...res.data.data.gitConvexApi.gitCommitFiles]);
+          setCommitFiles([...res.data.data.gitCommitFiles]);
         }
       })
       .catch((err) => {
@@ -54,10 +45,11 @@ export default function CommitLogFileCard({
         setIsLoading(false);
       });
   }, [repoId, commitHash]);
+
   return (
-    <div className="w-11/12 p-6 rounded-lg shadow-sm block justify-center mx-auto my-6 bg-blue-100">
+    <div className="commitlogs--files">
       <div
-        className="font-sans right-0 float-right font-light cursor-pointer mx-auto text-blue-400 text-2xl my-0"
+        className="commitlogs--files--close"
         style={{ marginTop: "-20px" }}
         onClick={() => {
           setCommitFiles([]);
@@ -67,14 +59,14 @@ export default function CommitLogFileCard({
         x
       </div>
       {isLoading ? (
-        <div className="mx-4 text-2xl text-gray-700 font-sans font-light text-center">
+        <div className="commitlogs--files--header text-center">
           Fetching changed files...
         </div>
       ) : null}
       {!isLoading && commitFiles ? (
-        <div className="mx-4 text-2xl text-gray-700 font-sans font-light">{`${commitFiles.length} Files changed`}</div>
+        <div className="commitlogs--files--header">{`${commitFiles.length} Files changed`}</div>
       ) : null}
-      <div className="block w-3/4 my-4 mx-10">
+      <div className="commitlogs--files--list">
         {commitFiles &&
           commitFiles.map(({ type, fileName }) => {
             let iconSelector = "";
@@ -82,7 +74,7 @@ export default function CommitLogFileCard({
             switch (type) {
               case "M":
                 iconSelector = "plus-square";
-                colorSelector = "text-yellow-600";
+                colorSelector = "text-yellow-400";
                 break;
               case "A":
                 iconSelector = "plus-square";
@@ -100,7 +92,7 @@ export default function CommitLogFileCard({
 
             return (
               <div
-                className="flex justify-evenly items-center my-auto align-middle"
+                className="commitlogs--files--list--item"
                 key={fileName + commitHash}
               >
                 <div className={`w-1/4 text-2xl ${colorSelector}`}>
@@ -108,7 +100,10 @@ export default function CommitLogFileCard({
                     icon={["far", iconSelector]}
                   ></FontAwesomeIcon>
                 </div>
-                <div className="w-3/4 text-sm font-sans font-medium text-gray-700 truncate">
+                <div
+                  className="commitlogs--files--list--filename"
+                  title={fileName}
+                >
                   {fileName}
                 </div>
               </div>

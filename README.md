@@ -1,7 +1,9 @@
 # gitconvex react project
 This is the front end react source for the [gitconvex](https://github.com/neel1996/gitconvex) project.
 
-![gitconvex-react](https://user-images.githubusercontent.com/47709856/87220396-e72df380-c380-11ea-9b2b-e156402842bb.png)
+<p align="center">
+    <img src="https://user-images.githubusercontent.com/47709856/87220396-e72df380-c380-11ea-9b2b-e156402842bb.png" width="280">
+</p>
 
 ## Dependencies
 
@@ -44,6 +46,7 @@ $ npm run build:tailwind
 ## This will generate a default tailwind css bundle
 
 ```
+> **Note:** The final production build stage is configured to purge unused CSS selectors from the tailwind css file. So make sure you follow the [tailwind purge guidelines](https://tailwindcss.com/docs/controlling-file-size#writing-purgeable-html:~:text=Don't%20use%20string%20concatenation%20to%20create%20class%20names) to make sure that the required styles are not getting purged from the [production bundle](https://github.com/neel1996/gitconvex)
 
 - **Starting the app**
 
@@ -53,9 +56,9 @@ After completing the setup process, use `npm start` to start the react app
 ## Project directory tree
 
 ```
-
 ├── LICENSE
 ├── README.md
+├── package-lock.json
 ├── package.json
 ├── public
 │   ├── favicon.ico
@@ -73,6 +76,21 @@ After completing the setup process, use `npm start` to start the react app
     │   ├── Animations
     │   │   └── InfiniteLoader.js
     │   ├── DashBoard
+    │   │   ├── Compare
+    │   │   │   ├── BranchCompareComponent
+    │   │   │   │   ├── BranchCommitLogChanges.js
+    │   │   │   │   └── BranchCompareComponent.js
+    │   │   │   ├── CommitCompareComponent
+    │   │   │   │   ├── ChangedFilesComponent.js
+    │   │   │   │   ├── CommitCompareComponent.js
+    │   │   │   │   ├── CommitFileDifferenceComponent.js
+    │   │   │   │   └── CommitLogCardComponent.js
+    │   │   │   ├── CompareActionButtons.js
+    │   │   │   ├── CompareActiveRepoPane.js
+    │   │   │   ├── CompareComponent.js
+    │   │   │   ├── CompareSelectionHint.js
+    │   │   │   ├── RepoSearchBar.js
+    │   │   │   └── SearchRepoCards.js
     │   │   ├── Dashboard.js
     │   │   ├── DashboardPaneComponents
     │   │   │   ├── LeftPane.js
@@ -98,6 +116,7 @@ After completing the setup process, use `npm start` to start the react app
     │   │   │       │   │   ├── AddBranchComponent.js
     │   │   │       │   │   ├── AddRemoteRepoComponent.js
     │   │   │       │   │   ├── BranchListComponent.js
+    │   │   │       │   │   ├── CodeFileViewComponent.js
     │   │   │       │   │   ├── CommitLogComponent.js
     │   │   │       │   │   ├── CommitLogFileCard.js
     │   │   │       │   │   ├── FetchPullActionComponent.js
@@ -106,14 +125,27 @@ After completing the setup process, use `npm start` to start the react app
     │   │   │       │   ├── RepoLeftPaneComponent.js
     │   │   │       │   ├── RepoRightPaneComponent.js
     │   │   │       │   ├── RepositoryDetails.js
-    │   │   │       │   ├── TopPaneGridComponent.js
     │   │   │       │   └── backdropActionType.js
-    │   │   │       ├── RepositoryAction.js
-    │   │   │       └── RepositoryDetails.js
+    │   │   │       └── RepositoryAction.js
     │   │   └── Settings
     │   │       └── Settings.js
+    │   ├── LoadingHOC.js
     │   ├── SplashScreen.css
-    │   └── SplashScreen.js
+    │   ├── SplashScreen.js
+    │   └── styles
+    │       ├── AddRepoForm.css
+    │       ├── Compare.css
+    │       ├── FileExplorer.css
+    │       ├── GitDiffView.css
+    │       ├── GitOperations.css
+    │       ├── GitTrackedComponent.css
+    │       ├── LeftPane.css
+    │       ├── RepoCard.css
+    │       ├── RepoComponent.css
+    │       ├── RepositoryAction.css
+    │       ├── RepositoryDetails.css
+    │       ├── RepositoryDetailsBackdrop.css
+    │       └── RightPane.css
     ├── actionStore.js
     ├── assets
     │   └── gitconvex.png
@@ -121,16 +153,20 @@ After completing the setup process, use `npm start` to start the react app
     ├── index.css
     ├── index.js
     ├── logo.svg
+    ├── postcss.config.js
     ├── prism.css
     ├── reducer.js
     ├── serviceWorker.js
     ├── setupTests.js
+    ├── tailwind.config.js
     ├── tests
     │   ├── App.test.js
     │   └── Dashboard.test.js
     └── util
         ├── apiURLSupplier.js
         └── env_config.js
+
+21 directories, 88 files
 
 ```
 

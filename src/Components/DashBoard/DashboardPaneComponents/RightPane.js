@@ -1,8 +1,9 @@
 import React from "react";
 import RepoComponent from "../Repository/RepoComponents/RepoComponent";
+import "../../styles/RightPane.css";
 
 export default function RightPane(props) {
-  const { platform, gitVersion, nodeVersion } = props.params;
+  const { platform, gitVersion } = props.params;
 
   const hcParams = [
     {
@@ -13,28 +14,21 @@ export default function RightPane(props) {
       label: "Git",
       value: gitVersion,
     },
-    {
-      label: "Node",
-      value: nodeVersion,
-    },
   ];
 
   return (
     <>
-      <div className="dashboard-rightpane w-full mx-auto justify-center xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none">
-        <div className="w-11/12 p-3 my-6 mx-auto rounded-lg shadow-md xl:flex lg:flex md:block sm:block rightpane-details block justify-between mx-auto bg-blue-100 border-2 border-blue-100">
+      <div className="dashboard--rightpane overflow-auto">
+        <div className="rightpane--toparea xl:flex lg:flex md:block sm:block">
           {hcParams.map((entry) => {
             return (
-              <div
-                key={entry.label}
-                className="my-2 flex mx-auto gap-10 justify-around items-center align-middle"
-              >
-                <div className="w-1/2 rightpane-details__header border-b-2 border-dashed text-center font-sans xl:font-bold lg:font-semibold md:font-medium xl:text-2xl lg:text-xl md:text-md">
+              <div key={entry.label} className="rightpane--toparea--hc">
+                <div className="rightpane--toparea--hclabel xl:font-bold lg:font-semibold md:font-medium xl:text-2xl lg:text-xl md:text-md">
                   {entry.label}
                 </div>
                 {entry.value !== "" ? (
                   <div
-                    className="w-2/3 mx-2 bg-green-200 border-green-800 text-center text-green-900 p-2 rounded-lg hc-param"
+                    className="rightpane--toparea--hcpills"
                     id={`hc-param__${entry.label}`}
                   >
                     {entry.value}
@@ -54,7 +48,7 @@ export default function RightPane(props) {
   );
 
   function repoEntry() {
-    if (platform && gitVersion && nodeVersion) {
+    if (platform && gitVersion) {
       return <RepoComponent parentProps={props}></RepoComponent>;
     }
   }

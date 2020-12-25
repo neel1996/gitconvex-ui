@@ -17,13 +17,6 @@
     color: pink;
 }
 
-.dashboard-leftpane__logo {
-    background: url('../assets/gitconvex.png');
-    background-size: cover;
-    width: 70px;
-    height: 70px;
-}
-
 @media only screen and (max-width: 1500px) {
     .dashboard-leftpane__logo {
         width: 60px;

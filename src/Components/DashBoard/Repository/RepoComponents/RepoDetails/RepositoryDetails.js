@@ -1,12 +1,12 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import React, { useEffect, useMemo, useState } from "react";
-import {
-  globalAPIEndpoint,
-  ROUTE_REPO_DETAILS,
-} from "../../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../../util/env_config";
+import LoadingHOC from "../../../../LoadingHOC";
+import "../../../../styles/RepositoryDetails.css";
 import FileExplorerComponent from "./FileExplorerComponent";
 import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
 import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
@@ -17,7 +17,6 @@ import SwitchBranchComponent from "./RepoDetailBackdrop/SwitchBranchComponent";
 import RepoInfoComponent from "./RepoInfoComponent";
 import RepoLeftPaneComponent from "./RepoLeftPaneComponent";
 import RepoRightPaneComponent from "./RepoRightPaneComponent";
-import LoadingHOC from "../../../../LoadingHOC";
 
 export default function RepositoryDetails(props) {
   library.add(fab, fas);
@@ -28,10 +27,10 @@ export default function RepositoryDetails(props) {
   const [isMultiRemote, setIsMultiRemote] = useState(false);
   const [multiRemoteCount, setMultiRemoteCount] = useState(0);
   const [backdropToggle, setBackdropToggle] = useState(false);
+  const [reloadView, setReloadView] = useState(false);
+  const [codeViewToggle, setCodeViewToggle] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState("");
   const [currentBranch, setCurrentBranch] = useState("");
-  const [gitRepoFiles, setGitRepoFiles] = useState([]);
-  const [gitFileBasedCommits, setGitFileBasedCommits] = useState([]);
   const [action, setAction] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -47,6 +46,12 @@ export default function RepositoryDetails(props) {
     setAction(actionType);
     setBackdropToggle(true);
   };
+
+  const memoizedFolderExplorer = useMemo(() => {
+    return (
+      <FileExplorerComponent repoIdState={repoIdState}></FileExplorerComponent>
+    );
+  }, [repoIdState]);
 
   const memoizedCommitLogComponent = useMemo(() => {
     return (
@@ -80,6 +85,9 @@ export default function RepositoryDetails(props) {
         repoId={repoIdState}
         branchName={selectedBranch}
         closeBackdrop={closeBackdrop}
+        switchReloadView={() => {
+          setReloadView(true);
+        }}
       ></SwitchBranchComponent>
     );
   }, [repoIdState, selectedBranch]);
@@ -100,6 +108,8 @@ export default function RepositoryDetails(props) {
   }, [repoIdState]);
 
   useEffect(() => {
+    setReloadView(false);
+    setCodeViewToggle(false);
     setLoading(true);
     const endpointURL = globalAPIEndpoint;
 
@@ -110,8 +120,6 @@ export default function RepositoryDetails(props) {
 
       setRepoIdState(repoId);
 
-      const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
-
       axios({
         url: endpointURL,
         method: "POST",
@@ -121,10 +129,9 @@ export default function RepositoryDetails(props) {
         data: {
           query: `
 
-            query GitConvexApi
+            query
             {
-              gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-                gitRepoStatus {
+                gitRepoStatus(repoId:"${repoId}"){
                   gitRemoteData
                   gitRepoName
                   gitBranchList
@@ -132,11 +139,8 @@ export default function RepositoryDetails(props) {
                   gitRemoteHost
                   gitTotalCommits
                   gitLatestCommit
-                  gitTrackedFiles
-                  gitFileBasedCommit
                   gitTotalTrackedFiles    
                 }
-              }
             }
           `,
         },
@@ -145,7 +149,7 @@ export default function RepositoryDetails(props) {
           setLoading(false);
 
           if (res.data && res.data.data && !res.data.error) {
-            const localRepoStatus = res.data.data.gitConvexApi.gitRepoStatus;
+            const localRepoStatus = res.data.data.gitRepoStatus;
             let gitRemoteLocal = localRepoStatus.gitRemoteData;
             setCurrentBranch(localRepoStatus.gitCurrentBranch);
             if (gitRemoteLocal.includes("||")) {
@@ -155,9 +159,6 @@ export default function RepositoryDetails(props) {
               setMultiRemoteCount(gitRemoteLocal.split("||").length);
             }
             setGitRepoStatus(localRepoStatus);
-
-            setGitRepoFiles([...localRepoStatus.gitTrackedFiles]);
-            setGitFileBasedCommits([...localRepoStatus.gitFileBasedCommit]);
           } else {
             setRepoFetchFailed(true);
           }
@@ -171,7 +172,7 @@ export default function RepositoryDetails(props) {
           }
         });
     }
-  }, [props.parentProps, backdropToggle]);
+  }, [props.parentProps, reloadView]);
 
   let {
     gitRemoteData,
@@ -229,7 +230,7 @@ export default function RepositoryDetails(props) {
             }}
           >
             <div
-              className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+              className="commitlogs-view"
               onClick={() => {
                 setShowCommitLogs(false);
               }}
@@ -245,11 +246,11 @@ export default function RepositoryDetails(props) {
           </div>
         </>
       ) : null}
-      {backdropToggle ? (
+      {backdropToggle || codeViewToggle ? (
         <div
-          className="fixed w-full h-full top-0 left-0 right-0 flex overflow-auto"
+          className="backdrop-view z-40"
           id="repo-backdrop"
-          style={{ background: "rgba(0,0,0,0.7)" }}
+          style={{ background: "rgba(0,0,0,0.7)", zIndex: "99" }}
           onClick={(event) => {
             if (event.target.id === "repo-backdrop") {
               setBackdropToggle(false);
@@ -259,9 +260,11 @@ export default function RepositoryDetails(props) {
         >
           <>{action ? actionComponentPicker() : null}</>
           <div
-            className="fixed top-0 right-0 mx-3 font-semibold bg-red-500 text-3xl cursor-pointer text-center text-white my-5 align-middle rounded-full w-12 h-12 items-center align-middle shadow-md mr-5"
+            className="action-view"
             onClick={() => {
               setBackdropToggle(false);
+              setCodeViewToggle(false);
+              setReloadView(true);
               setAction("");
             }}
           >
@@ -271,7 +274,7 @@ export default function RepositoryDetails(props) {
       ) : null}
       <>
         {!loading && gitRepoStatus && !repoFetchFailed ? (
-          <div className="xl:overflow-auto lg:overflow-auto md:overflow-none sm:overflow-none rp_repo-view w-full h-full p-6 mx-auto rounded-lg justify-evenly">
+          <div className="overflow-auto repo-details">
             <div className="flex px-3 py-2">
               {gitRepoStatus ? (
                 <RepoInfoComponent
@@ -307,13 +310,28 @@ export default function RepositoryDetails(props) {
               </div>
             </div>
 
-            {!loading && gitRepoStatus && repoIdState && gitRepoFiles ? (
-              <FileExplorerComponent
-                repoIdState={repoIdState}
-                gitRepoFiles={gitRepoFiles}
-                gitFileBasedCommits={gitFileBasedCommits}
-              ></FileExplorerComponent>
-            ) : null}
+            {!loading && gitRepoStatus && repoIdState
+              ? memoizedFolderExplorer
+              : null}
+          </div>
+        ) : !loading ? (
+          <div className="w-full h-full mx-auto text-center flex justify-center items-center">
+            <div className="block mx-auto w-11/12">
+              <div className="rounded-lg shadow border-2 border-dashed border-pink-400 text-red-300 text-3xl font-sans font-semibold p-4">
+                Unable to fetch repo details
+              </div>
+              <div className="font-sans font-light text-xl my-4 text-gray-600">
+                Please check if the repo is a valid git repo. If it is not a git
+                repo, delete the entry from "Settings" menu and add the repo
+                again by checking "Initialize a new repo" option
+              </div>
+              <div className="my-10 text-gray-200">
+                <FontAwesomeIcon
+                  icon={["fas", "unlink"]}
+                  size="10x"
+                ></FontAwesomeIcon>
+              </div>
+            </div>
           </div>
         ) : null}
       </>

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
 import { globalAPIEndpoint } from "../../../../../../util/env_config";
+import "../../../../../styles/RepositoryDetailsBackdrop.css";
 
 export default function AddBranchComponent(props) {
   const { repoId } = props;
@@ -42,7 +43,7 @@ export default function AddBranchComponent(props) {
   }
 
   return (
-    <div className="w-3/4 mx-auto my-auto bg-gray-200 p-6 rounded-md">
+    <div className="repo-backdrop--addbranch">
       <div className="my-auto">
         <div className="mx-auto">
           <input
@@ -50,7 +51,7 @@ export default function AddBranchComponent(props) {
             ref={branchNameRef}
             id="branchName"
             placeholder="Branch Name"
-            className="p-3 rounded bg-white text-xl text-gray-700 font-sans font-mono w-full border border-gray-200 shadow"
+            className="addbranch--input"
             onChange={(event) => {
               const branchNameVal = event.target.value;
               if (
@@ -70,10 +71,9 @@ export default function AddBranchComponent(props) {
           ></input>
         </div>
         <div
-          className="bg-indigo-500 p-3 rounded mt-6 mx-auto text-xl font-sans text-white hover:bg-indigo-600 text-center mx-auto cursor-pointer"
+          className="addbranch--btn"
           onClick={(event) => {
             if (branchName) {
-              console.log(branchName);
               addBranchClickHandler();
             } else {
               setBranchAddStatus("BRANCH_ADD_FAILED");
@@ -83,12 +83,12 @@ export default function AddBranchComponent(props) {
           Add Branch
         </div>
         {branchAddStatus === "BRANCH_CREATION_SUCCESS" ? (
-          <div className="w-full bg-green-200 p-1 rounded my-6 mx-auto text-md font-sans text-center mx-auto cursor-pointer">
+          <div className="backdrop--alert bg-green-200 text-green border-green-500">
             New branch has been added to your repo successfully
           </div>
         ) : null}
         {branchAddStatus === "BRANCH_ADD_FAILED" ? (
-          <div className="w-full bg-red-200 p-1 rounded my-6 mx-auto text-md font-sans text-center mx-auto cursor-pointer">
+          <div className="backdrop--alert bg-red-200 text-red-600 border-red-400">
             New branch addition failed!
           </div>
         ) : null}

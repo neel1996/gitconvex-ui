@@ -5,11 +5,8 @@ import axios from "axios";
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { GIT_GLOBAL_REPOID, PRESENT_REPO } from "../../../../actionStore";
 import { ContextProvider } from "../../../../context";
-import {
-  globalAPIEndpoint,
-  ROUTE_FETCH_REPO,
-  ROUTE_REPO_DETAILS,
-} from "../../../../util/env_config";
+import { globalAPIEndpoint } from "../../../../util/env_config";
+import "../../../styles/RepositoryAction.css";
 import GitTrackedComponent from "../GitComponents/GitTrackedComponent";
 
 export default function RepositoryAction() {
@@ -17,6 +14,7 @@ export default function RepositoryAction() {
 
   const { state, dispatch } = useContext(ContextProvider);
   const { presentRepo } = state;
+  const [loading, setLoading] = useState(false);
   const [selectedFlag, setSelectedFlag] = useState(false);
   const [defaultRepo, setDefaultRepo] = useState({});
   const [availableRepos, setAvailableRepos] = useState([]);
@@ -32,13 +30,17 @@ export default function RepositoryAction() {
   const memoizedGitTracker = useMemo(() => {
     if (defaultRepo && defaultRepo.id) {
       return (
-        <GitTrackedComponent repoId={defaultRepo.id}></GitTrackedComponent>
+        <GitTrackedComponent
+          repoId={defaultRepo.id}
+          resetBranchError={() => {
+            setBranchError(false);
+          }}
+        ></GitTrackedComponent>
       );
     }
   }, [defaultRepo]);
 
   useEffect(() => {
-    //Effect dep function
     const token = axios.CancelToken;
     const source = token.source();
 
@@ -46,8 +48,7 @@ export default function RepositoryAction() {
       const repoId = defaultRepo && defaultRepo.id;
 
       if (repoId) {
-        const payload = JSON.stringify(JSON.stringify({ repoId: repoId }));
-
+        setLoading(true);
         axios({
           url: globalAPIEndpoint,
           method: "POST",
@@ -57,27 +58,27 @@ export default function RepositoryAction() {
           cancelToken: source.token,
           data: {
             query: `
-              query GitConvexApi
+              query 
               {
-                gitConvexApi(route: "${ROUTE_REPO_DETAILS}", payload: ${payload}){
-                  gitRepoStatus {
+                  gitRepoStatus(repoId: "${repoId}") {
                     gitBranchList
                     gitCurrentBranch
                     gitTotalCommits
                     gitTotalTrackedFiles 
                   }
-                }
               }
             `,
           },
         })
           .then((res) => {
-            setSelectedRepoDetails(res.data.data.gitConvexApi.gitRepoStatus);
-            setActiveBranch(
-              res.data.data.gitConvexApi.gitRepoStatus.gitCurrentBranch
-            );
+            setLoading(false);
+
+            setSelectedRepoDetails(res.data.data.gitRepoStatus);
+            setActiveBranch(res.data.data.gitRepoStatus.gitCurrentBranch);
           })
           .catch((err) => {
+            setLoading(false);
+
             if (err) {
               console.log("API GitStatus error occurred : " + err);
             }
@@ -87,25 +88,26 @@ export default function RepositoryAction() {
 
     //Effect dep function
     async function invokeRepoFetchAPI() {
+      setLoading(true);
       return await axios({
         url: globalAPIEndpoint,
         method: "POST",
         cancelToken: source.token,
         data: {
           query: `
-              query GitConvexApi{
-                gitConvexApi(route: "${ROUTE_FETCH_REPO}"){
+              query {
                   fetchRepo{
                     repoId
                     repoName
                     repoPath
                   }
-                }
               }
           `,
         },
       }).then((res) => {
-        const apiResponse = res.data.data.gitConvexApi.fetchRepo;
+        setLoading(false);
+
+        const apiResponse = res.data.data.fetchRepo;
 
         if (apiResponse) {
           const repoContent = apiResponse.repoId.map((entry, index) => {
@@ -142,23 +144,28 @@ export default function RepositoryAction() {
   }, [defaultRepo, activeBranch, presentRepo, dispatch, branchError]);
 
   function setTrackingBranch(branchName, event) {
+    setLoading(true);
     axios({
       url: globalAPIEndpoint,
       method: "POST",
       data: {
         query: `
           mutation{
-            setBranch(repoId: "${defaultRepo.id}", branch: "${branchName}")
+            checkoutBranch(repoId: "${defaultRepo.id}", branchName: "${branchName}")
           }
         `,
       },
     })
       .then((res) => {
+        setLoading(false);
+
         if (res.data.data && !res.data.error) {
           setActiveBranch(branchName);
         }
       })
       .catch((err) => {
+        setLoading(false);
+
         if (err) {
           setBranchError(true);
           event.target.selectedIndex = 0;
@@ -168,15 +175,24 @@ export default function RepositoryAction() {
 
   function activeRepoPane() {
     return (
-      <div className="flex justify-around mx-auto align-middle items-around my-4">
+      <div className="top-pane">
         <div className="flex items-center">
-          <div className="font-sans font-semibold text-gray-900 my-1">
-            Choose saved repository
-          </div>
+          <div className="select--label">Choose saved repository</div>
           <select
-            className="p-2 bg-green-100 text-green-700 rounded-lg shadow mx-4 font-sans font-light text-xl outline-none border-dashed border-b-2 border-green-400"
+            className="top-pane--select bg-green-50 text-green-700 border-green-400"
             defaultValue={"checked"}
+            onClick={() => {
+              setBranchError(false);
+            }}
             onChange={(event) => {
+              setActiveBranch("...");
+              if (event.currentTarget.value !== defaultRepo.repoName) {
+                setSelectedRepoDetails({
+                  ...selectedRepoDetails,
+                  gitCurrentBranch: "",
+                  gitBranchList: ["..."],
+                });
+              }
               setSelectedFlag(true);
               availableRepos.length &&
                 availableRepos.forEach((elm) => {
@@ -202,22 +218,24 @@ export default function RepositoryAction() {
         </div>
         {selectedFlag ? (
           <div className="flex items-center">
-            <div className="font-sans font-semibold text-gray-900 my-1">
-              Branch
-            </div>
+            <div className="select--label">Branch</div>
             <select
-              className="p-2 bg-indigo-100 text-indigo-700 rounded-lg shadow mx-4 font-sans font-light text-xl outline-none border-dashed border-b-2 border-indigo-400"
               value={activeBranch}
+              defaultChecked={activeBranch}
+              className="top-pane--select bg-indigo-50 border-indigo-300 text-indigo-700"
               disabled={activeBranch ? false : true}
               onChange={(event) => {
                 event.persist();
-                setActiveBranch("");
+                setActiveBranch("...");
                 setTrackingBranch(event.target.value, event);
               }}
               onClick={() => {
                 setBranchError(false);
               }}
             >
+              <option key={activeBranch} value={activeBranch}>
+                {activeBranch}
+              </option>
               {availableBranch()}
             </select>
           </div>
@@ -229,7 +247,7 @@ export default function RepositoryAction() {
   function getTopPaneComponent(icon, value) {
     return (
       <>
-        <div className="flex p-2 border-b-2 border-indigo-400 border-dashed justify-between mx-2 font-sans text-lg text-gray-700">
+        <div className="top-pane--component">
           <div className="mx-2">
             <FontAwesomeIcon icon={["fas", icon]}></FontAwesomeIcon>
           </div>
@@ -244,7 +262,7 @@ export default function RepositoryAction() {
       const { gitBranchList } = selectedRepoDetails;
 
       return gitBranchList.map((branch, index) => {
-        if (branch !== "NO_BRANCH") {
+        if (branch !== "NO_BRANCH" && branch !== activeBranch) {
           return (
             <option key={branch} value={branch}>
               {branch}
@@ -258,55 +276,64 @@ export default function RepositoryAction() {
   }
 
   return (
-    <div className="w-full mx-auto block justify-center overflow-x-hidden">
+    <div className="repository-action">
       {availableRepos ? (
         <div>
-          <div className="mx-auto my-6 w-11/12 rounded shadow border border-gray-200">
+          <div className="active-repo">
             {activeRepoPane()}
             {selectedRepoDetails && selectedFlag ? (
               <div className="my-auto flex justify-around p-3 mx-auto">
-                {getTopPaneComponent(
-                  "code-branch",
-                  selectedRepoDetails.gitBranchList &&
-                    selectedRepoDetails.gitBranchList.length > 0 &&
-                    !selectedRepoDetails.gitBranchList[0].match(
-                      /NO_BRANCH/gi
-                    ) ? (
-                    <>
-                      {selectedRepoDetails.gitBranchList.length === 1
-                        ? 1 + " branch"
-                        : selectedRepoDetails.gitBranchList.length +
-                          " branches"}
-                    </>
-                  ) : (
-                    "No Branches"
-                  )
-                )}
-                {getTopPaneComponent(
-                  "sort-amount-up",
-                  selectedRepoDetails.gitTotalCommits + " Commits"
-                )}
-                {getTopPaneComponent(
-                  "archive",
-                  selectedRepoDetails.gitTotalTrackedFiles + " Tracked Files"
+                {loading ? (
+                  <div className="text-center font-sans font-semibold text-gray-600 text-xl">
+                    Loading repo details...
+                  </div>
+                ) : (
+                  <>
+                    {getTopPaneComponent(
+                      "code-branch",
+                      selectedRepoDetails.gitBranchList &&
+                        selectedRepoDetails.gitBranchList.length > 0 &&
+                        !selectedRepoDetails.gitBranchList[0].match(
+                          /NO_BRANCH/gi
+                        ) ? (
+                        <>
+                          {selectedRepoDetails.gitBranchList.length === 1
+                            ? 1 + " branch"
+                            : selectedRepoDetails.gitBranchList.length +
+                              " branches"}
+                        </>
+                      ) : (
+                        "No Branches"
+                      )
+                    )}
+                    {getTopPaneComponent(
+                      "sort-amount-up",
+                      selectedRepoDetails.gitTotalCommits + " Commits"
+                    )}
+                    {getTopPaneComponent(
+                      "archive",
+                      selectedRepoDetails.gitTotalTrackedFiles +
+                        " Tracked Files"
+                    )}
+                  </>
                 )}
               </div>
             ) : null}
           </div>
           {!selectedFlag ? (
             <>
-              <div className="mt-10 w-11/12 rounded-sm shadow-sm h-full my-auto bock mx-auto text-center align-middle p-6 bg-orange-200 text-xl text-orange-900">
+              <div className="alert--jumbotron">
                 Select a configured repo from the dropdown to perform git
                 related operations
               </div>
-              <div className="p-6 rounded-lg border-2 border-gray-100 w-3/4 block mx-auto my-20">
+              <div className="alert--message">
                 <div>
                   <FontAwesomeIcon
                     icon={["fas", "mouse-pointer"]}
-                    className="flex text-6xl mt-20 text-center text-gray-300 font-bold mx-auto my-auto h-full w-full"
+                    className="alert--message--icon"
                   ></FontAwesomeIcon>
                 </div>
-                <div className="block xl:text-6xl lg:text-3xl md:text-2xl my-4 text-gray-200 mx-auto text-center align-middle">
+                <div className="alert--message--label xl:text-6xl lg:text-3xl md:text-2xl">
                   No repositories selected
                 </div>
               </div>
@@ -314,7 +341,7 @@ export default function RepositoryAction() {
           ) : null}
           <div>
             {branchError ? (
-              <div className="p-2 rounded my-2 mx-auto text-center font-sand bg-red-200 text-red-800">
+              <div className="alert--failure">
                 Branch switching failed.Commit your changes and try again
               </div>
             ) : null}
