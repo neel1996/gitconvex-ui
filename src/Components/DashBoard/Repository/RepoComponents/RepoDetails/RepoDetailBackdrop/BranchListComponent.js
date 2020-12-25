@@ -69,7 +69,6 @@ export default function BranchListComponent({ repoId, currentBranch }) {
             setListError(true);
             return;
           }
-
           gitAllBranchList = gitAllBranchList.map((branch) => {
             if (branch === gitCurrentBranch) {
               return "*" + branch;
