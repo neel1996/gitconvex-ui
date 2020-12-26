@@ -86,7 +86,7 @@ export default function RepoRightPaneComponent(props) {
                 </div>
                 <div
                   id="addBranch"
-                  className="rounded-full items-center align-middle w-10 h-10 text-white text-2xl bg-green-400 text-center mx-auto shadow hover:bg-green-500 cursor-pointer"
+                  className="add-btn bg-green-400 hover:bg-green-500 cursor-pointer"
                   onMouseEnter={(event) => {
                     let popUp =
                       '<div class="tooltip" style="margin-left:-40px;">Click to add a new branch</div>';

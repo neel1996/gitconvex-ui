@@ -242,7 +242,7 @@ export default function RepositoryAction() {
             <div className="flex-1 select--label mr-2">Branch</div>
             <div className="flex-1 flex flex-col justify-center">
               <div
-                className="flex-auto cursor-pointer inline-flex items-center justify-center px-4 py-2 shadow-md bg-indigo-50 border-indigo-400 text-indigo-700 border-dashed	border-b-2"
+                className="flex-auto cursor-pointer inline-flex items-center justify-center px-4 py-2 shadow-md bg-indigo-50 border-indigo-400 text-indigo-700 border-dashed	border-b-2 truncate"
                 onClick={(e) => {
                   let target = e.currentTarget;
                   if (!toggleSearchSelect) {
