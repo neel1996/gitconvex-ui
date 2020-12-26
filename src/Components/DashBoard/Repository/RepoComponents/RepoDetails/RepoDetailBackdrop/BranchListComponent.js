@@ -212,6 +212,11 @@ export default function BranchListComponent({ repoId, currentBranch }) {
     }
   }
 
+  const cancelSearchBranchFromList = () => {
+    setBranchSearchTerm('')
+    setFilteredBranchList([])
+  }
+
   const renderBranchListComponent = (branch) => {
     
     const branchPickerComponent = (icon, branchType, branchName) => {
@@ -229,9 +234,8 @@ export default function BranchListComponent({ repoId, currentBranch }) {
       return (
         <div
           className="list-area--branches"
-          key={branchType + branchName}
-        >
-          <div className="list-area--branches--icon">
+          key={branchType + branchName}>
+          <div className={ icon === 'wifi' ? "list-area--branches--icon ml-0" : "list-area--branches--icon"}>
             <FontAwesomeIcon icon={["fas", icon]}></FontAwesomeIcon>
           </div>
           <div className="xl:block lg:block md:block sm:hidden list-area--branches--type">
@@ -351,17 +355,22 @@ export default function BranchListComponent({ repoId, currentBranch }) {
             Collecting branch list...
           </div>
         ) : null}
-         <div className='inline-flex w-full items-center justify-center flex-row'>
-         <div className="list-area--branches--icon">
-          <FontAwesomeIcon className='mr-4' icon={["fas", "search"]}></FontAwesomeIcon>
+         <div className='flex flex-row mx-8 shadow-md rounded-md b-1'>
+         <div className="b-1 text-center p-4 text-white bg-blue-500 rounded-l-md">
+          <FontAwesomeIcon icon={["fas", "search"]}></FontAwesomeIcon>
          </div>
-          <input
+         <div className='w-full'>
+         <input
             id="branchListSearchInput"
             type="text"
             placeholder="Search For Branch Name"
-            className="repo-form--input"
+            className="border-0 outline-none w-full p-4 focus:outline-none"
             onChange={searchBranchFromList}
             value={branchSearchTerm}></input>
+         </div>
+         <div className="b-1 text-center p-4 text-gray-500 cursor-pointer" onClick={cancelSearchBranchFromList}>
+          <FontAwesomeIcon icon={["fas", "times"]}></FontAwesomeIcon>
+         </div>
         </div>
         {!listError &&
           branchList &&
