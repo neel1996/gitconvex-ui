@@ -17,7 +17,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [branchSearchTerm, setBranchSearchTerm] = useState('');
+  const [branchSearchTerm, setBranchSearchTerm] = useState("");
   const [filteredBranchList, setFilteredBranchList] = useState([]);
 
   function resetStates() {
@@ -202,23 +202,24 @@ export default function BranchListComponent({ repoId, currentBranch }) {
   }
 
   const searchBranchFromList = (event) => {
-    const searchBranch = event.target.value
-    setBranchSearchTerm(searchBranch)
-    if(searchBranch !== ''){
-      const filteredBranches = branchList.filter(branchName => branchName.toLowerCase().includes(searchBranch))
-      setFilteredBranchList(filteredBranches)
+    const searchBranch = event.target.value;
+    setBranchSearchTerm(searchBranch);
+    if (searchBranch !== "") {
+      const filteredBranches = branchList.filter((branchName) =>
+        branchName.toLowerCase().includes(searchBranch)
+      );
+      setFilteredBranchList(filteredBranches);
     } else {
-      setFilteredBranchList([])
+      setFilteredBranchList([]);
     }
-  }
+  };
 
   const cancelSearchBranchFromList = () => {
-    setBranchSearchTerm('')
-    setFilteredBranchList([])
-  }
+    setBranchSearchTerm("");
+    setFilteredBranchList([]);
+  };
 
   const renderBranchListComponent = (branch) => {
-    
     const branchPickerComponent = (icon, branchType, branchName) => {
       let activeSwitchStyle = "";
       let activeBranchFlag = false;
@@ -228,14 +229,17 @@ export default function BranchListComponent({ repoId, currentBranch }) {
       }
 
       if (activeBranchFlag) {
-        activeSwitchStyle =
-          "border-dashed border-b-2 text-indigo-700 text-2xl";
+        activeSwitchStyle = "border-dashed border-b-2 text-indigo-700 text-2xl";
       }
       return (
-        <div
-          className="list-area--branches"
-          key={branchType + branchName}>
-          <div className={ icon === 'wifi' ? "list-area--branches--icon ml-0" : "list-area--branches--icon"}>
+        <div className="list-area--branches" key={branchType + branchName}>
+          <div
+            className={
+              icon === "wifi"
+                ? "list-area--branches--icon ml-0"
+                : "list-area--branches--icon"
+            }
+          >
             <FontAwesomeIcon icon={["fas", icon]}></FontAwesomeIcon>
           </div>
           <div className="xl:block lg:block md:block sm:hidden list-area--branches--type">
@@ -272,9 +276,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                     icon={["fas", "trash-alt"]}
                   ></FontAwesomeIcon>
                 </div>
-                <div className="list-area--branches--delete--type">
-                  Normal
-                </div>
+                <div className="list-area--branches--delete--type">Normal</div>
               </div>
               <div
                 className="list-area--branches--delete"
@@ -290,9 +292,7 @@ export default function BranchListComponent({ repoId, currentBranch }) {
                     icon={["fas", "minus-square"]}
                   ></FontAwesomeIcon>
                 </div>
-                <div className="list-area--branches--delete--type">
-                  Force
-                </div>
+                <div className="list-area--branches--delete--type">Force</div>
               </div>
             </div>
           ) : (
@@ -313,24 +313,18 @@ export default function BranchListComponent({ repoId, currentBranch }) {
     };
 
     if (!branch.includes("remotes/")) {
-      return branchPickerComponent(
-        "code-branch",
-        "Local Branch",
-        branch
-      );
+      return branchPickerComponent("code-branch", "Local Branch", branch);
     } else {
       const splitBranch = branch.split("/");
       if (splitBranch.length <= 2) {
         return null;
       }
       const remoteName = splitBranch[1];
-      const remoteBranch = splitBranch
-        .slice(2, splitBranch.length)
-        .join("/");
+      const remoteBranch = splitBranch.slice(2, splitBranch.length).join("/");
 
       return branchPickerComponent("wifi", remoteName, remoteBranch);
     }
-  }
+  };
 
   return (
     <div className="repo-backdrop--branchlist xl:w-3/4 lg:w-3/4 md:w-11/12 sm:w-11/12">
@@ -355,31 +349,44 @@ export default function BranchListComponent({ repoId, currentBranch }) {
             Collecting branch list...
           </div>
         ) : null}
-         <div className='flex flex-row mx-8 shadow-md rounded-md b-1'>
-         <div className="b-1 text-center p-4 text-white bg-blue-500 rounded-l-md">
-          <FontAwesomeIcon icon={["fas", "search"]}></FontAwesomeIcon>
-         </div>
-         <div className='w-full'>
-         <input
-            id="branchListSearchInput"
-            type="text"
-            placeholder="Search For Branch Name"
-            className="border-0 outline-none w-full p-4 focus:outline-none"
-            onChange={searchBranchFromList}
-            value={branchSearchTerm}></input>
-         </div>
-         <div className="b-1 text-center p-4 text-gray-500 cursor-pointer" onClick={cancelSearchBranchFromList}>
-          <FontAwesomeIcon icon={["fas", "times"]}></FontAwesomeIcon>
-         </div>
-        </div>
-        {!listError &&
-          branchList &&
-          branchSearchTerm !== '' ? (filteredBranchList.length > 0 ? filteredBranchList.map((branch) => {
-            return renderBranchListComponent(branch)
-          }) : <div className='text-center font-sans font-light text-xl my-2 text-gray-600 border-b border-dotted'>{branchSearchTerm.concat(' branch not available!')}</div>) :
+        {!loading ? (
+          <div className="flex flex-row mx-8 shadow-md rounded-md my-4">
+            <div className="b-1 text-center p-4 text-white bg-blue-500 rounded-l-md">
+              <FontAwesomeIcon icon={["fas", "search"]}></FontAwesomeIcon>
+            </div>
+            <div className="w-full">
+              <input
+                id="branchListSearchInput"
+                type="text"
+                placeholder="Search For Branch Name"
+                className="border-0 outline-none w-full p-4 focus:outline-none"
+                onChange={searchBranchFromList}
+                value={branchSearchTerm}
+              ></input>
+            </div>
+            <div
+              className="b-1 text-center p-4 text-gray-500 cursor-pointer bg-white rounded-r-md"
+              onClick={cancelSearchBranchFromList}
+            >
+              <FontAwesomeIcon icon={["fas", "times"]}></FontAwesomeIcon>
+            </div>
+          </div>
+        ) : null}
+        {!listError && branchList && branchSearchTerm !== "" ? (
+          filteredBranchList.length > 0 ? (
+            filteredBranchList.map((branch) => {
+              return renderBranchListComponent(branch);
+            })
+          ) : (
+            <div className="text-center font-sans font-light text-xl my-2 text-gray-600 border-b border-dotted">
+              {branchSearchTerm.concat(" branch not available!")}
+            </div>
+          )
+        ) : (
           branchList.map((branch) => {
-            return renderBranchListComponent(branch)
-          })}
+            return renderBranchListComponent(branch);
+          })
+        )}
       </div>
       {listError
         ? errorComponent("Error occurred while listing branches!")
