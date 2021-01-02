@@ -3,7 +3,6 @@ import { fab } from "@fortawesome/free-brands-svg-icons";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { globalAPIEndpoint } from "../../../../../util/env_config";
-import "../../../../styles/GitOperations.css";
 import CommitComponent from "./CommitComponent";
 import PushComponent from "./PushComponent";
 import StageComponent from "./StageComponent";
