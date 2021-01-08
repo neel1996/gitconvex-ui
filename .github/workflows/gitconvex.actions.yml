@@ -28,10 +28,12 @@ jobs:
           git clone https://github.com/neel1996/gitconvex-ui.git $HOME/gitconvex-ui
           cd $HOME/gitconvex-ui
           git checkout ${{ github.head_ref }}
+          export AUTHOR_NAME=$(git log --pretty=format:%an -1)
+          export AUTHOR_EMAIL=$(git log --pretty=format:%ae -1)
           export LATEST_COMMIT=$(git log --oneline -1 --pretty=format:%s)
           cd $GITHUB_WORKSPACE
           git clone https://github.com/neel1996/gitconvex.git $HOME/gitconvex
-          git config --global user.name "${{ secrets.ACTION_USER_NAME }}" && git config --global user.email "${{ secrets.ACTION_USER_EMAIL }}"
+          git config --global user.name "$AUTHOR_NAME" && git config --global user.email "$AUTHOR_EMAIL"
           cd $HOME/gitconvex
           git checkout $TARGET_BRANCH
           cd $GITHUB_WORKSPACE
