@@ -23,7 +23,7 @@ jobs:
           npm install tailwindcss@latest postcss@latest
           npm i -g create-react-app
           export NODE_ENV=production && npx tailwindcss build -o src/index.css -c src/tailwind.config.js
-          npm test && npm run build
+          npm test && export NODE_ENV=production && npm run build
           rm -rf build/
       - name: Integration and Deployment
         run: |
