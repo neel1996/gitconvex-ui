@@ -91,7 +91,7 @@ export default function RepoLeftPaneComponent(props) {
                     onMouseEnter={(event) => {
                       let popUp = document.createElement("div");
                       popUp.className = "tooltip";
-                      popUp.innerHTML = `Add or edit remote repo`;
+                      popUp.innerHTML = `Click here to configure remote repo`;
                       event.currentTarget.insertAdjacentElement(
                         "afterend",
                         popUp
