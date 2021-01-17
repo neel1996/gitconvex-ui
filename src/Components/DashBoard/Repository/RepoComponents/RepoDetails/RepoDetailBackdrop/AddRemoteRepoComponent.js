@@ -1,40 +1,18 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import "@fortawesome/react-fontawesome";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
-import { faCheckCircle } from "@fortawesome/free-regular-svg-icons";
-import axios from "axios";
-import { globalAPIEndpoint } from "../../../../../../util/env_config";
+// import axios from "axios";
+// import { globalAPIEndpoint } from "../../../../../../util/env_config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import AddRemoteRepoFormComponent from "./AddRemoteRepoFormComponent";
 
 export default function AddRemoteRepoComponent({ repoId }) {
-  const remoteNameRef = useRef();
-  const remoteUrlRef = useRef();
-
-  const [addRemoteStatus, setAddRemoteStatus] = useState("");
   const [fieldMissing, setFieldMissing] = useState(false);
-
-  const formAddRemote = (formId, placeholder) => {
-    return (
-      <input
-        type="text"
-        id={formId}
-        className="rounded p-3 shadow-md text-lg items-center text-gray-800"
-        placeholder={placeholder}
-        ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
-        style={{ width: "45%" }}
-        onChange={() => {
-          setFieldMissing(false);
-        }}
-      ></input>
-    );
-  };
-
-  function addRemote() {
-    let remoteName = remoteNameRef.current.value;
-    let remoteUrl = remoteUrlRef.current.value;
-
-    if (repoId && remoteName && remoteUrl) {
-      console.log(remoteUrl, remoteName);
+  const [remoteDetails, setRemoteDetails] = useState([]);
+  function addRemote(props) {
+    if (props) {
+      let newProps = [...remoteDetails, props];
+      setRemoteDetails(newProps);
     } else {
       setFieldMissing(true);
     }
@@ -69,23 +47,31 @@ export default function AddRemoteRepoComponent({ repoId }) {
             Remote URL
           </div>
         </div>
-        <div className="form--data flex w-full justify-between items-center mt-4 mb-6 p-3">
-          <div
-            className="flex items-center justify-around"
-            style={{ width: "95%" }}
-          >
-            {formAddRemote("remoteName", "Enter name for your remote repo")}
-            {formAddRemote("remoteURL", "URL for the remote repo")}
-          </div>
-          <div className="text-center" style={{ width: "5%" }}>
-            <FontAwesomeIcon
-              icon={faCheckCircle}
-              className="text-4xl cursor-pointer text-blue-500 font-bold"
-              onClick={() => {
-                addRemote();
-              }}
-            ></FontAwesomeIcon>
-          </div>
+        <AddRemoteRepoFormComponent
+          repoId={repoId}
+          remoteDetail={addRemote}
+          setFieldMissing={setFieldMissing}
+        ></AddRemoteRepoFormComponent>
+        <div className="mt-4 mb-8 overflow-auto" style={{ maxHeight: "250px" }}>
+          {remoteDetails.length > 0
+            ? remoteDetails.map((items) => {
+                const { remoteName, remoteUrl } = items;
+                console.log(items);
+                return (
+                  <div
+                    key={remoteUrl}
+                    className="flex items-center justify-around w-10/12 mx-auto my-2"
+                  >
+                    <div className="text-sans text-lg text-gray-800">
+                      {remoteName}
+                    </div>
+                    <div className="text-sans text-lg text-gray-800">
+                      {remoteUrl}
+                    </div>
+                  </div>
+                );
+              })
+            : null}
         </div>
         {fieldMissing
           ? statusPillComponent(
@@ -93,7 +79,14 @@ export default function AddRemoteRepoComponent({ repoId }) {
               "One or more required parameters are empty!"
             )
           : null}
+        {/* {addRemoteStatus === "success"
+          ? statusPillComponent(
+              "green",
+              "Remote repo has been added successfully!"
+            )
+          : null} */}
       </div>
+      <div className="flex items-center justify-around w-10/12 mx-auto"></div>
     </div>
   );
 }
