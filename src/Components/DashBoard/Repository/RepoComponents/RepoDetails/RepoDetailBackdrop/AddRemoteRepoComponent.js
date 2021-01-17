@@ -1,85 +1,42 @@
 import React, { useState, useRef } from "react";
+import "@fortawesome/react-fontawesome";
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle } from "@fortawesome/free-regular-svg-icons";
 import axios from "axios";
 import { globalAPIEndpoint } from "../../../../../../util/env_config";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function AddRemoteRepoComponent({ repoId }) {
   const remoteNameRef = useRef();
   const remoteUrlRef = useRef();
 
-  const [paramMissing, setParamMissing] = useState(false);
   const [addRemoteStatus, setAddRemoteStatus] = useState("");
+  const [fieldMissing, setFieldMissing] = useState(false);
 
-  const remoteFormTextComponent = (formId, label, placeholder) => {
+  const formAddRemote = (formId, placeholder) => {
     return (
-      <div className="addremote--form">
-        <label htmlFor={formId} className="addremote--form--label">
-          {label}
-        </label>
-        <div className="w-5/6">
-          <input
-            id={formId}
-            onClick={() => {
-              setParamMissing(false);
-              setAddRemoteStatus("");
-            }}
-            className="backdrop--input"
-            placeholder={placeholder}
-            ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
-            onChange={(event) => {
-              const remoteNameVal = event.target.value;
-              if (
-                event.target.id === "remoteName" &&
-                remoteNameVal.match(/[^a-zA-Z0-9_]/gi)
-              ) {
-                event.target.value = remoteNameVal.replace(
-                  /[^a-zA-Z0-9_]/gi,
-                  "-"
-                );
-              }
-            }}
-          ></input>
-        </div>
-      </div>
+      <input
+        type="text"
+        id={formId}
+        className="rounded p-3 shadow-md text-lg items-center text-gray-800"
+        placeholder={placeholder}
+        ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
+        style={{ width: "45%" }}
+        onChange={() => {
+          setFieldMissing(false);
+        }}
+      ></input>
     );
   };
 
-  function addRemoteClickHandler() {
-    let repoName = remoteNameRef.current.value;
-    let repoUrl = remoteUrlRef.current.value;
+  function addRemote() {
+    let remoteName = remoteNameRef.current.value;
+    let remoteUrl = remoteUrlRef.current.value;
 
-    if (repoId && repoName && repoUrl) {
-      axios({
-        url: globalAPIEndpoint,
-        method: "POST",
-        data: {
-          query: `
-              mutation {
-                addRemote(repoId: "${repoId}", remoteName: "${repoName}", remoteUrl: "${repoUrl}")
-              }
-            `,
-        },
-      })
-        .then((res) => {
-          if (res.data.data && !res.data.error) {
-            const remoteAddStatus = res.data.data.addRemote;
-
-            if (remoteAddStatus === "REMOTE_ADD_SUCCESS") {
-              setAddRemoteStatus("success");
-              remoteNameRef.current.value = "";
-              remoteUrlRef.current.value = "";
-            } else {
-              setAddRemoteStatus("failed");
-            }
-          } else {
-            setAddRemoteStatus("failed");
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          setAddRemoteStatus("failed");
-        });
+    if (repoId && remoteName && remoteUrl) {
+      console.log(remoteUrl, remoteName);
     } else {
-      setParamMissing(true);
+      setFieldMissing(true);
     }
   }
 
@@ -92,42 +49,50 @@ export default function AddRemoteRepoComponent({ repoId }) {
   };
 
   return (
-    <div className="xl:w-1/2 lg:w-3/4 md:w-11/12 sm:w-11/12 repo-backdrop--addremote">
-      <div className="addremote--header">Enter new remote details</div>
-      <div className="my-4 mx-6">
-        {remoteFormTextComponent(
-          "remoteName",
-          "Enter Remote Name",
-          "Give a name for your new remote"
-        )}
-        {remoteFormTextComponent(
-          "remoteUrl",
-          "Enter Remote URL",
-          "Provide the URL for your remote repo"
-        )}
+    <div className="xl:w-4/6 lg:w-3/4 md:w-11/12 sm:w-11/12 repo-backdrop--addremote">
+      <div className="addremote--header">
+        <FontAwesomeIcon
+          icon={faCodeBranch}
+          className="text-3xl mx-2"
+        ></FontAwesomeIcon>
+        Remote details
       </div>
-      {paramMissing
-        ? statusPillComponent(
-            "yellow",
-            "One or more required parameters are empty!"
-          )
-        : null}
-      {addRemoteStatus === "success"
-        ? statusPillComponent(
-            "green",
-            "Remote repo has been added successfully!"
-          )
-        : null}
-      {addRemoteStatus === "failed"
-        ? statusPillComponent("red", "Failed to add new repo!")
-        : null}
-      <div
-        className="addremote--btn"
-        onClick={() => {
-          addRemoteClickHandler();
-        }}
-      >
-        Add New Remote
+      <div className="w-10/12 mx-auto">
+        <div
+          className="flex justify-around items-center"
+          style={{ width: "90%" }}
+        >
+          <div className="font-sans text-2xl font-semibold text-gray-600">
+            Remote name
+          </div>
+          <div className="font-sans text-2xl font-semibold text-gray-600">
+            Remote URL
+          </div>
+        </div>
+        <div className="form--data flex w-full justify-between items-center mt-4 mb-6 p-3">
+          <div
+            className="flex items-center justify-around"
+            style={{ width: "95%" }}
+          >
+            {formAddRemote("remoteName", "Enter name for your remote repo")}
+            {formAddRemote("remoteURL", "URL for the remote repo")}
+          </div>
+          <div className="text-center" style={{ width: "5%" }}>
+            <FontAwesomeIcon
+              icon={faCheckCircle}
+              className="text-4xl cursor-pointer text-blue-500 font-bold"
+              onClick={() => {
+                addRemote();
+              }}
+            ></FontAwesomeIcon>
+          </div>
+        </div>
+        {fieldMissing
+          ? statusPillComponent(
+              "yellow",
+              "One or more required parameters are empty!"
+            )
+          : null}
       </div>
     </div>
   );
