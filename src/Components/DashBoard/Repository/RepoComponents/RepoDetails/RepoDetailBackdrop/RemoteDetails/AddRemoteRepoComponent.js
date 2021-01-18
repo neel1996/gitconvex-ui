@@ -51,7 +51,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
         </div>
         {addNewRemote ? (
           <div
-            className="mx-6 px-3 py-2 rounded text-lg cursor-pointer bg-blue-200 text-gray-800 hover:bg-blue-300 hover:text-gray-900"
+            className="mx-6 px-3 py-2 font-sans rounded text-lg cursor-pointer bg-blue-200 text-gray-800 hover:bg-blue-300 hover:text-gray-900"
             onClick={() => {
               setAddNewRemote(false);
               setRemoteForm(true);
@@ -65,13 +65,22 @@ export default function AddRemoteRepoComponent({ repoId }) {
         {remoteDetails.length > 0 ? (
           <>
             <div className="flex items-center w-full">
-              <div className="font-sans text-2xl text-center font-semibold text-gray-600 w-3/12">
+              <div
+                className="font-sans text-2xl mx-auto text-center font-semibold text-gray-600"
+                style={{ width: "25%" }}
+              >
                 Remote name
               </div>
-              <div className="font-sans text-2xl text-center font-semibold text-gray-600 w-1/2">
+              <div
+                className="font-sans text-2xl mx-auto text-center font-semibold text-gray-600"
+                style={{ width: "50%" }}
+              >
                 Remote URL
               </div>
-              <div className="font-sans text-2xl text-center font-semibold text-gray-600 w-3/12">
+              <div
+                className="font-sans text-2xl mx-auto text-center font-semibold text-gray-600"
+                style={{ width: "20%" }}
+              >
                 Actions
               </div>
             </div>
@@ -85,31 +94,47 @@ export default function AddRemoteRepoComponent({ repoId }) {
             ) : null}
             <div
               className="mt-3 w-full mb-4 overflow-auto flex flex-col items-center"
-              style={{ maxHeight: "300px" }}
+              style={{ maxHeight: "350px" }}
             >
               {remoteDetails.map((items) => {
                 const { remoteName, remoteUrl } = items;
                 return (
                   <div
                     key={remoteName}
-                    className="flex items-center align-middle w-full mx-auto my-2"
+                    className="flex items-center align-middle w-full mx-auto my-4 shadow rounded-md py-6"
                   >
-                    <div className="flex items-center justify-center text-sans text-lg text-gray-700 w-3/12">
+                    <div
+                      className="flex items-center mx-auto justify-center text-sans text-lg text-gray-700"
+                      style={{ width: "25%" }}
+                    >
                       <FontAwesomeIcon
                         icon={faGithub}
-                        className="text-3xl w-2/12 mr-2"
+                        className="text-3xl text-pink-500 w-2/12 mr-2"
                       ></FontAwesomeIcon>
                       <div className="w-1/2">{remoteName}</div>
                     </div>
-                    <div className="text-sans flex items-center justify-center text-center text-lg w-1/2 text-gray-700">
+                    <div
+                      className="text-sans flex items-center  mx-auto justify-center text-center text-lg text-gray-700"
+                      style={{ width: "50%" }}
+                    >
                       {remoteUrl}
                     </div>
-                    <div className="flex items-center text-center justify-center w-3/12">
-                      <FontAwesomeIcon
-                        icon={faPencilAlt}
-                        className="mr-2"
-                      ></FontAwesomeIcon>
-                      <FontAwesomeIcon icon={faTrashAlt}></FontAwesomeIcon>
+                    <div
+                      className="text-center flex items-center"
+                      style={{ width: "20%" }}
+                    >
+                      <div className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold">
+                        <FontAwesomeIcon
+                          icon={faPencilAlt}
+                          className="text-white"
+                        ></FontAwesomeIcon>
+                      </div>
+                      <div className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-red-400 hover:bg-red-600 font-semibold">
+                        <FontAwesomeIcon
+                          icon={faTrashAlt}
+                          className="text-white"
+                        ></FontAwesomeIcon>
+                      </div>
                     </div>
                   </div>
                 );
