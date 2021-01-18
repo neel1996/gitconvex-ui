@@ -9,7 +9,7 @@ import LoadingHOC from "../../../../LoadingHOC";
 import "../../../../styles/RepositoryDetails.css";
 import FileExplorerComponent from "./FileExplorerComponent";
 import AddBranchComponent from "./RepoDetailBackdrop/AddBranchComponent";
-import AddRemoteRepoComponent from "./RepoDetailBackdrop/AddRemoteRepoComponent";
+import AddRemoteRepoComponent from "./RepoDetailBackdrop/RemoteDetails/AddRemoteRepoComponent";
 import BranchListComponent from "./RepoDetailBackdrop/BranchListComponent";
 import CommitLogComponent from "./RepoDetailBackdrop/CommitLogComponent";
 import FetchPullActionComponent from "./RepoDetailBackdrop/FetchPullActionComponent";

@@ -12,10 +12,11 @@ export default function AddRemoteRepoFormComponent(props) {
         type="text"
         autoComplete="off"
         id={formId}
-        className="rounded p-3 shadow-md text-lg items-center text-gray-800 bg-white"
+        className={`rounded p-3 shadow-md text-lg items-center text-gray-800 bg-white ${
+          formId === "remoteName" ? "w-5/12" : "w-6/12"
+        }`}
         placeholder={placeholder}
         ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
-        style={{ width: "45%" }}
         onChange={() => {
           props.setFieldMissing(false);
         }}
@@ -45,7 +46,7 @@ export default function AddRemoteRepoFormComponent(props) {
         className="flex items-center justify-around"
         style={{ width: "95%" }}
       >
-        {formAddRemote("remoteName", "Enter name for your remote repo")}
+        {formAddRemote("remoteName", "Name for the remote repo")}
         {formAddRemote("remoteURL", "URL for the remote repo")}
       </div>
       <button className="text-center" style={{ width: "5%", outline: "none" }}>
@@ -53,6 +54,7 @@ export default function AddRemoteRepoFormComponent(props) {
           icon={faCheckCircle}
           className="text-4xl cursor-pointer text-blue-500 font-bold"
           onClick={() => {
+            props.setAddNewRemote(true);
             addRemote();
           }}
         ></FontAwesomeIcon>
