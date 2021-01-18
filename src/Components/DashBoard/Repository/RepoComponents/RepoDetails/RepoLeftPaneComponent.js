@@ -1,6 +1,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fab } from "@fortawesome/free-brands-svg-icons";
 import { fas } from "@fortawesome/free-solid-svg-icons";
+import { faTools } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { actionType } from "./backdropActionType";
 import React, { useEffect } from "react";
@@ -88,18 +89,25 @@ export default function RepoLeftPaneComponent(props) {
                     id="addRemote"
                     className="add-btn bg-indigo-400 hover:bg-indigo-500"
                     onMouseEnter={(event) => {
-                      let popUp =
-                        '<div class="tooltip" style="margin-left:-40px;">Click to add a new remote repo</div>';
-                      event.target.innerHTML += popUp;
+                      let popUp = document.createElement("div");
+                      popUp.className = "tooltip";
+                      popUp.innerHTML = `Click here to configure remote repo`;
+                      event.currentTarget.insertAdjacentElement(
+                        "afterend",
+                        popUp
+                      );
                     }}
                     onMouseLeave={(event) => {
-                      event.target.innerHTML = "+";
+                      event.currentTarget.parentNode.children[1].remove();
                     }}
                     onClick={() => {
                       actionTrigger(actionType.ADD_REMOTE_REPO);
                     }}
                   >
-                    +
+                    <FontAwesomeIcon
+                      icon={faTools}
+                      className="text-xl text-center text-white"
+                    ></FontAwesomeIcon>
                   </div>
                 </div>
               </div>

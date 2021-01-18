@@ -165,7 +165,8 @@
   font-size: 0.875rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  position: relative;
+  margin-left: -40px;
+  position: absolute;
 }
 
 .remote--url {
