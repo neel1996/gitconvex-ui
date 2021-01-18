@@ -1,8 +1,5 @@
 import React, { useRef } from "react";
-import {
-  faCheckCircle,
-  faTimesCircle,
-} from "@fortawesome/free-regular-svg-icons";
+import { faCheck, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function AddRemoteRepoFormComponent(props) {
@@ -15,7 +12,8 @@ export default function AddRemoteRepoFormComponent(props) {
         type="text"
         autoComplete="off"
         id={formId}
-        className={`rounded shadow-md w-full py-2 text-center text-lg items-center text-gray-800 bg-white`}
+        className={`rounded w-full py-2 border-2 text-center text-lg items-center text-gray-800 bg-white`}
+        style={{ borderColor: "rgb(113 166 196 / 33%)" }}
         placeholder={placeholder}
         ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
         onChange={() => {
@@ -38,28 +36,41 @@ export default function AddRemoteRepoFormComponent(props) {
   };
 
   return (
-    <form className="form--data flex w-full justify-between items-center mt-4 mb-3">
-      <div className="w-1/4">{formAddRemote("remoteName", "Remote name")}</div>
-      <div style={{ width: "40%" }}>
+    <form className="form--data flex w-full items-center my-6">
+      <div className="mx-auto" style={{ width: "25%" }}>
+        {formAddRemote("remoteName", "Remote name")}
+      </div>
+      <div className="mx-auto" style={{ width: "50%" }}>
         {formAddRemote("remoteURL", "Remote URL")}
       </div>
-      <div className="text-center w-1/4" style={{ outline: "none" }}>
-        <FontAwesomeIcon
-          icon={faCheckCircle}
-          className="text-3xl mr-2 cursor-pointer text-blue-500 font-semibold"
+      <div
+        className="text-center flex items-center justify-evenly"
+        style={{ outline: "none", width: "20%" }}
+      >
+        <div
+          className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
           onClick={() => {
             addRemote();
           }}
-        ></FontAwesomeIcon>
-        <FontAwesomeIcon
-          icon={faTimesCircle}
-          className="text-3xl mr-2 cursor-pointer text-red-500 font-semibold"
+        >
+          <FontAwesomeIcon
+            icon={faCheck}
+            className="text-white"
+          ></FontAwesomeIcon>
+        </div>
+        <div
+          className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-red-400 hover:bg-red-600 font-semibold"
           onClick={() => {
             props.setAddNewRemote(true);
             props.setRemoteForm(false);
             props.setFieldMissing(false);
           }}
-        ></FontAwesomeIcon>
+        >
+          <FontAwesomeIcon
+            icon={faTimes}
+            className="text-white"
+          ></FontAwesomeIcon>
+        </div>
       </div>
     </form>
   );
