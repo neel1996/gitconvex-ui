@@ -111,12 +111,17 @@ export default function AddRemoteRepoComponent({ repoId }) {
                 className="mt-3 w-full mb-4 overflow-auto flex flex-col items-center"
                 style={{ maxHeight: "350px" }}
               >
-                {remoteDetails.map((items) => {
+                {remoteDetails.map((items, index) => {
                   const { remoteName, remoteUrl } = items;
                   return (
                     <AddRemote
+                      key={remoteName}
                       remoteName={remoteName}
                       remoteUrl={remoteUrl}
+                      index={index}
+                      setFieldMissing={setFieldMissing}
+                      remoteDetails={remoteDetails}
+                      setAddRemoteStatus={setAddRemoteStatus}
                     ></AddRemote>
                   );
                 })}
