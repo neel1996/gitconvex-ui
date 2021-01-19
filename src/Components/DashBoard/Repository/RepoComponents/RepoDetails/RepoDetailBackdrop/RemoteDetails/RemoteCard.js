@@ -14,12 +14,18 @@ import {
   faGitSquare,
 } from "@fortawesome/free-brands-svg-icons";
 
-export default function RemoteCard({ remoteName, remoteUrl }) {
-  let remoteNameRef = useRef();
-  let remoteUrlRef = useRef();
+export default function RemoteCard({
+  remoteName,
+  remoteUrl,
+  setFieldMissing,
+  remoteDetails,
+  setAddRemoteStatus,
+}) {
+  const remoteFormName = useRef();
+  const remoteFormUrl = useRef();
 
-  remoteUrlRef.current = remoteUrl;
-  remoteNameRef.current = remoteName;
+  const [remoteNameState, setRemoteNameState] = useState(remoteName);
+  const [remoteUrlState, setRemoteUrlState] = useState(remoteUrl);
 
   const [editRemote, setEditRemote] = useState(false);
   const getRemoteLogo = (gitRemoteHost) => {
@@ -64,20 +70,21 @@ export default function RemoteCard({ remoteName, remoteUrl }) {
     return remoteLogo;
   };
   return (
-    <>
+    <div className="w-full">
       {editRemote ? (
-        <div
-          key={remoteName}
-          className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50"
-        >
+        <div className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50">
           <div className="flex items-center w-1/5 mx-auto justify-center text-sans text-lg text-gray-700">
             <input
               type="text"
               autoComplete="off"
               className={`rounded w-full shadow-md py-2 border-2 text-center text-lg items-center text-gray-800 bg-white`}
               style={{ borderColor: "rgb(113 166 196 / 33%)" }}
-              placeholder={remoteName}
-              ref={remoteNameRef}
+              placeholder={remoteNameState}
+              ref={remoteFormName}
+              onChange={() => {
+                setAddRemoteStatus(false);
+                setFieldMissing(false);
+              }}
             ></input>
           </div>
           <div className="text-sans mx-auto justify-center items-center text-center flex text-lg text-gray-700 w-1/2">
@@ -86,15 +93,43 @@ export default function RemoteCard({ remoteName, remoteUrl }) {
               autoComplete="off"
               className={`rounded shadow-md w-full py-2 border-2 text-center text-lg items-center text-gray-800 bg-white`}
               style={{ borderColor: "rgb(113 166 196 / 33%)" }}
-              placeholder={remoteUrl}
-              ref={remoteUrlRef}
+              placeholder={remoteUrlState}
+              ref={remoteFormUrl}
+              onChange={() => {
+                setAddRemoteStatus(false);
+                setFieldMissing(false);
+              }}
             ></input>
           </div>
           <div
             className="text-center flex items-center"
             style={{ width: "22%" }}
           >
-            <div className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold">
+            <div
+              className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
+              onClick={() => {
+                if (
+                  remoteFormUrl.current.value &&
+                  remoteFormName.current.value
+                ) {
+                  if (
+                    !remoteDetails.find((items) => {
+                      return items.remoteName === remoteFormName.current.value;
+                    })
+                  ) {
+                    setRemoteNameState(remoteFormName.current.value);
+                    setRemoteUrlState(remoteFormUrl.current.value);
+                    setEditRemote(false);
+                    setFieldMissing(false);
+                    setAddRemoteStatus(false);
+                  } else {
+                    setAddRemoteStatus(true);
+                  }
+                } else {
+                  setFieldMissing(true);
+                }
+              }}
+            >
               <FontAwesomeIcon
                 icon={faSave}
                 className="text-white"
@@ -104,6 +139,8 @@ export default function RemoteCard({ remoteName, remoteUrl }) {
               className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-gray-500 hover:bg-gray-700 font-semibold"
               onClick={() => {
                 setEditRemote(false);
+                setAddRemoteStatus(false);
+                setFieldMissing(false);
               }}
             >
               <FontAwesomeIcon
@@ -120,16 +157,13 @@ export default function RemoteCard({ remoteName, remoteUrl }) {
           </div>
         </div>
       ) : (
-        <div
-          key={remoteNameRef}
-          className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50"
-        >
+        <div className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50">
           <div className="flex items-center w-1/4 mx-auto justify-center text-sans text-lg text-gray-700">
-            {getRemoteLogo(remoteUrlRef)}
-            <div className="w-1/2">{remoteNameRef}</div>
+            {getRemoteLogo(remoteUrlState)}
+            <div className="w-1/2">{remoteNameState}</div>
           </div>
           <div className="text-sans mx-auto justify-center items-center text-center flex text-lg text-gray-700 w-7/12">
-            {remoteUrlRef}
+            {remoteUrlState}
           </div>
 
           <div
@@ -140,6 +174,8 @@ export default function RemoteCard({ remoteName, remoteUrl }) {
               className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
               onClick={() => {
                 setEditRemote(true);
+                setAddRemoteStatus(false);
+                setFieldMissing(false);
               }}
             >
               <FontAwesomeIcon
@@ -156,6 +192,6 @@ export default function RemoteCard({ remoteName, remoteUrl }) {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
