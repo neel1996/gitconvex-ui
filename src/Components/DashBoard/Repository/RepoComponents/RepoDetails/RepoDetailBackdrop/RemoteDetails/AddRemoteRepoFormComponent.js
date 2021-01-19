@@ -49,7 +49,7 @@ export default function AddRemoteRepoFormComponent(props) {
         style={{ outline: "none", width: "22%" }}
       >
         <div
-          className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
+          className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
           onClick={() => {
             addRemote();
           }}
@@ -60,7 +60,7 @@ export default function AddRemoteRepoFormComponent(props) {
           ></FontAwesomeIcon>
         </div>
         <div
-          className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
+          className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
           onClick={() => {
             props.setAddNewRemote(true);
             props.setRemoteForm(false);
