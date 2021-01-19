@@ -1,21 +1,12 @@
 import React, { useState } from "react";
 import "@fortawesome/react-fontawesome";
-import {
-  faCodeBranch,
-  faPencilAlt,
-  faTrashAlt,
-} from "@fortawesome/free-solid-svg-icons";
-import {
-  faGithub,
-  faGitlab,
-  faBitbucket,
-  faAws,
-  faGitSquare,
-} from "@fortawesome/free-brands-svg-icons";
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
+
 // import axios from "axios";
 // import { globalAPIEndpoint } from "../../../../../../util/env_config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddRemoteRepoFormComponent from "./AddRemoteRepoFormComponent";
+import AddRemote from "./RemoteCard";
 
 export default function AddRemoteRepoComponent({ repoId }) {
   const [fieldMissing, setFieldMissing] = useState(false);
@@ -23,48 +14,6 @@ export default function AddRemoteRepoComponent({ repoId }) {
   const [remoteForm, setRemoteForm] = useState(false);
   const [addNewRemote, setAddNewRemote] = useState(false);
   const [addRemoteStatus, setAddRemoteStatus] = useState(false);
-
-  const getRemoteLogo = (gitRemoteHost) => {
-    let remoteLogo = "";
-    if (gitRemoteHost.match(/github/i)) {
-      remoteLogo = (
-        <FontAwesomeIcon
-          icon={faGithub}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
-        ></FontAwesomeIcon>
-      );
-    } else if (gitRemoteHost.match(/gitlab/i)) {
-      remoteLogo = (
-        <FontAwesomeIcon
-          icon={faGitlab}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
-        ></FontAwesomeIcon>
-      );
-    } else if (gitRemoteHost.match(/bitbucket/i)) {
-      remoteLogo = (
-        <FontAwesomeIcon
-          icon={faBitbucket}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
-        ></FontAwesomeIcon>
-      );
-    } else if (gitRemoteHost.match(/codecommit/i)) {
-      remoteLogo = (
-        <FontAwesomeIcon
-          icon={faAws}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
-        ></FontAwesomeIcon>
-      );
-    } else {
-      remoteLogo = (
-        <FontAwesomeIcon
-          icon={faGitSquare}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
-        ></FontAwesomeIcon>
-      );
-    }
-
-    return remoteLogo;
-  };
 
   function addRemote(props) {
     if (props) {
@@ -99,7 +48,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
 
   return (
     <div
-      className="xl:w-4/6 lg:w-3/4 md:w-11/12 sm:w-11/12 m-auto rounded-lg"
+      className="xl:w-3/4 lg:w-3/4 md:w-11/12 sm:w-11/12 m-auto rounded-lg"
       style={{ backgroundColor: "#edf2f7" }}
     >
       {addRemoteStatus
@@ -111,7 +60,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
             "One or more required parameters are empty!"
           )
         : null}
-      <div className=" p-2 pb-8 pt-6">
+      <div className="w-full p-2 pb-8 pt-6">
         <div className="text-3xl m-6 font-sans text-gray-800 font-semibold flex items-center">
           <FontAwesomeIcon
             icon={faCodeBranch}
@@ -132,7 +81,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
             </div>
           ) : null}
         </div>
-        <div className="w-10/12 mx-auto">
+        <div className="w-11/12 mx-auto">
           {remoteDetails.length > 0 ? (
             <>
               <div className="flex items-center w-full">
@@ -165,35 +114,10 @@ export default function AddRemoteRepoComponent({ repoId }) {
                 {remoteDetails.map((items) => {
                   const { remoteName, remoteUrl } = items;
                   return (
-                    <div
-                      key={remoteName}
-                      className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50"
-                    >
-                      <div className="flex items-center w-1/4 mx-auto justify-center text-sans text-lg text-gray-700">
-                        {getRemoteLogo(remoteUrl)}
-                        <div className="w-1/2">{remoteName}</div>
-                      </div>
-                      <div className="text-sans mx-auto justify-center items-center text-center flex text-base text-gray-700 w-7/12">
-                        {remoteUrl}
-                      </div>
-                      <div
-                        className="text-center flex items-center"
-                        style={{ width: "22%" }}
-                      >
-                        <div className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold">
-                          <FontAwesomeIcon
-                            icon={faPencilAlt}
-                            className="text-white"
-                          ></FontAwesomeIcon>
-                        </div>
-                        <div className="text-lg items-center p-1 rounded w-1/3 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold">
-                          <FontAwesomeIcon
-                            icon={faTrashAlt}
-                            className="text-white"
-                          ></FontAwesomeIcon>
-                        </div>
-                      </div>
-                    </div>
+                    <AddRemote
+                      remoteName={remoteName}
+                      remoteUrl={remoteUrl}
+                    ></AddRemote>
                   );
                 })}
               </div>
