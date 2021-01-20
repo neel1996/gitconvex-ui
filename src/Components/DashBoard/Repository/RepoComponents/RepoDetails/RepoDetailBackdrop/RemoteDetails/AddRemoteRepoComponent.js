@@ -122,6 +122,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
                       setFieldMissing={setFieldMissing}
                       remoteDetails={remoteDetails}
                       setAddRemoteStatus={setAddRemoteStatus}
+                      setRemoteDetails={setRemoteDetails}
                     ></AddRemote>
                   );
                 })}
