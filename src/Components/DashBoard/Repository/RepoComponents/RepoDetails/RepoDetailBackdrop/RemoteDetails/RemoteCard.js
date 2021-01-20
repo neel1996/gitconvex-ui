@@ -28,6 +28,7 @@ export default function RemoteCard({
   const [remoteNameState, setRemoteNameState] = useState(remoteName);
   const [remoteUrlState, setRemoteUrlState] = useState(remoteUrl);
   const [editRemote, setEditRemote] = useState(false);
+  const [deleteRemote, setDeleteRemote] = useState(false);
   let [editNameState, setEditNameState] = useState(false);
 
   const changeState = (name, url) => {
@@ -173,7 +174,17 @@ export default function RemoteCard({
                 className="text-white"
               ></FontAwesomeIcon>
             </div>
-            <div className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold">
+            <div
+              className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
+              onClick={() => {
+                setRemoteDetails(
+                  remoteDetails.filter((items) => {
+                    return items.remoteName !== remoteNameState;
+                  })
+                );
+                setDeleteRemote(true);
+              }}
+            >
               <FontAwesomeIcon
                 icon={faTrashAlt}
                 className="text-white"
@@ -182,40 +193,56 @@ export default function RemoteCard({
           </div>
         </div>
       ) : (
-        <div className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50">
-          <div className="flex items-center w-1/4 mx-auto justify-center text-sans text-lg text-gray-700">
-            {getRemoteLogo(remoteUrlState)}
-            <div className="w-1/2">{remoteNameState}</div>
-          </div>
-          <div className="text-sans mx-auto justify-center items-center text-center flex text-lg text-gray-700 w-7/12">
-            {remoteUrlState}
-          </div>
+        <>
+          {deleteRemote ? (
+            " "
+          ) : (
+            <div className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50">
+              <div className="flex items-center w-1/4 mx-auto justify-center text-sans text-lg text-gray-700">
+                {getRemoteLogo(remoteUrlState)}
+                <div className="w-1/2">{remoteNameState}</div>
+              </div>
+              <div className="text-sans mx-auto justify-center items-center text-center flex text-lg text-gray-700 w-7/12">
+                {remoteUrlState}
+              </div>
 
-          <div
-            className="text-center flex items-center"
-            style={{ width: "22%" }}
-          >
-            <div
-              className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
-              onClick={() => {
-                setEditRemote(true);
-                setAddRemoteStatus(false);
-                setFieldMissing(false);
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faPencilAlt}
-                className="text-white"
-              ></FontAwesomeIcon>
+              <div
+                className="text-center flex items-center"
+                style={{ width: "22%" }}
+              >
+                <div
+                  className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
+                  onClick={() => {
+                    setEditRemote(true);
+                    setAddRemoteStatus(false);
+                    setFieldMissing(false);
+                  }}
+                >
+                  <FontAwesomeIcon
+                    icon={faPencilAlt}
+                    className="text-white"
+                  ></FontAwesomeIcon>
+                </div>
+                <div
+                  className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
+                  onClick={() => {
+                    setRemoteDetails(
+                      remoteDetails.filter((items) => {
+                        return items.remoteName !== remoteNameState;
+                      })
+                    );
+                    setDeleteRemote(true);
+                  }}
+                >
+                  <FontAwesomeIcon
+                    icon={faTrashAlt}
+                    className="text-white"
+                  ></FontAwesomeIcon>
+                </div>
+              </div>
             </div>
-            <div className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold">
-              <FontAwesomeIcon
-                icon={faTrashAlt}
-                className="text-white"
-              ></FontAwesomeIcon>
-            </div>
-          </div>
-        </div>
+          )}
+        </>
       )}
     </div>
   );
