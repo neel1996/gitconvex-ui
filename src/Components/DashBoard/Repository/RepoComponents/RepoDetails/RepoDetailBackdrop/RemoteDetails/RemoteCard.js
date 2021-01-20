@@ -123,7 +123,7 @@ export default function RemoteCard({
             style={{ width: "22%" }}
           >
             <div
-              className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
+              className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
               onClick={() => {
                 let name;
                 let url = !remoteFormUrl.current.value
@@ -162,7 +162,7 @@ export default function RemoteCard({
               ></FontAwesomeIcon>
             </div>
             <div
-              className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-gray-500 hover:bg-gray-700 font-semibold"
+              className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-gray-500 hover:bg-gray-700 font-semibold"
               onClick={() => {
                 setEditRemote(false);
                 setAddRemoteStatus(false);
@@ -174,7 +174,7 @@ export default function RemoteCard({
                 className="text-white"
               ></FontAwesomeIcon>
             </div>
-            <div
+            {/* <div
               className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
               onClick={() => {
                 setRemoteDetails(
@@ -189,7 +189,7 @@ export default function RemoteCard({
                 icon={faTrashAlt}
                 className="text-white"
               ></FontAwesomeIcon>
-            </div>
+            </div> */}
           </div>
         </div>
       ) : (
