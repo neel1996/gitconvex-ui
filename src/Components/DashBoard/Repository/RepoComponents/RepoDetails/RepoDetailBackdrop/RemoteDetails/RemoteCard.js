@@ -104,9 +104,9 @@ export default function RemoteCard({
               ref={remoteFormName}
               onChange={(event) => {
                 const remoteNameVal = event.target.value;
-                if (remoteNameVal.match(/[^a-zA-Z0-9_]/gi)) {
+                if (remoteNameVal.match(/[\s\\//*]/gi)) {
                   event.target.value = remoteNameVal.replace(
-                    /[^a-zA-Z0-9_]/gi,
+                    /[\s\\//*]/gi,
                     "-"
                   );
                 }
@@ -142,35 +142,36 @@ export default function RemoteCard({
               onClick={() => {
                 let name;
                 let url = !remoteFormUrl.current.value
-                  ? remoteUrlState
-                  : remoteFormUrl.current.value;
-                if (url.match(/(\s)/g) || url.match(/[^ ]*/g)) {
-                  url = remoteUrlState;
-                }
-                if (
-                  !remoteFormName.current.value ||
-                  remoteFormName.current.value === remoteNameState
-                ) {
-                  name = remoteNameState.trim();
-                  editNameState = false;
-                  setEditNameState(false);
+                  ? remoteUrlState.trim()
+                  : remoteFormUrl.current.value.trim();
+                if (url.match(/(\s)/g) || url.length === 0) {
+                  setInvalidUrl(true);
                 } else {
-                  name = remoteFormName.current.value.trim();
-                  editNameState = true;
-                  setEditNameState(true);
-                }
-                if (editNameState) {
                   if (
-                    !remoteDetails.find((items) => {
-                      return items.remoteName === name;
-                    })
+                    !remoteFormName.current.value ||
+                    remoteFormName.current.value === remoteNameState
                   ) {
-                    changeState(name, url);
+                    name = remoteNameState.trim();
+                    editNameState = false;
+                    setEditNameState(false);
                   } else {
-                    setAddRemoteStatus(true);
+                    name = remoteFormName.current.value.trim();
+                    editNameState = true;
+                    setEditNameState(true);
                   }
-                } else {
-                  changeState(name, url);
+                  if (editNameState) {
+                    if (
+                      !remoteDetails.find((items) => {
+                        return items.remoteName === name;
+                      })
+                    ) {
+                      changeState(name, url);
+                    } else {
+                      setAddRemoteStatus(true);
+                    }
+                  } else {
+                    changeState(name, url);
+                  }
                 }
               }}
             >

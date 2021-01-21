@@ -42,10 +42,10 @@ export default function AddRemoteRepoComponent({ repoId }) {
     }
   }
 
-  const statusPillComponent = (color, message) => {
+  const statusPillComponent = (border, bgColor, textColor, message) => {
     return (
       <div
-        className={`border-${color}-800 bg-${color}-200 text-${color}-900 border-b-2 font-sans text-xl border-dashed text-center rounded-b-none rounded-t-lg w-full py-6`}
+        className={`${border} ${bgColor} ${textColor} border-b-2 font-sans text-xl border-dashed text-center rounded-b-none rounded-t-lg w-full py-6`}
       >
         {message}
       </div>
@@ -58,16 +58,28 @@ export default function AddRemoteRepoComponent({ repoId }) {
       style={{ backgroundColor: "#edf2f7" }}
     >
       {addRemoteStatus
-        ? statusPillComponent("red", "Remote name already exist!")
+        ? statusPillComponent(
+            "border-red-800",
+            "bg-red-200",
+            "text-red-900",
+            "Remote name already exist!"
+          )
         : null}
       {fieldMissing
         ? statusPillComponent(
-            "indigo",
+            "border-indigo-800",
+            "bg-indigo-200",
+            "text-indigo-900",
             "One or more required parameters are empty!"
           )
         : null}
       {invalidUrl
-        ? statusPillComponent("yellow", "URL with whitespace is invalid!")
+        ? statusPillComponent(
+            "border-yellow-800",
+            "bg-yellow-200",
+            "text-yellow-900",
+            "URL with whitespace is invalid!"
+          )
         : null}
       <div className="w-full p-2 pb-8 pt-6">
         <div className="text-3xl m-6 font-sans text-gray-800 font-semibold flex items-center">

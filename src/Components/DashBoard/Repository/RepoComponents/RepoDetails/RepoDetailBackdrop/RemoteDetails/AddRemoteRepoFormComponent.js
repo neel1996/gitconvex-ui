@@ -23,9 +23,9 @@ export default function AddRemoteRepoFormComponent(props) {
           const remoteNameVal = event.target.value;
           if (
             event.target.id === "remoteName" &&
-            remoteNameVal.match(/[^a-zA-Z0-9_]/gi)
+            remoteNameVal.match(/[\s\\//*]/gi)
           ) {
-            event.target.value = remoteNameVal.replace(/[^a-zA-Z0-9_]/gi, "-");
+            event.target.value = remoteNameVal.replace(/[\s\\//*]/gi, "-");
           }
         }}
       ></input>
@@ -33,15 +33,15 @@ export default function AddRemoteRepoFormComponent(props) {
   };
 
   const addRemote = () => {
-    let remoteName = remoteNameRef.current.value;
-    let remoteUrl = remoteUrlRef.current.value;
-    if (remoteName.trim() && remoteUrl.trim() && remoteUrl.match(/[^ ]*/g)) {
+    let remoteName = remoteNameRef.current.value.trim();
+    let remoteUrl = remoteUrlRef.current.value.trim();
+    if (remoteName && remoteUrl && remoteUrl.match(/[^ ]*/g)) {
       if (remoteUrl.match(/(\s)/g)) {
         props.remoteDetail(false);
       } else {
         props.remoteDetail({
-          remoteName: remoteName.trim(),
-          remoteUrl: remoteUrl.trim(),
+          remoteName: remoteName,
+          remoteUrl: remoteUrl,
         });
         remoteNameRef.current.value = "";
         remoteUrlRef.current.value = "";
