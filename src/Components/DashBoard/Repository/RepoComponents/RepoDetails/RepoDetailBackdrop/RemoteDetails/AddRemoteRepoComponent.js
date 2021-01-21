@@ -10,6 +10,7 @@ import AddRemote from "./RemoteCard";
 
 export default function AddRemoteRepoComponent({ repoId }) {
   const [fieldMissing, setFieldMissing] = useState(false);
+  const [invalidUrl, setInvalidUrl] = useState(false);
   const [remoteDetails, setRemoteDetails] = useState([]);
   const [remoteForm, setRemoteForm] = useState(false);
   const [addNewRemote, setAddNewRemote] = useState(false);
@@ -31,8 +32,13 @@ export default function AddRemoteRepoComponent({ repoId }) {
         setAddRemoteStatus(true);
       }
     } else {
-      setAddNewRemote(false);
-      setFieldMissing(true);
+      if (props === false) {
+        setInvalidUrl(true);
+      } else {
+        setAddNewRemote(false);
+        setInvalidUrl(false);
+        setFieldMissing(true);
+      }
     }
   }
 
@@ -59,6 +65,9 @@ export default function AddRemoteRepoComponent({ repoId }) {
             "indigo",
             "One or more required parameters are empty!"
           )
+        : null}
+      {invalidUrl
+        ? statusPillComponent("yellow", "URL with whitespace is invalid!")
         : null}
       <div className="w-full p-2 pb-8 pt-6">
         <div className="text-3xl m-6 font-sans text-gray-800 font-semibold flex items-center">
@@ -103,6 +112,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
                   setRemoteForm={setRemoteForm}
                   remoteDetail={addRemote}
                   setFieldMissing={setFieldMissing}
+                  setInvalidUrl={setInvalidUrl}
                   setAddNewRemote={setAddNewRemote}
                   setAddRemoteStatus={setAddRemoteStatus}
                 ></AddRemoteRepoFormComponent>
@@ -120,6 +130,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
                       remoteUrl={remoteUrl}
                       index={index}
                       setFieldMissing={setFieldMissing}
+                      setInvalidUrl={setInvalidUrl}
                       remoteDetails={remoteDetails}
                       setAddRemoteStatus={setAddRemoteStatus}
                       setRemoteDetails={setRemoteDetails}
@@ -132,6 +143,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
             <AddRemoteRepoFormComponent
               setRemoteForm={setRemoteForm}
               remoteDetail={addRemote}
+              setInvalidUrl={setInvalidUrl}
               setFieldMissing={setFieldMissing}
               setAddNewRemote={setAddNewRemote}
               setAddRemoteStatus={setAddRemoteStatus}

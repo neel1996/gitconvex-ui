@@ -16,9 +16,17 @@ export default function AddRemoteRepoFormComponent(props) {
         style={{ borderColor: "rgb(113 166 196 / 33%)" }}
         placeholder={placeholder}
         ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
-        onChange={() => {
+        onChange={(event) => {
           props.setFieldMissing(false);
           props.setAddRemoteStatus(false);
+          props.setInvalidUrl(false);
+          const remoteNameVal = event.target.value;
+          if (
+            event.target.id === "remoteName" &&
+            remoteNameVal.match(/[^a-zA-Z0-9_]/gi)
+          ) {
+            event.target.value = remoteNameVal.replace(/[^a-zA-Z0-9_]/gi, "-");
+          }
         }}
       ></input>
     );
@@ -27,10 +35,17 @@ export default function AddRemoteRepoFormComponent(props) {
   const addRemote = () => {
     let remoteName = remoteNameRef.current.value;
     let remoteUrl = remoteUrlRef.current.value;
-    if (remoteName && remoteUrl) {
-      props.remoteDetail({ remoteName: remoteName, remoteUrl: remoteUrl });
-      remoteNameRef.current.value = "";
-      remoteUrlRef.current.value = "";
+    if (remoteName.trim() && remoteUrl.trim() && remoteUrl.match(/[^ ]*/g)) {
+      if (remoteUrl.match(/(\s)/g)) {
+        props.remoteDetail(false);
+      } else {
+        props.remoteDetail({
+          remoteName: remoteName.trim(),
+          remoteUrl: remoteUrl.trim(),
+        });
+        remoteNameRef.current.value = "";
+        remoteUrlRef.current.value = "";
+      }
     } else {
       props.remoteDetail("");
     }
@@ -65,6 +80,7 @@ export default function AddRemoteRepoFormComponent(props) {
             props.setAddNewRemote(true);
             props.setRemoteForm(false);
             props.setFieldMissing(false);
+            props.setInvalidUrl(false);
             props.setAddRemoteStatus(false);
           }}
         >
