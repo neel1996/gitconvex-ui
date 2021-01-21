@@ -55,35 +55,35 @@ export default function RemoteCard({
       remoteLogo = (
         <FontAwesomeIcon
           icon={faGithub}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
+          className="xl:text-3xl lg:text-3xl md:text-2xl text-xl text-pink-500 w-2/12 mr-2"
         ></FontAwesomeIcon>
       );
     } else if (gitRemoteHost.match(/gitlab/i)) {
       remoteLogo = (
         <FontAwesomeIcon
           icon={faGitlab}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
+          className="xl:text-3xl lg:text-3xl md:text-2xl text-xl text-pink-500 w-2/12 mr-2"
         ></FontAwesomeIcon>
       );
     } else if (gitRemoteHost.match(/bitbucket/i)) {
       remoteLogo = (
         <FontAwesomeIcon
           icon={faBitbucket}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
+          className="xl:text-3xl lg:text-3xl md:text-2xl text-xl text-pink-500 w-2/12 mr-2"
         ></FontAwesomeIcon>
       );
     } else if (gitRemoteHost.match(/codecommit/i)) {
       remoteLogo = (
         <FontAwesomeIcon
           icon={faAws}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
+          className="xl:text-3xl lg:text-3xl md:text-2xl text-xl text-pink-500 w-2/12 mr-2"
         ></FontAwesomeIcon>
       );
     } else {
       remoteLogo = (
         <FontAwesomeIcon
           icon={faGitSquare}
-          className="text-3xl text-pink-500 w-2/12 mr-2"
+          className="xl:text-3xl lg:text-3xl md:text-2xl text-xl text-pink-500 w-2/12 mr-2"
         ></FontAwesomeIcon>
       );
     }
@@ -94,11 +94,11 @@ export default function RemoteCard({
     <div className="w-full">
       {editRemote ? (
         <div className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50">
-          <div className="flex items-center w-1/5 mx-auto justify-center text-sans text-lg text-gray-700">
+          <div className="flex items-center w-1/5 mx-auto justify-center text-sans xl:text-lg lg:text-lg md:text-base text-base text-gray-700">
             <input
               type="text"
               autoComplete="off"
-              className={`rounded w-full shadow-md py-2 border-2 text-center text-lg items-center text-gray-800 bg-white`}
+              className={`rounded w-full shadow-md py-2 border-2 text-center xl:text-lg lg:text-lg md:text-base text-base items-center text-gray-800 bg-white`}
               style={{ borderColor: "rgb(113 166 196 / 33%)" }}
               placeholder={remoteNameState}
               ref={remoteFormName}
@@ -116,11 +116,11 @@ export default function RemoteCard({
               }}
             ></input>
           </div>
-          <div className="text-sans mx-auto justify-center items-center text-center flex text-lg text-gray-700 w-1/2">
+          <div className="text-sans mx-auto justify-center items-center text-center flex xl:text-lg lg:text-lg md:text-base text-base text-gray-700 w-1/2">
             <input
               type="text"
               autoComplete="off"
-              className={`rounded shadow-md w-full py-2 border-2 text-center text-lg items-center text-gray-800 bg-white`}
+              className={`rounded shadow-md w-full py-2 border-2 text-center xl:text-lg lg:text-lg md:text-base text-base items-center text-gray-800 bg-white`}
               style={{ borderColor: "rgb(113 166 196 / 33%)" }}
               placeholder={remoteUrlState}
               value={remoteUrlState}
@@ -138,7 +138,7 @@ export default function RemoteCard({
             style={{ width: "22%" }}
           >
             <div
-              className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
+              className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
               onClick={() => {
                 let name;
                 let url = !remoteFormUrl.current.value
@@ -181,7 +181,7 @@ export default function RemoteCard({
               ></FontAwesomeIcon>
             </div>
             <div
-              className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-gray-500 hover:bg-gray-700 font-semibold"
+              className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-gray-500 hover:bg-gray-700 font-semibold"
               onClick={() => {
                 setRemoteUrlState(globalUrl);
                 setEditRemote(false);
@@ -203,11 +203,11 @@ export default function RemoteCard({
             " "
           ) : (
             <div className="flex items-center align-middle w-full mx-auto my-1 shadow rounded-md py-6 bg-gray-50">
-              <div className="flex items-center w-1/4 mx-auto justify-center text-sans text-lg text-gray-700">
+              <div className="flex items-center w-1/4 mx-auto justify-center text-sans xl:text-lg lg:text-lg md:text-base text-base text-gray-700">
                 {getRemoteLogo(remoteUrlState)}
                 <div className="w-1/2">{remoteNameState}</div>
               </div>
-              <div className="text-sans mx-auto justify-center items-center text-center flex text-lg text-gray-700 w-7/12">
+              <div className="text-sans mx-auto justify-center items-center text-center flex xl:text-lg lg:text-lg md:text-base text-base text-gray-700 w-7/12">
                 {remoteUrlState}
               </div>
 
@@ -216,7 +216,7 @@ export default function RemoteCard({
                 style={{ width: "22%" }}
               >
                 <div
-                  className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
+                  className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
                   onClick={() => {
                     setEditRemote(true);
                     setAddRemoteStatus(false);
@@ -230,7 +230,7 @@ export default function RemoteCard({
                   ></FontAwesomeIcon>
                 </div>
                 <div
-                  className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
+                  className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
                   onClick={() => {
                     setRemoteDetails(
                       remoteDetails.filter((items) => {
