@@ -18,6 +18,7 @@ export default function RemoteCard({
   remoteName,
   remoteUrl,
   setFieldMissing,
+  setInvalidUrl,
   remoteDetails,
   setAddRemoteStatus,
   setRemoteDetails,
@@ -31,6 +32,8 @@ export default function RemoteCard({
   const [deleteRemote, setDeleteRemote] = useState(false);
   let [editNameState, setEditNameState] = useState(false);
 
+  var globalUrl = remoteUrl;
+
   const changeState = (name, url) => {
     remoteDetails.forEach((items) => {
       if (items.remoteName === remoteNameState) {
@@ -43,6 +46,7 @@ export default function RemoteCard({
     setRemoteUrlState(url);
     setEditRemote(false);
     setFieldMissing(false);
+    setInvalidUrl(false);
     setAddRemoteStatus(false);
   };
   const getRemoteLogo = (gitRemoteHost) => {
@@ -98,9 +102,17 @@ export default function RemoteCard({
               style={{ borderColor: "rgb(113 166 196 / 33%)" }}
               placeholder={remoteNameState}
               ref={remoteFormName}
-              onChange={() => {
+              onChange={(event) => {
+                const remoteNameVal = event.target.value;
+                if (remoteNameVal.match(/[^a-zA-Z0-9_]/gi)) {
+                  event.target.value = remoteNameVal.replace(
+                    /[^a-zA-Z0-9_]/gi,
+                    "-"
+                  );
+                }
                 setAddRemoteStatus(false);
                 setFieldMissing(false);
+                setInvalidUrl(false);
               }}
             ></input>
           </div>
@@ -111,10 +123,13 @@ export default function RemoteCard({
               className={`rounded shadow-md w-full py-2 border-2 text-center text-lg items-center text-gray-800 bg-white`}
               style={{ borderColor: "rgb(113 166 196 / 33%)" }}
               placeholder={remoteUrlState}
+              value={remoteUrlState}
               ref={remoteFormUrl}
-              onChange={() => {
+              onChange={(event) => {
+                setRemoteUrlState(event.target.value);
                 setAddRemoteStatus(false);
                 setFieldMissing(false);
+                setInvalidUrl(false);
               }}
             ></input>
           </div>
@@ -129,15 +144,18 @@ export default function RemoteCard({
                 let url = !remoteFormUrl.current.value
                   ? remoteUrlState
                   : remoteFormUrl.current.value;
+                if (url.match(/(\s)/g) || url.match(/[^ ]*/g)) {
+                  url = remoteUrlState;
+                }
                 if (
                   !remoteFormName.current.value ||
                   remoteFormName.current.value === remoteNameState
                 ) {
-                  name = remoteNameState;
+                  name = remoteNameState.trim();
                   editNameState = false;
                   setEditNameState(false);
                 } else {
-                  name = remoteFormName.current.value;
+                  name = remoteFormName.current.value.trim();
                   editNameState = true;
                   setEditNameState(true);
                 }
@@ -164,9 +182,11 @@ export default function RemoteCard({
             <div
               className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-gray-500 hover:bg-gray-700 font-semibold"
               onClick={() => {
+                setRemoteUrlState(globalUrl);
                 setEditRemote(false);
                 setAddRemoteStatus(false);
                 setFieldMissing(false);
+                setInvalidUrl(false);
               }}
             >
               <FontAwesomeIcon
@@ -174,22 +194,6 @@ export default function RemoteCard({
                 className="text-white"
               ></FontAwesomeIcon>
             </div>
-            {/* <div
-              className="text-lg items-center p-1 py-2 rounded w-1/4 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
-              onClick={() => {
-                setRemoteDetails(
-                  remoteDetails.filter((items) => {
-                    return items.remoteName !== remoteNameState;
-                  })
-                );
-                setDeleteRemote(true);
-              }}
-            >
-              <FontAwesomeIcon
-                icon={faTrashAlt}
-                className="text-white"
-              ></FontAwesomeIcon>
-            </div> */}
           </div>
         </div>
       ) : (
@@ -216,6 +220,7 @@ export default function RemoteCard({
                     setEditRemote(true);
                     setAddRemoteStatus(false);
                     setFieldMissing(false);
+                    setInvalidUrl(false);
                   }}
                 >
                   <FontAwesomeIcon
