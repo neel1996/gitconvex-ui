@@ -12,7 +12,7 @@ export default function AddRemoteRepoFormComponent(props) {
         type="text"
         autoComplete="off"
         id={formId}
-        className={`rounded w-full py-2 border-2 text-center text-lg items-center text-gray-800 bg-white`}
+        className={`rounded w-full py-2 border-2 text-center xl:text-lg lg:text-lg md:text-base text-base items-center text-gray-800 bg-white`}
         style={{ borderColor: "rgb(113 166 196 / 33%)" }}
         placeholder={placeholder}
         ref={formId === "remoteName" ? remoteNameRef : remoteUrlRef}
@@ -64,7 +64,7 @@ export default function AddRemoteRepoFormComponent(props) {
         style={{ outline: "none", width: "22%" }}
       >
         <div
-          className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
+          className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-blue-500 hover:bg-blue-700 font-semibold"
           onClick={() => {
             addRemote();
           }}
@@ -75,7 +75,7 @@ export default function AddRemoteRepoFormComponent(props) {
           ></FontAwesomeIcon>
         </div>
         <div
-          className="text-lg items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
+          className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
           onClick={() => {
             props.setAddNewRemote(true);
             props.setRemoteForm(false);

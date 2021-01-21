@@ -54,7 +54,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
 
   return (
     <div
-      className="xl:w-3/4 lg:w-3/4 md:w-11/12 sm:w-11/12 m-auto rounded-lg"
+      className="xl:w-3/4 lg:w-3/4 md:w-11/12 sm:w-11/12 w-11/12 m-auto rounded-lg"
       style={{ backgroundColor: "#edf2f7" }}
     >
       {addRemoteStatus
@@ -82,17 +82,17 @@ export default function AddRemoteRepoComponent({ repoId }) {
           )
         : null}
       <div className="w-full p-2 pb-8 pt-6">
-        <div className="text-3xl m-6 font-sans text-gray-800 font-semibold flex items-center">
+        <div className="xl:text-3xl lg:text-3xl md:text-2xl sm:text-xl text-xl m-6 font-sans text-gray-800 font-semibold flex items-center">
           <FontAwesomeIcon
             icon={faCodeBranch}
-            className="text-3xl mx-2"
+            className="xl:text-3xl lg:text-3xl md:text-2xl sm:text-xl text-xl mx-2"
           ></FontAwesomeIcon>
           <div className="border-b-4 pb-2 border-dashed border-blue-400">
             Remote details
           </div>
           {addNewRemote && remoteDetails.length > 0 ? (
             <div
-              className="mx-6 px-3 py-2 font-sans rounded text-lg cursor-pointer bg-blue-200 text-gray-800 hover:bg-blue-300 hover:text-gray-900"
+              className="mx-6 px-3 py-2 font-sans rounded xl:text-lg lg:text-lg md:text-base text-base cursor-pointer bg-blue-200 text-gray-800 hover:bg-blue-300 hover:text-gray-900"
               onClick={() => {
                 setAddNewRemote(false);
                 setRemoteForm(true);
@@ -106,14 +106,14 @@ export default function AddRemoteRepoComponent({ repoId }) {
           {remoteDetails.length > 0 ? (
             <>
               <div className="flex items-center w-full">
-                <div className="font-sans w-1/4 text-2xl mx-auto text-center font-semibold text-gray-600">
+                <div className="font-sans w-1/4 xl:text-2xl lg:text-2xl md:text-xl text-lg mx-auto text-center font-semibold text-gray-600">
                   Remote name
                 </div>
-                <div className="font-sans text-2xl w-7/12 mx-auto text-center font-semibold text-gray-600">
+                <div className="font-sans xl:text-2xl lg:text-2xl md:text-xl text-lg w-7/12 mx-auto text-center font-semibold text-gray-600">
                   Remote URL
                 </div>
                 <div
-                  className="font-sans text-2xl mx-auto text-center font-semibold text-gray-600"
+                  className="font-sans xl:text-2xl lg:text-2xl md:text-xl text-lg mx-auto text-center font-semibold text-gray-600"
                   style={{ width: "22%" }}
                 >
                   Actions
