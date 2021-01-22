@@ -87,10 +87,11 @@ export default function RepoLeftPaneComponent(props) {
                 <div className="w-1/4">
                   <div
                     id="addRemote"
-                    className="add-btn bg-indigo-400 hover:bg-indigo-500"
+                    className="rounded-full cursor-pointer items-center h-10 text-2xl mx-auto shadow text-center text-white align-middle w-10 bg-indigo-400 hover:bg-indigo-500"
                     onMouseEnter={(event) => {
                       let popUp = document.createElement("div");
-                      popUp.className = "tooltip";
+                      popUp.className =
+                        "text-gray-600 bg-white border-gray-300 p-2 rounded w-40 text-center border text-sm mt-2 mb-2 -ml-10 absolute";
                       popUp.innerHTML = `Click here to configure remote repo`;
                       event.currentTarget.insertAdjacentElement(
                         "afterend",
@@ -110,6 +111,32 @@ export default function RepoLeftPaneComponent(props) {
                     ></FontAwesomeIcon>
                   </div>
                 </div>
+                {/* <div className="w-1/5 items-center rounded-lg">
+                  <div
+                    id="addRemote"
+                    className="w-full items-center justify-center mx-auto bg-indigo-400 hover:bg-indigo-500"
+                    // onMouseEnter={(event) => {
+                    //   let popUp = document.createElement("div");
+                    //   popUp.className = "tooltip";
+                    //   popUp.innerHTML = `Click here to configure remote repo`;
+                    //   event.currentTarget.insertAdjacentElement(
+                    //     "afterend",
+                    //     popUp
+                    //   );
+                    // }}
+                    // onMouseLeave={(event) => {
+                    //   event.currentTarget.parentNode.children[1].remove();
+                    // }}
+                    onClick={() => {
+                      actionTrigger(actionType.ADD_REMOTE_REPO);
+                    }}
+                  >
+                    <FontAwesomeIcon
+                      icon={faTools}
+                      className="text-xl text-center text-white"
+                    ></FontAwesomeIcon>
+                  </div>
+                </div> */}
               </div>
             </div>
 
