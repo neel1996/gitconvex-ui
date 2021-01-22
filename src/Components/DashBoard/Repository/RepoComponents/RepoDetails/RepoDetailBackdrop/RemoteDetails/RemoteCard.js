@@ -35,6 +35,7 @@ export default function RemoteCard({
   var globalUrl = remoteUrl;
 
   const changeState = (name, url) => {
+    //TODO: Add axios
     remoteDetails.forEach((items) => {
       if (items.remoteName === remoteNameState) {
         items.remoteName = name;
@@ -232,6 +233,7 @@ export default function RemoteCard({
                 <div
                   className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
                   onClick={() => {
+                    //TODO: Add axios
                     setRemoteDetails(
                       remoteDetails.filter((items) => {
                         return items.remoteName !== remoteNameState;
