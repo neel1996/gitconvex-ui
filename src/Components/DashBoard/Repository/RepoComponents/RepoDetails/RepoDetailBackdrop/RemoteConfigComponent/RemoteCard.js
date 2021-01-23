@@ -14,15 +14,16 @@ import {
   faGitSquare,
 } from "@fortawesome/free-brands-svg-icons";
 
-export default function RemoteCard({
-  remoteName,
-  remoteUrl,
-  setFieldMissing,
-  setInvalidUrl,
-  remoteDetails,
-  setAddRemoteStatus,
-  setRemoteDetails,
-}) {
+export default function RemoteCard(props) {
+  const {
+    remoteName,
+    remoteUrl,
+    setFieldMissing,
+    setInvalidUrl,
+    setAddRemoteStatus,
+    setDeleteFailed,
+    setReloadView,
+  } = props;
   const remoteFormName = useRef();
   const remoteFormUrl = useRef();
 
@@ -30,19 +31,28 @@ export default function RemoteCard({
   const [remoteUrlState, setRemoteUrlState] = useState(remoteUrl);
   const [editRemote, setEditRemote] = useState(false);
   const [deleteRemote, setDeleteRemote] = useState(false);
-  let [editNameState, setEditNameState] = useState(false);
 
   var globalUrl = remoteUrl;
 
   const changeState = (name, url) => {
-      //TODO:Axios
-    remoteDetails.forEach((items) => {
-      if (items.remoteName === remoteNameState) {
-        items.remoteName = name;
-        items.remoteUrl = url;
-      }
-    });
-    setRemoteDetails(remoteDetails);
+    //TODO:Axios
+
+    let status = "success";
+
+    if (status === "success") {
+      //   localStorage.removeItem(remoteNameState);
+      //   localStorage.setItem(
+      //     name,
+      //     JSON.stringify({
+      //       remoteName: name,
+      //       remoteUrl: url,
+      //     })
+      //   );
+      setReloadView(true);
+    } else {
+      setAddRemoteStatus(true);
+    }
+
     setRemoteNameState(name);
     setRemoteUrlState(url);
     setEditRemote(false);
@@ -153,26 +163,10 @@ export default function RemoteCard({
                     remoteFormName.current.value === remoteNameState
                   ) {
                     name = remoteNameState.trim();
-                    editNameState = false;
-                    setEditNameState(false);
                   } else {
                     name = remoteFormName.current.value.trim();
-                    editNameState = true;
-                    setEditNameState(true);
                   }
-                  if (editNameState) {
-                    if (
-                      !remoteDetails.find((items) => {
-                        return items.remoteName === name;
-                      })
-                    ) {
-                      changeState(name, url);
-                    } else {
-                      setAddRemoteStatus(true);
-                    }
-                  } else {
-                    changeState(name, url);
-                  }
+                  changeState(name, url);
                 }
               }}
             >
@@ -234,12 +228,15 @@ export default function RemoteCard({
                   className="xl:text-lg lg:text-lg md:text-base text-base items-center p-1 py-2 rounded w-5/12 mx-auto cursor-pointer bg-red-500 hover:bg-red-600 font-semibold"
                   onClick={() => {
                     //TODO: Add axios
-                    setRemoteDetails(
-                      remoteDetails.filter((items) => {
-                        return items.remoteName !== remoteNameState;
-                      })
-                    );
-                    setDeleteRemote(true);
+                    let status = "success";
+                    if (status === "success") {
+                    //   localStorage.removeItem(remoteNameState);
+                      setReloadView(true);
+                      setDeleteFailed(false);
+                      setDeleteRemote(true);
+                    } else {
+                      setDeleteFailed(true);
+                    }
                   }}
                 >
                   <FontAwesomeIcon

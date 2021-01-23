@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "@fortawesome/react-fontawesome";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 
@@ -6,41 +6,35 @@ import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 // import { globalAPIEndpoint } from "../../../../../../util/env_config";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import AddRemoteRepoFormComponent from "./AddRemoteRepoFormComponent";
-import AddRemote from "./RemoteCard";
+import RemoteCard from "./RemoteCard";
 
 export default function AddRemoteRepoComponent({ repoId }) {
+  const [reloadView, setReloadView] = useState(false);
   const [fieldMissing, setFieldMissing] = useState(false);
   const [invalidUrl, setInvalidUrl] = useState(false);
-  const [remoteDetails, setRemoteDetails] = useState([]);
   const [remoteForm, setRemoteForm] = useState(false);
-  const [addNewRemote, setAddNewRemote] = useState(false);
+  const [deleteFailed, setDeleteFailed] = useState(false);
+  const [addNewRemote, setAddNewRemote] = useState(true);
   const [addRemoteStatus, setAddRemoteStatus] = useState(false);
+  const [remoteDetails, setRemoteDetails] = useState([]);
 
-  function addRemote(props) {
-    if (props) {
-      let remoteCheck = remoteDetails.find((items) => {
-        return items.remoteName === props.remoteName;
-      });
+  useEffect(() => {
+    let remoteArray = [];
+    //TODO: Add API call here and load it into the state
 
-      if (!remoteCheck) {
-        //TODO: Add axios
-        let newProps = [...remoteDetails, props];
-        setRemoteDetails(newProps);
-        setRemoteForm(false);
-        setAddNewRemote(true);
-      } else {
-        setAddRemoteStatus(true);
-      }
-    } else {
-      if (props === false) {
-        setInvalidUrl(true);
-      } else {
-        setAddNewRemote(false);
-        setInvalidUrl(false);
-        setFieldMissing(true);
-      }
-    }
-  }
+    // for (let i = 0; i < localStorage.length; i++) {
+    //   var key = localStorage.key(i);
+    //   var value = JSON.parse(localStorage.getItem(key));
+    //   remoteArray.push(value);
+    // }
+
+    setRemoteDetails([...remoteArray]);
+
+    return () => {
+      setRemoteDetails([]);
+      setReloadView(false);
+    };
+  }, [reloadView]);
 
   const statusPillComponent = (border, bgColor, textColor, message) => {
     return (
@@ -79,6 +73,14 @@ export default function AddRemoteRepoComponent({ repoId }) {
             "bg-yellow-200",
             "text-yellow-900",
             "URL with whitespace is invalid!"
+          )
+        : null}
+      {deleteFailed
+        ? statusPillComponent(
+            "border-red-800",
+            "bg-red-200",
+            "text-red-900",
+            "Failed to delete"
           )
         : null}
       <div className="w-full p-2 pb-8 pt-6">
@@ -121,8 +123,8 @@ export default function AddRemoteRepoComponent({ repoId }) {
               </div>
               {remoteForm ? (
                 <AddRemoteRepoFormComponent
+                  setReloadView={setReloadView}
                   setRemoteForm={setRemoteForm}
-                  remoteDetail={addRemote}
                   setFieldMissing={setFieldMissing}
                   setInvalidUrl={setInvalidUrl}
                   setAddNewRemote={setAddNewRemote}
@@ -133,28 +135,29 @@ export default function AddRemoteRepoComponent({ repoId }) {
                 className="mt-3 w-full mb-4 overflow-auto flex flex-col items-center"
                 style={{ maxHeight: "350px" }}
               >
-                {remoteDetails.map((items, index) => {
+                {remoteDetails.map((items) => {
+                  console.log(remoteDetails.length);
                   const { remoteName, remoteUrl } = items;
                   return (
-                    <AddRemote
+                    <RemoteCard
                       key={remoteName}
                       remoteName={remoteName}
                       remoteUrl={remoteUrl}
-                      index={index}
+                      remoteDetails={remoteDetails}
                       setFieldMissing={setFieldMissing}
                       setInvalidUrl={setInvalidUrl}
-                      remoteDetails={remoteDetails}
                       setAddRemoteStatus={setAddRemoteStatus}
-                      setRemoteDetails={setRemoteDetails}
-                    ></AddRemote>
+                      setDeleteFailed={setDeleteFailed}
+                      setReloadView={setReloadView}
+                    ></RemoteCard>
                   );
                 })}
               </div>
             </>
           ) : (
             <AddRemoteRepoFormComponent
+              setReloadView={setReloadView}
               setRemoteForm={setRemoteForm}
-              remoteDetail={addRemote}
               setInvalidUrl={setInvalidUrl}
               setFieldMissing={setFieldMissing}
               setAddNewRemote={setAddNewRemote}

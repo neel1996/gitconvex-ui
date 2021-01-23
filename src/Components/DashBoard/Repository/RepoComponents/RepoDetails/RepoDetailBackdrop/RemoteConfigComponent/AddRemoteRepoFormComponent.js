@@ -37,17 +37,31 @@ export default function AddRemoteRepoFormComponent(props) {
     let remoteUrl = remoteUrlRef.current.value.trim();
     if (remoteName && remoteUrl && remoteUrl.match(/[^ ]*/g)) {
       if (remoteUrl.match(/(\s)/g)) {
-        props.remoteDetail(false);
+        props.setInvalidUrl(true);
       } else {
-        props.remoteDetail({
-          remoteName: remoteName,
-          remoteUrl: remoteUrl,
-        });
-        remoteNameRef.current.value = "";
-        remoteUrlRef.current.value = "";
+        //TODO: Add axios
+        let status = "success";
+        if (status === "success") {
+          //   localStorage.setItem(
+          //     remoteName,
+          //     JSON.stringify({
+          //       remoteName: remoteName,
+          //       remoteUrl: remoteUrl,
+          //     })
+          //   );
+          props.setRemoteForm(false);
+          props.setAddNewRemote(true);
+          props.setReloadView(true);
+          remoteNameRef.current.value = "";
+          remoteUrlRef.current.value = "";
+        } else {
+          props.setAddRemoteStatus(true);
+        }
       }
     } else {
-      props.remoteDetail("");
+      props.setAddNewRemote(false);
+      props.setInvalidUrl(false);
+      props.setFieldMissing(true);
     }
   };
 

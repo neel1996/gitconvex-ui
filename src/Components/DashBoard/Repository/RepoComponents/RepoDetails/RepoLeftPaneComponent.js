@@ -99,7 +99,9 @@ export default function RepoLeftPaneComponent(props) {
                       );
                     }}
                     onMouseLeave={(event) => {
-                      event.currentTarget.parentNode.children[1].remove();
+                      if (event.currentTarget.parentNode.children[1]) {
+                        event.currentTarget.parentNode.children[1].remove();
+                      }
                     }}
                     onClick={() => {
                       actionTrigger(actionType.ADD_REMOTE_REPO);
