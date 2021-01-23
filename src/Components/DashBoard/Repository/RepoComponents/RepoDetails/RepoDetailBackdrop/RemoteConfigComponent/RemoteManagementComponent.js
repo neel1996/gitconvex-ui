@@ -22,11 +22,11 @@ export default function AddRemoteRepoComponent({ repoId }) {
     let remoteArray = [];
     //TODO: Add API call here and load it into the state
 
-    // for (let i = 0; i < localStorage.length; i++) {
-    //   var key = localStorage.key(i);
-    //   var value = JSON.parse(localStorage.getItem(key));
-    //   remoteArray.push(value);
-    // }
+    for (let i = 0; i < localStorage.length; i++) {
+      var key = localStorage.key(i);
+      var value = JSON.parse(localStorage.getItem(key));
+      remoteArray.push(value);
+    }
 
     setRemoteDetails([...remoteArray]);
 

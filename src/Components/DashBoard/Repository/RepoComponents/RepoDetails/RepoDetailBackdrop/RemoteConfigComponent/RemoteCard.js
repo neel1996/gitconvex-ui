@@ -40,14 +40,14 @@ export default function RemoteCard(props) {
     let status = "success";
 
     if (status === "success") {
-      //   localStorage.removeItem(remoteNameState);
-      //   localStorage.setItem(
-      //     name,
-      //     JSON.stringify({
-      //       remoteName: name,
-      //       remoteUrl: url,
-      //     })
-      //   );
+      localStorage.removeItem(remoteNameState);
+      localStorage.setItem(
+        name,
+        JSON.stringify({
+          remoteName: name,
+          remoteUrl: url,
+        })
+      );
       setReloadView(true);
     } else {
       setAddRemoteStatus(true);
@@ -101,6 +101,33 @@ export default function RemoteCard(props) {
 
     return remoteLogo;
   };
+
+  const remoteUrlHandler = (gitRemoteData) => {
+    let remoteData = "";
+    if (gitRemoteData) {
+      if (
+        gitRemoteData.match(/(^https)/gi) ||
+        gitRemoteData.match(/(^http)/gi)
+      ) {
+        remoteData = (
+          <a
+            href={gitRemoteData}
+            className="text-blue-400 hover:text-blue-500"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {gitRemoteData}
+          </a>
+        );
+      } else {
+        remoteData = <>{gitRemoteData}</>;
+      }
+    } else {
+      remoteData = " ";
+    }
+    return remoteData;
+  };
+
   return (
     <div className="w-full">
       {editRemote ? (
@@ -203,7 +230,7 @@ export default function RemoteCard(props) {
                 <div className="w-1/2">{remoteNameState}</div>
               </div>
               <div className="text-sans mx-auto justify-center items-center text-center flex xl:text-lg lg:text-lg md:text-base text-base text-gray-700 w-7/12">
-                {remoteUrlState}
+                {remoteUrlHandler(remoteUrlState)}
               </div>
 
               <div
@@ -230,7 +257,7 @@ export default function RemoteCard(props) {
                     //TODO: Add axios
                     let status = "success";
                     if (status === "success") {
-                    //   localStorage.removeItem(remoteNameState);
+                      localStorage.removeItem(remoteNameState);
                       setReloadView(true);
                       setDeleteFailed(false);
                       setDeleteRemote(true);

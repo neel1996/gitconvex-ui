@@ -62,6 +62,24 @@ export default function RepoLeftPaneComponent(props) {
     return remoteLogo;
   };
 
+  const remoteUrl = () => {
+    let remoteData = "";
+    if (gitRemoteData) {
+      if (gitRemoteData.match(/(^https)/gi)) {
+        remoteData = (
+          <a href={gitRemoteData} target="_blank" rel="noopener noreferrer">
+            {gitRemoteData}
+          </a>
+        );
+      } else {
+        remoteData = <>{gitRemoteData}</>;
+      }
+    } else {
+      remoteData = " ";
+    }
+    return remoteData;
+  };
+
   return (
     <>
       {props.received ? (
@@ -121,7 +139,7 @@ export default function RepoLeftPaneComponent(props) {
                 {`${gitRemoteHost} URL`}
               </div>
               <div className="cursor-pointer text-blue-400 break-words w-1/2 hover:text-blue-500">
-                {gitRemoteData}
+                {remoteUrl()}
               </div>
             </div>
 

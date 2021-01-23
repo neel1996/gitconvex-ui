@@ -35,6 +35,7 @@ export default function AddRemoteRepoFormComponent(props) {
   const addRemote = () => {
     let remoteName = remoteNameRef.current.value.trim();
     let remoteUrl = remoteUrlRef.current.value.trim();
+
     if (remoteName && remoteUrl && remoteUrl.match(/[^ ]*/g)) {
       if (remoteUrl.match(/(\s)/g)) {
         props.setInvalidUrl(true);
@@ -42,13 +43,13 @@ export default function AddRemoteRepoFormComponent(props) {
         //TODO: Add axios
         let status = "success";
         if (status === "success") {
-          //   localStorage.setItem(
-          //     remoteName,
-          //     JSON.stringify({
-          //       remoteName: remoteName,
-          //       remoteUrl: remoteUrl,
-          //     })
-          //   );
+          localStorage.setItem(
+            remoteName,
+            JSON.stringify({
+              remoteName: remoteName,
+              remoteUrl: remoteUrl,
+            })
+          );
           props.setRemoteForm(false);
           props.setAddNewRemote(true);
           props.setReloadView(true);
