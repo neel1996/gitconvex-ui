@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x, 13.x, 12.x]
+        node-version: [14.x, 15.x]
 
     steps:
       - uses: actions/checkout@v2
@@ -21,7 +21,7 @@ jobs:
       - run: npm install tailwindcss@latest postcss@latest
       - run: npm i -g create-react-app
       - run: export NODE_ENV=production && npx tailwindcss build -o src/index.css -c src/tailwind.config.js
-      - run: npm test && && export NODE_ENV=production && npm run build
+      - run: npm test && export NODE_ENV=production && npm run build
       - run: rm -rf build/
       - run: |
           export TARGET_BRANCH=${{ secrets.TARGET_BRANCH }}
