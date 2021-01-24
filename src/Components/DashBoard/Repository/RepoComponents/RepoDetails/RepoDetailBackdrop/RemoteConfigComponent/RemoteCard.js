@@ -105,10 +105,7 @@ export default function RemoteCard(props) {
   const remoteUrlHandler = (gitRemoteData) => {
     let remoteData = "";
     if (gitRemoteData) {
-      if (
-        gitRemoteData.match(/(^https)/gi) ||
-        gitRemoteData.match(/(^http)/gi)
-      ) {
+      if (gitRemoteData.match(/(^https)/gi)) {
         remoteData = (
           <a
             href={gitRemoteData}
