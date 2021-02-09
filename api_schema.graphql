@@ -120,6 +120,7 @@ type Query {
     baseBranch: String!
     compareBranch: String!
   ): [branchCompareResults]!
+  getRemote(repoId: String!): [remoteDetails]!
 }
 
 type BranchDeleteStatus {
@@ -149,7 +150,6 @@ type Mutation {
     repoURL: String
     initSwitch: Boolean!
     authOption: String!
-    sshKeyPath: String
     userName: String
     password: String
   ): AddRepoParams!
@@ -181,4 +181,7 @@ type Mutation {
   updateRepoDataFile(newDbFile: String!): String!
   deleteRepo(repoId: String!): deleteStatus!
   updateRepoName(repoId: String!, repoName: String!): String!
+  addRemote(repoId: String!, remoteName: String!, remoteUrl: String!): String!
+  editRemote(repoId: String!, remoteName: String!, remoteUrl: String!): String!
+  deleteRemote(repoId: String!, remoteName: String!): String!
 }
