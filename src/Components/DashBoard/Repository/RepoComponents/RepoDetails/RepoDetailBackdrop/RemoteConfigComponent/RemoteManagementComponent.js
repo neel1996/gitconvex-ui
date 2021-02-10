@@ -35,7 +35,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
       },
     })
       .then((res) => {
-        res.data.data.forEach((items) => {
+        res.data.data.remoteDetails.forEach((items) => {
           remoteArray.push(items);
         });
         setRemoteDetails([...remoteArray]);
@@ -43,7 +43,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
       })
       .catch(() => {
         setStatusCheck(true);
-        setRemoteOperation("get");
+        setRemoteOperation("load");
         // setRemoteDetails(remoteDetails);
         // console.log(err);
       });
@@ -134,7 +134,7 @@ export default function AddRemoteRepoComponent({ repoId }) {
               ) : null}
             </div>
             <div className="w-11/12 mx-auto">
-              {remoteDetails.length > 0 ? (
+              {remoteDetails && remoteDetails.length > 0 ? (
                 <>
                   <div className="flex items-center w-full">
                     <div className="w-1/4 mx-auto font-sans text-lg font-semibold text-center text-gray-600 xl:text-2xl lg:text-2xl md:text-xl">
