@@ -85,7 +85,6 @@ export default function AddRemoteRepoFormComponent(props) {
           .catch(() => {
             setStatusCheck(true);
             setRemoteOperation("add");
-
             // setRemoteDetails([...remoteDetails, {
             //   remoteName: remoteName,
             //   remoteUrl: remoteUrl,
